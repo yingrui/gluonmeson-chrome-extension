@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>GluonMeson Settings</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="form-container">
+      <form id="settings-form">
+          <label for="apiKey">API Key:</label>
+          <input type="password" id="apiKey" name="apiKey" required>
+
+          <label for="baseURL">Base URL:</label>
+          <input type="text" id="baseURL" name="baseURL" required>
+
+          <label for="organization">Organization:</label>
+          <input type="text" id="organization" name="organization" required>
+
+          <button type="submit">Save Settings</button>
+      </form>
+    </div>
+
+    <script src="popup.js"></script>
+
+    <!--
+      This HTML file opens when you click on icon from the toolbar.
+
+      To begin the development, run `npm run watch`.
+      To create a production bundle, use `npm run build`.
+    -->
+  </body>
+</html>

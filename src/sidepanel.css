@@ -1,0 +1,59 @@
+body, html {
+  height: 100%;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Ensures the form stays at the bottom */
+  height: 100%;
+  background-color: #f4f4f9;
+  border: 1px solid #ddd;
+  position: relative; /* Needed for absolute positioning of the form */
+}
+
+.chat-box {
+  flex-grow: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.chat-box div {
+  margin-bottom: 10px;
+  padding: 8px;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  width: fit-content;
+}
+
+form#messageForm {
+  position: absolute;
+  bottom: 0;
+  width: 100%; /* Makes the form span the entire width of the container */
+  display: flex;
+  justify-content: center; /* Centers the form horizontally */
+  padding: 10px 0; /* Adds padding on top and bottom */
+}
+
+input[type="text"] {
+  width: calc(80% - 60px); /* Adjusted width to leave space for button */
+  padding: 10px;
+  border: none;
+  border-radius: 3px;
+  margin-right: 5px;
+}
+
+button {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}

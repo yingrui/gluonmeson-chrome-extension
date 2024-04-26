@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "GluonMeson",
+  "version": "0.1.0",
+  "description": "GluonMeson Chrome Extension",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/gm_logo.png",
+    "32": "icons/gm_logo.png",
+    "64": "icons/gm_logo.png"
+  },
+  "action": {
+    "default_title": "GluonMeson",
+    "default_popup": "popup.html"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "permissions": [
+    "storage",
+    "sidePanel"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "run_at": "document_idle",
+      "js": [
+        "contentScript.js"
+      ]
+    }
+  ]
+}
