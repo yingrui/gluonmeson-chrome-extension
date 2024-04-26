@@ -1,11 +1,11 @@
-# <img src="public/icons/gm_logo.png" width="45" align="left"> Gluonmeson Chrome Extension
+# <img src="public/icons/gm_logo.png" width="45" align="left"> GluonMeson Chrome Extension
 
-My Chrome Extension
+GluonMeson Chrome Extension is Chrome Web Browser Copilot
 
 ## Features
 
-- Feature 1
-- Feature 2
+- Summarize Webpage
+- Generate content
 
 ## Install
 
