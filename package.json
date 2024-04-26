@@ -22,7 +22,10 @@
     "webpack-merge": "^5.10.0"
   },
   "dependencies": {
+    "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
+    "github-markdown-css": "^5.5.1",
+    "jquery": "^3.7.1",
     "openai": "^4.38.5"
   }
 }

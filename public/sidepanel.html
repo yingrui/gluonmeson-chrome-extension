@@ -5,16 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Extension</title>
     <link rel="stylesheet" href="sidepanel.css">
+    <style>
+        .markdown-body {
+            background: #0000;
+            font-family: Inter, sans-serif;
+            font-size: 14px;
+            font-weight: lighter;
+        }
+    </style>
 </head>
 <body>
     <div class="chat-container">
         <div class="chat-box" id="chatBox">
             <!-- Messages will be displayed here -->
+            <div class="bot-message">
+                <img class="bot-avatar" src="icons/gm_logo.png" alt="logo"/>
+                <div class="bot-message-content">
+                    <div class="markdown-body">
+                        <p>Hello! How can I assist you today?</p>
+                    </div>
+                </div>
+            </div>
+            <div class="user-message">
+                <div class="user-message-content">
+                    <div class="markdown-body">
+                        <p>Generate a blog</p>
+                    </div>
+                </div>
+                <img class="user-avatar" src="icons/user-icon.png" alt="logo"/>
+            </div>
         </div>
-        <form id="messageForm">
-            <input type="text" id="userInput" placeholder="Type a message..." autocomplete="off">
-            <button type="submit"><i class="bi bi-play-fill"></i></button>
-        </form>
+        <div id="message-form">
+            <div class="input-group mb-3 input-form">
+                <textarea id="input-message" type="text" class="form-control" placeholder="Type a message..."></textarea>
+                <button class="btn btn-outline-secondary" type="button" id="submit-button"><i class="bi bi-play-fill"></i></button>
+            </div>
+        </div>
+        
     </div>
     <script src="sidepanel.js"></script>
 </body>

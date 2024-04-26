@@ -1,8 +1,11 @@
 'use strict';
 
 import './sidepanel.css';
+import 'github-markdown-css/github-markdown.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import OpenAI from 'openai';
+import jQuery from 'jquery';
 
 (function () {
   
@@ -21,14 +24,24 @@ import OpenAI from 'openai';
     }
   });
 
-  document.getElementById('messageForm').addEventListener('submit', function(event) {
-      event.preventDefault(); 
+  function submit() {
+    let message = jQuery("#input-message").val();
+    jQuery("#input-message").val("");
+    console.log('message:', message);
+    // TODO: send message to GluonMeson
+  }
+
+  jQuery('#submit-button').on('click', function(event) {
+    event.preventDefault();
+    submit();
+  });
   
-      const userInput = document.getElementById('userInput');
-      if (userInput.value.trim() !== '') {
-          console.log(event);
-          console.log(client);
-      }
+  jQuery('#input-message').on('keypress', function(e) {
+    var code = e.keyCode ? e.keyCode : e.which;
+    if (code == 13 && !e.shiftKey) {
+      e.preventDefault();
+      submit();
+    }
   });
 })();
   
