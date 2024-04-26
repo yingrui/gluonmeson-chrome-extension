@@ -1,4 +1,4 @@
-# <img src="public/icons/icon_48.png" width="45" align="left"> Gluonmeson Chrome Extension
+# <img src="public/icons/gm_logo.png" width="45" align="left"> Gluonmeson Chrome Extension
 
 My Chrome Extension
 
