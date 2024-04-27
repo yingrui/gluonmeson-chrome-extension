@@ -12,7 +12,7 @@ import jQuery from 'jquery';
   const storage = chrome.storage.local;
   let modelName = 'gpt-3.5-turbo';
   let organization = 'GluonMeson';
-  let client = null;
+  var client: OpenAI;
   
   storage.get('configure', function (items) {
     if (!!items.configure) {
@@ -25,8 +25,8 @@ import jQuery from 'jquery';
     }
   });
 
-  async function submit(onCompleted) {
-    let message = jQuery("#input-message").val();
+  async function submit(onCompleted: () => void) {
+    let message = jQuery("#input-message").val() as string;
     jQuery("#input-message").val("");
     appendUserMessage(message);
     // TODO: send message to GluonMeson
@@ -34,11 +34,11 @@ import jQuery from 'jquery';
       messages: [{ role: 'user', content: message }],
       model: modelName,
     });
-    appendBotMessage(chatCompletion.choices[0].message.content);
+    appendBotMessage(chatCompletion.choices[0].message.content as string);
     onCompleted();
   }
 
-  function appendUserMessage(message) {
+  function appendUserMessage(message: string) {
     let div = jQuery(
       '<div class="user-message">'+
       ' <div class="user-message-content">'+
@@ -51,7 +51,7 @@ import jQuery from 'jquery';
     jQuery('#chat-box').append(div);
   }
 
-  function appendBotMessage(message) {
+  function appendBotMessage(message: string) {
     let div = jQuery(
       '<div class="bot-message">'+
       ' <img class="bot-avatar" src="icons/gm_logo.png" alt="logo"/>'+
