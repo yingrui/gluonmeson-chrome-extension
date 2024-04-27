@@ -16,7 +16,7 @@
 </head>
 <body>
     <div class="chat-container">
-        <div class="chat-box" id="chatBox">
+        <div class="chat-box" id="chat-box">
             <!-- Messages will be displayed here -->
             <div class="bot-message">
                 <img class="bot-avatar" src="icons/gm_logo.png" alt="logo"/>
@@ -26,18 +26,10 @@
                     </div>
                 </div>
             </div>
-            <div class="user-message">
-                <div class="user-message-content">
-                    <div class="markdown-body">
-                        <p>Generate a blog</p>
-                    </div>
-                </div>
-                <img class="user-avatar" src="icons/user-icon.png" alt="logo"/>
-            </div>
         </div>
         <div id="message-form">
             <div class="input-group mb-3 input-form">
-                <textarea id="input-message" type="text" class="form-control" placeholder="Type a message..."></textarea>
+                <textarea id="input-message" type="text" class="form-control" placeholder="Type a message..." style="resize: none;"></textarea>
                 <button class="btn btn-outline-secondary" type="button" id="submit-button"><i class="bi bi-play-fill"></i></button>
             </div>
         </div>
