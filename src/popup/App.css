@@ -4,9 +4,8 @@ body {
 }
 
 .form-container {
-  display: flex;
-  flex-direction: column;
   width: 300px;
+  padding: 10px 0px;
 }
 
 form {
@@ -23,17 +22,4 @@ input {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
-}
-
-button {
-  background-color: none;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #007bff;
-  color: white;
 }

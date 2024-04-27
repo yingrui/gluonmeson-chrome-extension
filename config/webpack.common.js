@@ -2,11 +2,23 @@
 
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HTMLPlugin = require("html-webpack-plugin");
 
 const PATHS = require('./paths');
 
 // used in the module rules and in the stats exlude list
 const IMAGE_TYPES = /\.(png|jpe?g|gif|svg)$/i;
+
+function getHtmlPlugins(chunks) {
+  return chunks.map(
+      (chunk) =>
+          new HTMLPlugin({
+              title: "React extension",
+              filename: `${chunk}.html`,
+              chunks: [chunk],
+          })
+  );
+}
 
 // To re-use webpack configuration across templates,
 // CLI maintains a common webpack configuration file - `webpack.common.js`.
@@ -33,6 +45,10 @@ const common = {
         test: /\.ts$/,
         use: ['ts-loader'],
       },
+      {
+        test: /\.tsx$/,
+        use: ['ts-loader'],
+      },
       // Help webpack in understanding CSS files imported in .js files
       {
         test: /\.css$/,
@@ -55,7 +71,7 @@ const common = {
   },
   resolve: {
     // Help webpack resolve these extensions in order
-    extensions: ['.ts', '.js'],
+    extensions: ['.js', '.ts', ".tsx"],
   },
   plugins: [
     // Copy static assets from `public` folder to `build` folder
@@ -71,6 +87,7 @@ const common = {
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),
+    ...getHtmlPlugins(["popup"]),
   ],
 };
 
