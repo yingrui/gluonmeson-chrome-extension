@@ -1,18 +1,3 @@
-body, html {
-  height: 100%;
-  margin: 0;
-  font-family: Arial, sans-serif;
-}
-
-.chat-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* Ensures the form stays at the bottom */
-  height: 100%;
-  border: 1px solid #ddd;
-  border-radius: 16px;
-  position: relative; /* Needed for absolute positioning of the form */
-}
 
 .chat-box {
   flex-grow: 1;

@@ -1,0 +1,22 @@
+body, html {
+  height: 100%;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  position: relative;
+}
+
+
+.markdown-body {
+  background: #0000;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  font-weight: lighter;
+}
+

@@ -87,7 +87,7 @@ const common = {
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),
-    ...getHtmlPlugins(["popup"]),
+    ...getHtmlPlugins(["popup", "sidepanel"]),
   ],
 };
 
