@@ -1,17 +1,18 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 /node_modules
 
-# production
-/build
+# testing
+/coverage
 
-# misc
+# build
+/dist
+
+# etc
 .DS_Store
-
-npm-debug.log*
-
-# packed files
-/release
+.env.local
 .idea
-.vscode
+
+# compiled
+utils/reload/*.js
+utils/reload/injections/*.js
+public/manifest.json
