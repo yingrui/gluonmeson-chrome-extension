@@ -1,11 +1,15 @@
-
-.bot-message {
-  margin-bottom: .5rem;
-  align-items: flex-start;
+.message-item {
   display: flex;
-  margin-right: 44px;
+  align-items: start;
+  justify-content: end;
+  margin-bottom: .5rem;
   padding: 16px 32px;
 }
+
+.message-item.message-assistant {
+  justify-content: start;
+}
+
 
 .bot-avatar {
   border: 1px solid #e5e7eb;
@@ -16,7 +20,7 @@
   height: 32px;
 }
 
-.bot-message-content {
+.message-content {
   background: #f3f4f6;
   border-radius: 16px;
   display: flex;
@@ -38,13 +42,4 @@
   padding: 5px;
   width: 32px;
   height: 32px;
-}
-
-.user-message-content {
-  background: #d1e9ff80;
-  border-radius: 16px;
-  margin-right: 0px;
-  margin-left: auto;
-  display: flex;
-  padding: 12px 16px;
 }

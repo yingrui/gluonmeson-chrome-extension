@@ -2,7 +2,7 @@ import React from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
-import MessageComponent from './MessageComponent';
+import MessageComponent from './components/MessageComponent';
 import "./App.css";
 import 'github-markdown-css/github-markdown.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -44,7 +44,7 @@ function App() {
       model: modelName,
     });
     appendMessage("assistant", chatCompletion.choices[0].message.content as string);
-  } 
+  }
 
   function appendMessage(role: string, content: string) {
     messages.push({role: role, content: content});
@@ -62,9 +62,9 @@ function App() {
   return (
     <>
       <div className="chat-box" id="chat-box">
-        { 
+        {
           messages.filter((msg) => msg.role != "system")
-            .map((msg, i) => <MessageComponent key={i}  {...msg}></MessageComponent>) 
+            .map((msg, i) => <MessageComponent key={i}  {...msg}></MessageComponent>)
         }
       </div>
       <div id="message-form">
