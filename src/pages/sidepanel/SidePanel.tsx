@@ -1,57 +1,69 @@
-import React from "react";
+import React, { useState } from "react";
 import "@pages/sidepanel/SidePanel.css";
 import withSuspense from "@src/shared/hoc/withSuspense";
 import withErrorBoundary from "@src/shared/hoc/withErrorBoundary";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import InputGroup from "react-bootstrap/InputGroup";
-import MessageComponent from "./components/MessageComponent";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "react-bootstrap/dist/react-bootstrap.min.js";
-import "bootstrap-icons/font/bootstrap-icons.css";
+import { Input } from "antd";
+import styles from "./SidePanel.module.scss";
+
+import Message from "./components/MessageComponent";
 
 import OpenAI from "openai";
-import jQuery from "jquery";
+
+const storage = chrome.storage.local;
+const modelName = "gpt-3.5-turbo";
+let organization = "";
+let client: OpenAI;
+
+storage.get("configure", function (items) {
+  if (items.configure) {
+    organization = items.configure.organization;
+    client = new OpenAI({
+      apiKey: items.configure.apiKey,
+      baseURL: items.configure.baseURL,
+      dangerouslyAllowBrowser: true,
+    });
+  }
+});
 
 function SidePanel() {
-  const storage = chrome.storage.local;
-  const modelName = "gpt-3.5-turbo";
-  let organization = "";
-  let client: OpenAI;
-
-  storage.get("configure", function (items) {
-    if (items.configure) {
-      organization = items.configure.organization;
-      client = new OpenAI({
-        apiKey: items.configure.apiKey,
-        baseURL: items.configure.baseURL,
-        dangerouslyAllowBrowser: true,
-      });
-    }
-  });
+  const [text, setText] = useState<string>();
+  const [currentText, setCurrentText] = useState<string>();
+  const [loading, setLoading] = useState<boolean>();
 
   const [messages, setList] = React.useState<ChatMessage[]>([
     {
       role: "system",
       content:
-        "You're an assistant, please direct anwser questions, should not add assistant in anwser.",
+        "You're an assistant, please direct answer questions, should not add assistant in anwser.",
     },
     { role: "assistant", content: "Hello! How can I assist you today?" },
   ]);
 
-  async function submit() {
-    const message = jQuery("#input-message").val() as string;
-    jQuery("#input-message").val("");
-    appendMessage("user", message);
+  async function handleSubmit() {
+    setLoading(true);
 
-    const chatCompletion = await client.chat.completions.create({
+    appendMessage("user", text);
+
+    const stream = await client.chat.completions.create({
       messages: messages as OpenAI.ChatCompletionMessageParam[],
       model: modelName,
+      stream: true,
     });
-    appendMessage(
-      "assistant",
-      chatCompletion.choices[0].message.content as string,
-    );
+
+    let message = "";
+
+    for await (const chunk of stream) {
+      const finishReason = chunk.choices[0]?.finish_reason;
+      console.log(chunk.choices[0]);
+      const content = chunk.choices[0]?.delta?.content;
+      message = message + content;
+      setCurrentText(message);
+    }
+
+    appendMessage("assistant", message);
+    setCurrentText("");
+    setText("");
+    setLoading(false);
   }
 
   function appendMessage(role: ChatMessage["role"], content: string) {
@@ -63,44 +75,36 @@ function SidePanel() {
     const code = e.keyCode ? e.keyCode : e.which;
     if (code == 13 && !e.shiftKey) {
       e.preventDefault();
-      await submit();
+      handleSubmit();
     }
   }
 
   return (
-    <>
-      <div className="chat-box" id="chat-box">
+    <div className={styles.chat}>
+      <div className={styles.chatList}>
         {messages
           .filter((msg) => msg.role != "system")
           .map((msg, i) => (
-            <MessageComponent
-              key={i}
-              role={msg.role}
-              content={msg.content}
-            ></MessageComponent>
+            <Message key={i} role={msg.role} content={msg.content}></Message>
           ))}
+        {currentText && (
+          <Message role="assistant" content={currentText}></Message>
+        )}
       </div>
-      <div id="message-form">
-        <InputGroup className="input-group mb-3 input-form">
-          <Form.Control
-            as="textarea"
-            id="input-message"
-            className="form-control"
-            onKeyDown={keypress}
-            placeholder="Type a message..."
-            style={{ resize: "none" }}
-          />
-          <Button
-            variant="outline-secondary"
-            type="button"
-            id="submit-button"
-            onClick={submit}
-          >
-            <i className="bi bi-play-fill"></i>
-          </Button>
-        </InputGroup>
+
+      <div className={styles.form}>
+        <Input.TextArea
+          autoFocus
+          disabled={loading}
+          onKeyDown={keypress}
+          value={text}
+          onChange={(e) => {
+            setText(e.target.value);
+          }}
+          autoSize={{ minRows: 2, maxRows: 4 }}
+        />
       </div>
-    </>
+    </div>
   );
 }
 
