@@ -29,6 +29,7 @@
     "react-bootstrap": "^2.10.2",
     "react-dom": "18.2.0",
     "react-markdown": "^9.0.1",
+    "react-draggable": "^4.4.6",
     "webextension-polyfill": "0.10.0"
   },
   "devDependencies": {

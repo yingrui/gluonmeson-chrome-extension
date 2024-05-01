@@ -16,6 +16,9 @@ const manifest = {
   version: packageJson.version,
   description: "GluonMeson Chrome Extension",
   permissions: ["storage", "sidePanel"],
+  background: {
+    service_worker: "src/index.js",
+  },
   side_panel: {
     default_path: "src/pages/sidepanel/index.html",
   },
@@ -34,6 +37,12 @@ const manifest = {
     {
       matches: ["http://*/*", "https://*/*", "<all_urls>"],
       js: ["src/pages/contentUI/index.js"],
+    },
+  ],
+  web_accessible_resources: [
+    {
+      resources: ["assets/js/*.js", "assets/css/*.css", "icons/*.png"],
+      matches: ["*://*/*"],
     },
   ],
 };

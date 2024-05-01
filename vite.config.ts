@@ -32,13 +32,19 @@ export default defineConfig({
     emptyOutDir: !isDev,
     rollupOptions: {
       input: {
-        contentInjected: resolve(pagesDir, "content", "injected", "index.ts"),
-        contentUI: resolve(pagesDir, "content", "ui", "index.ts"),
-        popup: resolve(pagesDir, "popup", "index.html"),
-        sidepanel: resolve(pagesDir, "sidepanel", "index.html"),
+        src: resolve(srcDir, "background.js"),
+        "src/pages/contentInjected": resolve(
+          pagesDir,
+          "content",
+          "injected",
+          "index.ts",
+        ),
+        "src/pages/contentUI": resolve(pagesDir, "content", "ui", "index.ts"),
+        "src/pages/popup": resolve(pagesDir, "popup", "index.html"),
+        "src/pages/sidepanel": resolve(pagesDir, "sidepanel", "index.html"),
       },
       output: {
-        entryFileNames: "src/pages/[name]/index.js",
+        entryFileNames: "[name]/index.js",
         chunkFileNames: isDev
           ? "assets/js/[name].js"
           : "assets/js/[name].[hash].js",
