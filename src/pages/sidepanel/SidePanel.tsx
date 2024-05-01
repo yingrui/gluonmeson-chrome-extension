@@ -6,24 +6,7 @@ import { Input } from "antd";
 import styles from "./SidePanel.module.scss";
 
 import Message from "./components/MessageComponent";
-
-import OpenAI from "openai";
-
-const storage = chrome.storage.local;
-const modelName = "gpt-3.5-turbo";
-let organization = "";
-let client: OpenAI;
-
-storage.get("configure", function (items) {
-  if (items.configure) {
-    organization = items.configure.organization;
-    client = new OpenAI({
-      apiKey: items.configure.apiKey,
-      baseURL: items.configure.baseURL,
-      dangerouslyAllowBrowser: true,
-    });
-  }
-});
+import GluonMesonAgent from "./agents/agents";
 
 function SidePanel() {
   const [text, setText] = useState<string>();
@@ -39,16 +22,14 @@ function SidePanel() {
     { role: "assistant", content: "Hello! How can I assist you today?" },
   ]);
 
+  const agent = new GluonMesonAgent();
+
   async function handleSubmit() {
     setLoading(true);
 
     appendMessage("user", text);
 
-    const stream = await client.chat.completions.create({
-      messages: messages as OpenAI.ChatCompletionMessageParam[],
-      model: modelName,
-      stream: true,
-    });
+    const stream = await agent.chat(messages);
 
     let message = "";
 
