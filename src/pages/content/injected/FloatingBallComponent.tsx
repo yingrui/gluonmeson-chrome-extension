@@ -1,22 +1,29 @@
-import { useState } from "react";
+import { useRef } from "react";
 import Draggable from "react-draggable";
 
 export default function FloatingBallComponent() {
-  const [isHovered, setIsHovered] = useState(false);
+  const draggedRef = useRef<boolean>(false);
 
   const handleClick = () => {
+    if (draggedRef.current) {
+      return;
+    }
     chrome.runtime.sendMessage({ type: "open_side_panel" });
   };
 
   const iconSrc = chrome.runtime.getURL("icons/gm_logo.png");
   return (
-    <Draggable axis="y">
-      <div
-        className={`floating-window ${isHovered ? "hovered" : ""}`}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <img src={iconSrc} alt="icon" onClick={handleClick} />
+    <Draggable
+      onDrag={() => {
+        draggedRef.current = true;
+      }}
+      onStop={() => {
+        draggedRef.current = false;
+      }}
+      axis="y"
+    >
+      <div className="floating-window" onClick={handleClick}>
+        <img draggable="false" src={iconSrc} alt="icon" />
       </div>
     </Draggable>
   );

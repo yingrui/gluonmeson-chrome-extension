@@ -1,15 +1,14 @@
 import OpenAI from "openai";
+import { CONFIG_STAORAGE_KEY } from "../../popup/Popup";
 
 const storage = chrome.storage.local;
-let organization = "";
 let client: OpenAI;
 
-storage.get("configure", function (items) {
-  if (items.configure) {
-    organization = items.configure.organization;
+storage.get(CONFIG_STAORAGE_KEY, function (items) {
+  if (items?.[CONFIG_STAORAGE_KEY]) {
     client = new OpenAI({
-      apiKey: items.configure.apiKey,
-      baseURL: items.configure.baseURL,
+      apiKey: items?.[CONFIG_STAORAGE_KEY].apiKey,
+      baseURL: items?.[CONFIG_STAORAGE_KEY].baseURL,
       dangerouslyAllowBrowser: true,
     });
   }

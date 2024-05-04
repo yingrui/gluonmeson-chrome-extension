@@ -1,7 +1,7 @@
 .floating-window {
     position: fixed;
     bottom: 200px;
-    right: -15px;
+    right: 5px;
     width: 30px;
     height: 30px;
     background-color: #ffffff;
@@ -11,6 +11,7 @@
     align-items: center;
     transition: transform 0.3s;
     cursor: pointer;
+    z-index: 9999;
   }
   
   .floating-window img {
@@ -18,7 +19,5 @@
     height: auto;
   }
   
-  .floating-window:hover {
-    transform: translateX(-16px) !important; /* 向左移动一半的宽度 */
-  }
+
   

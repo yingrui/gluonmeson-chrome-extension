@@ -1,103 +1,108 @@
 import withSuspense from "@src/shared/hoc/withSuspense";
 import withErrorBoundary from "@src/shared/hoc/withErrorBoundary";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "react-bootstrap/dist/react-bootstrap.min.js";
+
+import { Button, Form, Input, Switch } from "antd";
+import { useEffect } from "react";
+
+export const CONFIG_STAORAGE_KEY = "gm_configure_data";
 
 const Popup = () => {
+  const formItemLayout = {
+    labelCol: { span: 6 },
+    wrapperCol: { span: 18 },
+  };
+
   const storage = chrome.storage.local;
+  const [form] = Form.useForm();
 
-  function setInputElementValue(id: string, value: string): void {
-    const inputElement = document.getElementById(id);
-    if (!!inputElement && inputElement instanceof HTMLInputElement) {
-      inputElement.value = value;
+  useEffect(() => {
+    storage.get(CONFIG_STAORAGE_KEY, function (items) {
+      loadData(items);
+    });
+  });
+
+  const onSaveSettings = () => {
+    form.validateFields().then(async (values) => {
+      // Save settings using Chrome Storage API or handle them as needed
+      const configure = { ...values };
+      await storage.set(
+        { [CONFIG_STAORAGE_KEY]: configure },
+        async function () {
+          chrome.runtime.sendMessage({
+            type: "enable_floating_ball",
+            enabled: configure.enableFloatingBall,
+          });
+          window.close();
+        },
+      );
+    });
+  };
+
+  function loadData(items) {
+    if (!items) {
+      form.resetFields();
+      return;
     }
-  }
-
-  function loadChanges() {
-    storage.get("configure", function (items: any) {
-      if (!!items && !!items.configure) {
-        setInputElementValue("apiKey", items.configure.apiKey);
-        setInputElementValue("baseURL", items.configure.baseURL);
-        setInputElementValue("organization", items.configure.organization);
-      } else {
-        setInputElementValue("apiKey", "");
-        setInputElementValue("baseURL", "");
-        setInputElementValue("organization", "");
-      }
+    form.setFieldsValue({
+      ...items?.[CONFIG_STAORAGE_KEY],
     });
   }
 
-  loadChanges();
-
-  async function saveSettings(event: any) {
+  async function clear(event) {
     event.preventDefault();
-
-    const apiKey = (document.getElementById("apiKey") as HTMLInputElement)
-      .value;
-    const baseURL = (document.getElementById("baseURL") as HTMLInputElement)
-      .value;
-    const organization = (
-      document.getElementById("organization") as HTMLInputElement
-    ).value;
-
-    // Save settings using Chrome Storage API or handle them as needed
-    const configure = {
-      apiKey: apiKey,
-      baseURL: baseURL,
-      organization: organization,
-    };
-    await storage.set({ configure: configure }, function () {
-      alert("Settings have been saved successfully!");
-    });
-  }
-
-  async function clear(event: any) {
-    event.preventDefault();
-
-    await storage.set({ configure: null }, function () {
-      loadChanges();
+    await storage.set({ [CONFIG_STAORAGE_KEY]: null }, function () {
+      loadData(null);
     });
   }
 
   return (
     <div className="form-container">
-      <Form id="settings-form">
-        <Form.Group controlId="apiKey">
-          <Form.Label>API Key:</Form.Label>
-          <Form.Control type="password" size="sm" required />
-        </Form.Group>
-        <Form.Group controlId="baseURL">
-          <Form.Label>Base URL:</Form.Label>
-          <Form.Control type="text" size="sm" required />
-        </Form.Group>
-        <Form.Group controlId="organization">
-          <Form.Label>Organization:</Form.Label>
-          <Form.Control type="text" size="sm" required />
-        </Form.Group>
-        <Row className="text-center">
-          <Col>
-            <Button
-              className="m-2"
-              size="sm"
-              onClick={saveSettings}
-              variant="primary"
-            >
-              Save Settings
-            </Button>
-            <Button
-              className="m-2"
-              size="sm"
-              onClick={clear}
-              variant="secondary"
-            >
-              Clear
-            </Button>
-          </Col>
-        </Row>
+      <Form
+        form={form}
+        layout="inline"
+        {...formItemLayout}
+        onFinish={onSaveSettings}
+      >
+        <Form.Item
+          name="apiKey"
+          label="API key"
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+        >
+          <Input type="password" />
+        </Form.Item>
+        <Form.Item
+          name="baseURL"
+          label="Base URL"
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item name="organization" label="Organization">
+          <Input />
+        </Form.Item>
+        <Form.Item
+          label="Floating Ball"
+          name="enableFloatingBall"
+          valuePropName="checked"
+        >
+          <Switch defaultValue={true} />
+        </Form.Item>
+        <div className="popup-footer">
+          <Button key="create" type="primary" htmlType="submit">
+            Save
+          </Button>
+          <Button key="cancel" onClick={clear}>
+            Clear
+          </Button>
+        </div>
       </Form>
     </div>
   );

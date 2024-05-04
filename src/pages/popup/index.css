@@ -4,8 +4,17 @@ body {
 }
 
 .form-container {
-  width: 300px;
+  width: 400px;
   padding: 10px 0px;
+
+  .popup-footer {
+    display: flex;
+    justify-content: center;
+  }
+
+  .ant-btn {
+    margin: 0 5px;
+  }
 }
 
 form {
