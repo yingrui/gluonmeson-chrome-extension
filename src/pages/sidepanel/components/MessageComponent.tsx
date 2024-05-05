@@ -1,3 +1,4 @@
+import { Spin } from "antd";
 import "./MessageComponent.css";
 import Markdown from "react-markdown";
 
@@ -13,7 +14,12 @@ const Message = (props: Props) => {
     <div className={`message-item ${isAssistant ? "message-assistant" : ""}`}>
       {isAssistant && <img className="bot-avatar" src="/icons/gm_logo.png" />}
       <div className="message-content">
-        <Markdown>{content}</Markdown>
+        {content && <Markdown>{content}</Markdown>}
+        {!content && (
+          <>
+            <Spin />
+          </>
+        )}
       </div>
       {!isAssistant && (
         <img className="user-avatar" src="/icons/user-icon.png" />

@@ -73,7 +73,7 @@ function SidePanel() {
           .map((msg, i) => (
             <Message key={i} role={msg.role} content={msg.content}></Message>
           ))}
-        {currentText && (
+        {generating && (
           <Message role="assistant" content={currentText}></Message>
         )}
       </div>
