@@ -33,6 +33,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         src: resolve(srcDir, "background.js"),
+        "src/listeners": resolve(srcDir, "listeners", "index.ts"),
         "src/pages/contentInjected": resolve(
           pagesDir,
           "content",

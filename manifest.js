@@ -38,6 +38,10 @@ const manifest = {
       matches: ["http://*/*", "https://*/*", "<all_urls>"],
       js: ["src/pages/contentUI/index.js"],
     },
+    {
+      matches: ["http://*/*", "https://*/*", "<all_urls>"],
+      js: ["src/listeners/index.js"],
+    },
   ],
   web_accessible_resources: [
     {

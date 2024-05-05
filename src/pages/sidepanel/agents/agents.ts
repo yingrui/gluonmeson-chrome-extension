@@ -19,9 +19,29 @@ class WebpageSummarizationAgent {
 
   constructor() {}
 
+  private async get_content(): Promise<any> {
+    return new Promise<any>(function (resolve, reject) {
+      // send message to content script, call resolve() when received response"
+      chrome.tabs.query({ currentWindow: true, active: true }, (tabs) => {
+        chrome.tabs.sendMessage(
+          tabs[0].id,
+          { type: "get_content" },
+          (response) => {
+            resolve(response);
+          },
+        );
+      });
+    });
+  }
+
   async summarize(userInput) {
+    const content = await this.get_content();
+    const prompt = `You're an assistant and good at summarization, the user is reading an article: ${content.title}. 
+                    Please summarize the content according to user instruction: ${userInput}
+                    The content text is: ${content.text}`;
+
     return await client.chat.completions.create({
-      messages: [{ role: "system", content: userInput }],
+      messages: [{ role: "system", content: prompt }],
       model: this.modelName,
       stream: true,
     });
@@ -55,7 +75,7 @@ class GluonMesonAgent {
   }
 
   private parseCommand(userInput: string): [string, string] {
-    if (userInput.startsWith("/summarize_webpage ")) {
+    if (userInput.startsWith("/summarize_webpage")) {
       return ["summarize_webpage", userInput];
     }
     return ["chat", userInput];
