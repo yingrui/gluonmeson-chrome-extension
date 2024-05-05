@@ -11,7 +11,7 @@ import GluonMesonAgent from "./agents/agents";
 function SidePanel() {
   const [text, setText] = useState<string>();
   const [currentText, setCurrentText] = useState<string>();
-  const [loading, setLoading] = useState<boolean>();
+  const [generating, setGenerating] = useState<boolean>();
 
   const [messages, setList] = React.useState<ChatMessage[]>([
     {
@@ -25,26 +25,31 @@ function SidePanel() {
   const agent = new GluonMesonAgent();
 
   async function handleSubmit() {
-    setLoading(true);
-
-    appendMessage("user", text);
-
-    const stream = await agent.chat(messages);
-
-    let message = "";
-
-    for await (const chunk of stream) {
-      const finishReason = chunk.choices[0]?.finish_reason;
-      console.log(chunk.choices[0]);
-      const content = chunk.choices[0]?.delta?.content;
-      message = message + content;
-      setCurrentText(message);
+    if (generating) {
+      return;
     }
+    setGenerating(true);
+    try {
+      setText("");
+      appendMessage("user", text);
 
-    appendMessage("assistant", message);
-    setCurrentText("");
-    setText("");
-    setLoading(false);
+      const stream = await agent.chat(messages);
+
+      let message = "";
+
+      for await (const chunk of stream) {
+        const finishReason = chunk.choices[0]?.finish_reason;
+        console.log(chunk.choices[0]);
+        const content = chunk.choices[0]?.delta?.content;
+        message = message + content;
+        setCurrentText(message);
+      }
+
+      appendMessage("assistant", message);
+      setCurrentText("");
+    } finally {
+      setGenerating(false);
+    }
   }
 
   function appendMessage(role: ChatMessage["role"], content: string) {
@@ -75,10 +80,10 @@ function SidePanel() {
 
       <div className={styles.form}>
         <Input.TextArea
-          autoFocus
-          disabled={loading}
+          autoFocus={true}
           onKeyDown={keypress}
           value={text}
+          placeholder="Hit Enter to send the message..."
           onChange={(e) => {
             setText(e.target.value);
           }}
