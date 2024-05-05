@@ -13,7 +13,8 @@ const Message = (props: Props) => {
   return (
     <div className={`message-item ${isAssistant ? "message-assistant" : ""}`}>
       {isAssistant && <img className="bot-avatar" src="/icons/gm_logo.png" />}
-      <div className="message-content">
+
+      <div className={`message-content ${isAssistant ? "bot-message-content" : "user-message-content"}`}>
         {content && <Markdown>{content}</Markdown>}
         {!content && (
           <>

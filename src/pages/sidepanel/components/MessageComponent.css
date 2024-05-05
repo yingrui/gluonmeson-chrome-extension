@@ -27,6 +27,14 @@
   padding: 12px 16px;
 }
 
+.bot-message-content {
+  background: #f3f4f6;
+}
+
+.user-message-content {
+  background: #d1e9ff80;
+}
+
 .user-message {
   margin-bottom: .5rem;
   align-items: flex-start;

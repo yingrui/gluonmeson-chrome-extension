@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import { CONFIG_STAORAGE_KEY } from "../../popup/Popup";
 
 const storage = chrome.storage.local;
+const defaultModelName = "gpt-3.5-turbo";
 let client: OpenAI;
 
 storage.get(CONFIG_STAORAGE_KEY, function (items) {
@@ -15,7 +16,7 @@ storage.get(CONFIG_STAORAGE_KEY, function (items) {
 });
 
 class WebpageSummarizationAgent {
-  modelName = "gpt-3.5-turbo";
+  modelName = defaultModelName;
 
   constructor() {}
 
@@ -49,7 +50,7 @@ class WebpageSummarizationAgent {
 }
 
 class GluonMesonAgent {
-  modelName = "gpt-3.5-turbo";
+  modelName = defaultModelName;
 
   constructor() {}
 
