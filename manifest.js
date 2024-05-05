@@ -15,6 +15,7 @@ const manifest = {
   name: "GluonMeson",
   version: packageJson.version,
   description: "GluonMeson Chrome Extension",
+  host_permissions: ["<all_urls>"],
   permissions: ["storage", "sidePanel", "scripting", "activeTab"],
   background: {
     service_worker: "src/index.js",

@@ -2,6 +2,7 @@ import { createRoot } from "react-dom/client";
 import refreshOnUpdate from "virtual:reload-on-update-in-view";
 import FloatingBallComponent from "./FloatingBallComponent";
 import injectedStyle from "./floatingBallComponent.css?inline";
+import { CONFIG_STAORAGE_KEY } from "../../popup/Popup";
 
 refreshOnUpdate("pages/content/injected/initBall");
 
@@ -21,3 +22,12 @@ const styleElement = document.createElement("style");
 styleElement.innerHTML = injectedStyle;
 shadowRoot.appendChild(styleElement);
 createRoot(rootIntoShadow).render(<FloatingBallComponent />);
+
+chrome.storage.local.get(CONFIG_STAORAGE_KEY, function (items) {
+  if (items?.[CONFIG_STAORAGE_KEY]) {
+    chrome.runtime.sendMessage({
+      type: "enable_floating_ball",
+      enabled: items?.[CONFIG_STAORAGE_KEY].enableFloatingBall,
+    });
+  }
+});
