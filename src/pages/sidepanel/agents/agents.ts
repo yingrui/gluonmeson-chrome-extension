@@ -66,7 +66,7 @@ class GluonMesonAgent {
           stream: true,
         });
       }
-      case "summarize_webpage":
+      case "summary":
         return await new WebpageSummarizationAgent().summarize(userInput);
     }
   }
@@ -76,8 +76,8 @@ class GluonMesonAgent {
   }
 
   private parseCommand(userInput: string): [string, string] {
-    if (userInput.startsWith("/summarize_webpage")) {
-      return ["summarize_webpage", userInput];
+    if (userInput.startsWith("/summary")) {
+      return ["summary", userInput];
     }
     return ["chat", userInput];
   }
