@@ -1,17 +1,26 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import "@pages/sidepanel/SidePanel.css";
 import withSuspense from "@src/shared/hoc/withSuspense";
 import withErrorBoundary from "@src/shared/hoc/withErrorBoundary";
-import { Input } from "antd";
+import { useScrollAnchor } from "./hooks/use-scroll-anchor";
+import { Mentions } from "antd";
 import styles from "./SidePanel.module.scss";
 
 import Message from "./components/MessageComponent";
-import GluonMesonAgent from "./agents/agents";
+import GluonMesonAgent, { commands } from "./agents/agents";
+import { delay } from "@pages/sidepanel/utils";
+
+const commandOptions = Object.keys(commands).map((key) => ({
+  value: key,
+  label: key,
+}));
 
 function SidePanel() {
   const [text, setText] = useState<string>();
   const [currentText, setCurrentText] = useState<string>();
   const [generating, setGenerating] = useState<boolean>();
+  const { scrollToBottom, messagesRef } = useScrollAnchor();
+  const commandRef = useRef<boolean>();
 
   const [messages, setList] = React.useState<ChatMessage[]>([
     {
@@ -43,6 +52,7 @@ function SidePanel() {
         const content = chunk.choices[0]?.delta?.content;
         message = message + content;
         setCurrentText(message);
+        scrollToBottom();
       }
 
       appendMessage("assistant", message);
@@ -50,6 +60,8 @@ function SidePanel() {
     } finally {
       setGenerating(false);
     }
+
+    scrollToBottom();
   }
 
   function appendMessage(role: ChatMessage["role"], content: string) {
@@ -57,17 +69,27 @@ function SidePanel() {
     setList([...messages]);
   }
 
+  const handleSearchChange = async () => {
+    console.log(commandRef.current, "ref");
+    commandRef.current = true;
+    await delay(500);
+    commandRef.current = false;
+  };
+
   async function keypress(e: any) {
     const code = e.keyCode ? e.keyCode : e.which;
     if (code == 13 && !e.shiftKey) {
+      console.log(commandRef.current);
       e.preventDefault();
-      handleSubmit();
+      if (!commandRef.current) {
+        handleSubmit();
+      }
     }
   }
 
   return (
     <div className={styles.chat}>
-      <div className={styles.chatList}>
+      <div className={styles.chatList} ref={messagesRef}>
         {messages
           .filter((msg) => msg.role != "system")
           .map((msg, i) => (
@@ -76,16 +98,20 @@ function SidePanel() {
         {generating && (
           <Message role="assistant" content={currentText}></Message>
         )}
+        <div className="scroll-helper"></div>
       </div>
 
       <div className={styles.form}>
-        <Input.TextArea
+        <Mentions
+          onSelect={handleSearchChange}
+          onKeyUp={keypress}
           autoFocus={true}
-          onKeyDown={keypress}
+          prefix={"/"}
           value={text}
+          options={commandOptions}
           placeholder="Hit Enter to send the message..."
-          onChange={(e) => {
-            setText(e.target.value);
+          onChange={(value) => {
+            setText(value);
           }}
           autoSize={{ minRows: 2, maxRows: 4 }}
         />

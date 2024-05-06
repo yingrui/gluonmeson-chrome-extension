@@ -49,6 +49,12 @@ class WebpageSummarizationAgent {
   }
 }
 
+export const commands = {
+  summary({ userInput }) {
+    return new WebpageSummarizationAgent().summarize(userInput);
+  },
+};
+
 class GluonMesonAgent {
   modelName = defaultModelName;
 
@@ -58,16 +64,17 @@ class GluonMesonAgent {
     const [command, userInput] = this.parseCommand(
       this.getLastUserInput(messages),
     );
-    switch (command) {
-      case "chat": {
-        return await client.chat.completions.create({
-          messages: messages as OpenAI.ChatCompletionMessageParam[],
-          model: this.modelName,
-          stream: true,
-        });
-      }
-      case "summary":
-        return await new WebpageSummarizationAgent().summarize(userInput);
+
+    const commandExecutor = commands[command];
+
+    if (commandExecutor) {
+      return commandExecutor({ userInput });
+    } else {
+      return client.chat.completions.create({
+        messages: messages as OpenAI.ChatCompletionMessageParam[],
+        model: this.modelName,
+        stream: true,
+      });
     }
   }
 
@@ -76,8 +83,14 @@ class GluonMesonAgent {
   }
 
   private parseCommand(userInput: string): [string, string] {
-    if (userInput.startsWith("/summary")) {
-      return ["summary", userInput];
+    const commandKeys = Object.keys(commands);
+
+    const matchedCommand = commandKeys.find((commandKey) =>
+      userInput.match(new RegExp(`(?:^|\\s)/${commandKey}\\s+`)),
+    );
+
+    if (matchedCommand) {
+      return [matchedCommand, userInput];
     }
     return ["chat", userInput];
   }
