@@ -49,9 +49,30 @@ class WebpageSummarizationAgent {
   }
 }
 
+class TranslateAgent {
+  modelName = defaultModelName;
+
+  constructor() {}
+
+  async translate(userInput) {
+    const prompt = `You're an assistant and good at translation.
+                    Please translate to Chinese according to user instruction, and generate result directly. 
+                    Here is user input: ${userInput}`;
+
+    return await client.chat.completions.create({
+      messages: [{ role: "system", content: prompt }],
+      model: this.modelName,
+      stream: true,
+    });
+  }
+}
+
 export const commands = {
   summary({ userInput }) {
     return new WebpageSummarizationAgent().summarize(userInput);
+  },
+  translate({ userInput }) {
+    return new TranslateAgent().translate(userInput);
   },
 };
 
