@@ -1,6 +1,7 @@
 import { Spin } from "antd";
-import "./MessageComponent.css";
+import "./index.css";
 import Markdown from "react-markdown";
+import CodeBlock from "@pages/sidepanel/components/Message/MarkDownBlock/CodeBlock";
 
 interface Props {
   role: ChatMessage["role"];
@@ -14,9 +15,12 @@ const Message = (props: Props) => {
     <div className={`message-item ${isAssistant ? "message-assistant" : ""}`}>
       {isAssistant && <img className="bot-avatar" src="/icons/gm_logo.png" />}
 
-      <div className={`message-content ${isAssistant ? "bot-message-content" : "user-message-content"}`}>
-        {content && <Markdown>{content}</Markdown>}
-        {!content && (
+      <div
+        className={`message-content ${isAssistant ? "bot-message-content" : "user-message-content"}`}
+      >
+        {content ? (
+          <Markdown components={{ code: CodeBlock }}>{content}</Markdown>
+        ) : (
           <>
             <Spin />
           </>

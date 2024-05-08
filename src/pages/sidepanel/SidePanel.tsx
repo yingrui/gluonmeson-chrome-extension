@@ -6,7 +6,7 @@ import { useScrollAnchor } from "./hooks/use-scroll-anchor";
 import { Mentions } from "antd";
 import styles from "./SidePanel.module.scss";
 
-import Message from "./components/MessageComponent";
+import Message from "./components/Message";
 import GluonMesonAgent, { commands } from "./agents/agents";
 import { delay } from "@pages/sidepanel/utils";
 
