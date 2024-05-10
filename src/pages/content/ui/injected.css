@@ -1,0 +1,20 @@
+.floating-window {
+    position: fixed;
+    bottom: 200px;
+    right: 5px;
+    width: 30px;
+    height: 30px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s;
+    cursor: pointer;
+    z-index: 9999;
+}
+
+.floating-window img {
+    width: 65%;
+    height: auto;
+}

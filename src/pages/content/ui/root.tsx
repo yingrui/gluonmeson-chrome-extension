@@ -6,7 +6,7 @@ import injectedStyle from "./injected.css?inline";
 refreshOnUpdate("pages/content");
 
 const root = document.createElement("div");
-root.id = "chrome-extension-boilerplate-react-vite-content-view-root";
+root.id = "gm-floating-ball-shadow-root";
 
 document.body.append(root);
 

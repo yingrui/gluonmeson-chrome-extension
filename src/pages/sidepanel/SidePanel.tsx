@@ -1,5 +1,4 @@
 import React, { useRef, useState } from "react";
-import "@pages/sidepanel/SidePanel.css";
 import withSuspense from "@src/shared/hoc/withSuspense";
 import withErrorBoundary from "@src/shared/hoc/withErrorBoundary";
 import { useScrollAnchor } from "./hooks/use-scroll-anchor";
@@ -62,7 +61,6 @@ function SidePanel() {
 
       for await (const chunk of stream) {
         const finishReason = chunk.choices[0]?.finish_reason;
-
         const content = chunk.choices[0]?.delta?.content;
         message = message + content;
         setCurrentText(message);
@@ -84,16 +82,13 @@ function SidePanel() {
   }
 
   const handleSearchChange = async () => {
-    console.log(commandRef.current, "ref");
     commandRef.current = true;
     await delay(500);
     commandRef.current = false;
   };
 
   async function keypress(e: any) {
-    const code = e.keyCode ? e.keyCode : e.which;
-    if (code == 13 && !e.shiftKey) {
-      console.log(commandRef.current);
+    if (e.keyCode == "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (!commandRef.current) {
         handleSubmit();

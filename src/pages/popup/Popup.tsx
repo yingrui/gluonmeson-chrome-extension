@@ -1,27 +1,39 @@
+import { Button, Form, Input, Switch, Modal } from "antd";
+import { isEqual } from "lodash";
 import withSuspense from "@src/shared/hoc/withSuspense";
 import withErrorBoundary from "@src/shared/hoc/withErrorBoundary";
-
-import { Button, Form, Input, Switch } from "antd";
 import configureStorage, {
   DEFAULT_GM_CONFIG_VALUE,
 } from "@root/src/shared/storages/gluonConfig";
 import useStorage from "@root/src/shared/hooks/useStorage";
 
+const formItemLayout = {
+  labelCol: { span: 6 },
+  wrapperCol: { span: 18 },
+};
+
 const Popup = () => {
-  const formItemLayout = {
-    labelCol: { span: 6 },
-    wrapperCol: { span: 18 },
-  };
-
+  const [modal, contextHolder] = Modal.useModal();
+  const initData = useStorage(configureStorage);
   const [form] = Form.useForm();
-  const configStorage = useStorage(configureStorage);
 
-  const onSaveSettings = () => {
-    form.validateFields().then(async (values) => {
-      await configureStorage.set({ ...values });
-      window.close();
-    });
+  const onSaveSettings = async () => {
+    const values = await form.validateFields();
+    if (!isEqual(values, initData)) {
+      modal.confirm({
+        title: "Confirm to save configuration",
+        async onOk() {
+          await configureStorage.set(values);
+          chrome.runtime.sendMessage({
+            type: "enable_floating_ball",
+            enabled: !!values.enableFloatingBall,
+          });
+          window.close();
+        },
+      });
+    }
   };
+
 
   async function reset() {
     form.setFieldsValue(DEFAULT_GM_CONFIG_VALUE);
@@ -30,7 +42,7 @@ const Popup = () => {
   return (
     <div className="form-container">
       <Form
-        initialValues={configStorage}
+        initialValues={initData}
         form={form}
         layout="inline"
         {...formItemLayout}
@@ -54,6 +66,7 @@ const Popup = () => {
             {
               required: true,
             },
+            { type: "url" },
           ]}
         >
           <Input />
@@ -77,6 +90,7 @@ const Popup = () => {
           </Button>
         </div>
       </Form>
+      {contextHolder}
     </div>
   );
 };
