@@ -41,7 +41,7 @@ const manifest = {
     },
     {
       matches: ["http://*/*", "https://*/*", "<all_urls>"],
-      js: ["src/listeners/index.js"],
+      js: ["src/listeners/common/index.js"],
     },
   ],
   web_accessible_resources: [
