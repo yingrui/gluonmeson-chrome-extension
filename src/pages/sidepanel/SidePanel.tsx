@@ -3,19 +3,23 @@ import "@pages/sidepanel/SidePanel.css";
 import withSuspense from "@src/shared/hoc/withSuspense";
 import withErrorBoundary from "@src/shared/hoc/withErrorBoundary";
 import { useScrollAnchor } from "./hooks/use-scroll-anchor";
-import { Mentions } from "antd";
+import { Mentions, Typography } from "antd";
 import styles from "./SidePanel.module.scss";
 
 import Message from "./components/Message";
 import GluonMesonAgent, { commands } from "./agents/agents";
 import { delay } from "@pages/sidepanel/utils";
+import useStorage from "@root/src/shared/hooks/useStorage";
+import configureStorage from "@root/src/shared/storages/gluonConfig";
 
 const commandOptions = Object.keys(commands).map((key) => ({
   value: key,
   label: key,
 }));
 
+const { Text } = Typography;
 function SidePanel() {
+  const configStorage = useStorage(configureStorage);
   const [text, setText] = useState<string>();
   const [currentText, setCurrentText] = useState<string>();
   const [generating, setGenerating] = useState<boolean>();
@@ -30,6 +34,16 @@ function SidePanel() {
     },
     { role: "assistant", content: "Hello! How can I assist you today?" },
   ]);
+
+  if (!configStorage.apiKey || !configStorage.baseURL) {
+    return (
+      <div className={styles.chat} style={{ justifyContent: "center" }}>
+        <Text style={{ textAlign: "center" }}>
+          Please complete the configuration first.
+        </Text>
+      </div>
+    );
+  }
 
   const agent = new GluonMesonAgent();
 

@@ -1,8 +1,11 @@
+import useStorage from "@root/src/shared/hooks/useStorage";
+import configureStorage from "@root/src/shared/storages/gluonConfig";
 import { useRef } from "react";
 import Draggable from "react-draggable";
 
 export default function FloatingBallComponent() {
   const draggedRef = useRef<boolean>(false);
+  const configStorage = useStorage(configureStorage);
 
   const handleClick = () => {
     if (draggedRef.current) {
@@ -14,6 +17,7 @@ export default function FloatingBallComponent() {
   const iconSrc = chrome.runtime.getURL("icons/gm_logo.png");
   return (
     <Draggable
+      defaultClassName={configStorage.enableFloatingBall ? "" : "hidden"}
       onDrag={() => {
         draggedRef.current = true;
       }}

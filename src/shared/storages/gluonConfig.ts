@@ -8,17 +8,21 @@ type GluonConfigure = {
   apiKey: string;
   baseURL: string;
   organization: string;
+  enableFloatingBall: boolean;
 };
 
 type ConfigureStorage = BaseStorage<GluonConfigure>;
 
+export const DEFAULT_GM_CONFIG_VALUE = {
+  apiKey: "",
+  baseURL: "",
+  organization: "",
+  enableFloatingBall: true,
+};
+
 const storage = createStorage<GluonConfigure>(
-  "configure",
-  {
-    apiKey: "",
-    baseURL: "",
-    organization: "",
-  },
+  "gm_configure_data",
+  DEFAULT_GM_CONFIG_VALUE,
   {
     storageType: StorageType.Local,
     liveUpdate: true,

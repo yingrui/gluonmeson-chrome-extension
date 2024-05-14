@@ -1,19 +1,15 @@
 import OpenAI from "openai";
-import { CONFIG_STAORAGE_KEY } from "../../popup/Popup";
 import TrelloAgent from "./TrelloAgent";
+import configureStorage from "@root/src/shared/storages/gluonConfig";
 
-const storage = chrome.storage.local;
 const defaultModelName = "gpt-3.5-turbo";
 let client: OpenAI;
-
-storage.get(CONFIG_STAORAGE_KEY, function (items) {
-  if (items?.[CONFIG_STAORAGE_KEY]) {
-    client = new OpenAI({
-      apiKey: items?.[CONFIG_STAORAGE_KEY].apiKey,
-      baseURL: items?.[CONFIG_STAORAGE_KEY].baseURL,
-      dangerouslyAllowBrowser: true,
-    });
-  }
+configureStorage.get().then((config) => {
+  client = new OpenAI({
+    apiKey: config.apiKey,
+    baseURL: config.baseURL,
+    dangerouslyAllowBrowser: true,
+  });
 });
 
 class WebpageSummarizationAgent {

@@ -2,9 +2,10 @@ import withSuspense from "@src/shared/hoc/withSuspense";
 import withErrorBoundary from "@src/shared/hoc/withErrorBoundary";
 
 import { Button, Form, Input, Switch } from "antd";
-import { useEffect } from "react";
-
-export const CONFIG_STAORAGE_KEY = "gm_configure_data";
+import configureStorage, {
+  DEFAULT_GM_CONFIG_VALUE,
+} from "@root/src/shared/storages/gluonConfig";
+import useStorage from "@root/src/shared/hooks/useStorage";
 
 const Popup = () => {
   const formItemLayout = {
@@ -12,52 +13,25 @@ const Popup = () => {
     wrapperCol: { span: 18 },
   };
 
-  const storage = chrome.storage.local;
   const [form] = Form.useForm();
-
-  useEffect(() => {
-    storage.get(CONFIG_STAORAGE_KEY, function (items) {
-      loadData(items);
-    });
-  });
+  const configStorage = useStorage(configureStorage);
 
   const onSaveSettings = () => {
     form.validateFields().then(async (values) => {
-      // Save settings using Chrome Storage API or handle them as needed
-      const configure = { ...values };
-      await storage.set(
-        { [CONFIG_STAORAGE_KEY]: configure },
-        async function () {
-          chrome.runtime.sendMessage({
-            type: "enable_floating_ball",
-            enabled: configure.enableFloatingBall,
-          });
-          window.close();
-        },
-      );
+      await configureStorage.set({ ...values });
+      window.close();
     });
   };
 
-  function loadData(items) {
-    if (!items) {
-      form.resetFields();
-      return;
-    }
-    form.setFieldsValue({
-      ...items?.[CONFIG_STAORAGE_KEY],
-    });
-  }
-
-  async function clear(event) {
-    event.preventDefault();
-    await storage.set({ [CONFIG_STAORAGE_KEY]: null }, function () {
-      loadData(null);
-    });
+  async function reset() {
+    await configureStorage.set(DEFAULT_GM_CONFIG_VALUE);
+    form.resetFields();
   }
 
   return (
     <div className="form-container">
       <Form
+        initialValues={configStorage}
         form={form}
         layout="inline"
         {...formItemLayout}
@@ -93,14 +67,14 @@ const Popup = () => {
           name="enableFloatingBall"
           valuePropName="checked"
         >
-          <Switch defaultValue={true} />
+          <Switch />
         </Form.Item>
         <div className="popup-footer">
           <Button key="create" type="primary" htmlType="submit">
             Save
           </Button>
-          <Button key="cancel" onClick={clear}>
-            Clear
+          <Button key="cancel" htmlType="button" onClick={reset}>
+            Reset
           </Button>
         </div>
       </Form>

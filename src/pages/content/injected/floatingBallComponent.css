@@ -14,6 +14,10 @@
     z-index: 9999;
   }
   
+  .hidden {
+    visibility: hidden;
+  }
+
   .floating-window img {
     width: 65%;
     height: auto;
