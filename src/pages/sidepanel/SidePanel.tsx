@@ -48,7 +48,7 @@ function SidePanel() {
 
       for await (const chunk of stream) {
         const finishReason = chunk.choices[0]?.finish_reason;
-        console.log(chunk.choices[0]);
+
         const content = chunk.choices[0]?.delta?.content;
         message = message + content;
         setCurrentText(message);

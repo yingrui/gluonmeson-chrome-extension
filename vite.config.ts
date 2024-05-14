@@ -39,6 +39,12 @@ export default defineConfig({
           "common",
           "index.ts",
         ),
+        "src/listeners/trello": resolve(
+          srcDir,
+          "listeners",
+          "trello",
+          "index.ts",
+        ),
         "src/pages/contentInjected": resolve(
           pagesDir,
           "content",

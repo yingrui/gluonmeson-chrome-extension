@@ -43,6 +43,10 @@ const manifest = {
       matches: ["http://*/*", "https://*/*", "<all_urls>"],
       js: ["src/listeners/common/index.js"],
     },
+    {
+      matches: ["https://trello.com/*"],
+      js: ["src/listeners/trello/index.js"],
+    },
   ],
   web_accessible_resources: [
     {

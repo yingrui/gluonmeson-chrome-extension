@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { CONFIG_STAORAGE_KEY } from "../../popup/Popup";
+import TrelloAgent from "./TrelloAgent";
 
 const storage = chrome.storage.local;
 const defaultModelName = "gpt-3.5-turbo";
@@ -35,7 +36,7 @@ class WebpageSummarizationAgent {
     });
   }
 
-  async summarize(userInput) {
+  async execute(userInput) {
     const content = await this.get_content();
     const prompt = `You're an assistant and good at summarization, the user is reading an article: ${content.title}. 
                     Please summarize the content according to user instruction: ${userInput}
@@ -54,7 +55,7 @@ class TranslateAgent {
 
   constructor() {}
 
-  async translate(userInput) {
+  async execute(userInput) {
     const prompt = `You're an assistant and good at translation.
                     Please translate to Chinese according to user instruction, and generate result directly. 
                     Here is user input: ${userInput}`;
@@ -69,10 +70,13 @@ class TranslateAgent {
 
 export const commands = {
   summary({ userInput }) {
-    return new WebpageSummarizationAgent().summarize(userInput);
+    return new WebpageSummarizationAgent().execute(userInput);
   },
   translate({ userInput }) {
-    return new TranslateAgent().translate(userInput);
+    return new TranslateAgent().execute(userInput);
+  },
+  trello({ userInput }) {
+    return new TrelloAgent(defaultModelName, client).execute(userInput);
   },
 };
 
