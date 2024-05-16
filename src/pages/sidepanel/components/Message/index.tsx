@@ -14,18 +14,17 @@ const Message = (props: Props) => {
   return (
     <div className={`message-item ${isAssistant ? "message-assistant" : ""}`}>
       {isAssistant && <img className="bot-avatar" src="/icons/gm_logo.png" />}
-
-      <div
-        className={`message-content ${isAssistant ? "bot-message-content" : "user-message-content"}`}
-      >
-        {content ? (
+      {content ? (
+        <div
+          className={`message-content ${isAssistant ? "bot-message-content" : "user-message-content"}`}
+        >
           <Markdown components={{ code: CodeBlock }}>{content}</Markdown>
-        ) : (
-          <>
-            <Spin />
-          </>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className="message-spin">
+          <Spin />
+        </div>
+      )}
       {!isAssistant && (
         <img className="user-avatar" src="/icons/user-icon.png" />
       )}

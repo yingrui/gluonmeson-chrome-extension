@@ -24,8 +24,7 @@ const Popup = () => {
   };
 
   async function reset() {
-    await configureStorage.set(DEFAULT_GM_CONFIG_VALUE);
-    form.resetFields();
+    form.setFieldsValue(DEFAULT_GM_CONFIG_VALUE);
   }
 
   return (
