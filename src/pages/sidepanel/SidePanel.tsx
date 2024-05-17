@@ -64,7 +64,9 @@ function SidePanel() {
         const content = chunk.choices[0]?.delta?.content;
         message = message + content;
         setCurrentText(message);
-        scrollToBottom();
+        setTimeout(() => {
+          scrollToBottom();
+        });
       }
 
       appendMessage("assistant", message);
@@ -73,7 +75,9 @@ function SidePanel() {
       setGenerating(false);
     }
 
-    scrollToBottom();
+    setTimeout(() => {
+      scrollToBottom();
+    });
   }
 
   function appendMessage(role: ChatMessage["role"], content: string) {
@@ -98,16 +102,18 @@ function SidePanel() {
 
   return (
     <div className={styles.chat}>
-      <div className={styles.chatList} ref={scrollRef}>
-        {messages
-          .filter((msg) => msg.role != "system")
-          .map((msg, i) => (
-            <Message key={i} role={msg.role} content={msg.content}></Message>
-          ))}
-        {generating && (
-          <Message role="assistant" content={currentText}></Message>
-        )}
-        <div className="helper" ref={messagesRef}></div>
+      <div className={styles.chatList}>
+        <div>
+          {messages
+            .filter((msg) => msg.role != "system")
+            .map((msg, i) => (
+              <Message key={i} role={msg.role} content={msg.content}></Message>
+            ))}
+          {generating && (
+            <Message role="assistant" content={currentText}></Message>
+          )}
+          <div className="helper" ref={messagesRef}></div>
+        </div>
       </div>
 
       <div className={styles.form}>
