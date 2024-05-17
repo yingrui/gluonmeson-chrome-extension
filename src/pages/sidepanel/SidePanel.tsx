@@ -88,7 +88,7 @@ function SidePanel() {
   };
 
   async function keypress(e: any) {
-    if (e.keyCode == "Enter" && !e.shiftKey) {
+    if (e.key == "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (!commandRef.current) {
         handleSubmit();

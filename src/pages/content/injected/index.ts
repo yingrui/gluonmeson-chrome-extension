@@ -7,5 +7,7 @@
  * If you want to use other modules in content scripts, you need to import them via these files.
  *
  */
-import("@pages/content/injected/toggleTheme");
 import("@pages/content/injected/floatingBall");
+import("@pages/content/injected/listeners/common/commands");
+import("@pages/content/injected/listeners/trello/commands");
+

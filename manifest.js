@@ -1,5 +1,6 @@
-import fs from "node:fs";
-const packageJson = JSON.parse(fs.readFileSync("./package.json", "utf8"));
+import fs from 'node:fs';
+
+const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 
 /**
  * After changing, please reload the extension at `chrome://extensions`
@@ -12,46 +13,38 @@ const manifest = {
    * if you want to support multiple languages, you can use the following reference
    * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Internationalization
    */
-  name: "GluonMeson",
+  name: 'GluonMeson',
   version: packageJson.version,
-  description: "GluonMeson Chrome Extension",
-  host_permissions: ["<all_urls>"],
-  permissions: ["storage", "sidePanel", "scripting", "activeTab"],
+  description: 'GluonMeson Chrome Extension',
+  host_permissions: ['<all_urls>'],
+  permissions: ['storage', 'sidePanel', 'scripting', 'activeTab'],
   background: {
-    service_worker: "src/index.js",
+    service_worker: 'src/index.js',
   },
   side_panel: {
-    default_path: "src/pages/sidepanel/index.html",
+    default_path: 'src/pages/sidepanel/index.html',
   },
   action: {
-    default_popup: "src/pages/popup/index.html",
-    default_icon: "icons/gm_logo.png",
+    default_popup: 'src/pages/popup/index.html',
+    default_icon: 'icons/gm_logo.png',
   },
   icons: {
-    128: "icons/gm_logo.png",
+    128: 'icons/gm_logo.png',
   },
   content_scripts: [
     {
-      matches: ["http://*/*", "https://*/*", "<all_urls>"],
-      js: ["src/pages/contentInjected/index.js"],
+      matches: ['http://*/*', 'https://*/*', '<all_urls>'],
+      js: ['src/pages/contentInjected/index.js'],
     },
     {
-      matches: ["http://*/*", "https://*/*", "<all_urls>"],
-      js: ["src/pages/contentUI/index.js"],
-    },
-    {
-      matches: ["http://*/*", "https://*/*", "<all_urls>"],
-      js: ["src/listeners/common/index.js"],
-    },
-    {
-      matches: ["https://trello.com/*"],
-      js: ["src/listeners/trello/index.js"],
-    },
+      matches: ['http://*/*', 'https://*/*', '<all_urls>'],
+      js: ['src/pages/contentUI/index.js'],
+    }
   ],
   web_accessible_resources: [
     {
-      resources: ["assets/js/*.js", "assets/css/*.css", "icons/*.png"],
-      matches: ["*://*/*"],
+      resources: ['assets/js/*.js', 'assets/css/*.css', 'icons/*.png'],
+      matches: ['*://*/*'],
     },
   ],
 };

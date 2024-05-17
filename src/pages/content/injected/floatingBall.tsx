@@ -1,7 +1,10 @@
 import { createRoot } from "react-dom/client";
+import OpenAI from "openai";
 import refreshOnUpdate from "virtual:reload-on-update-in-view";
 import FloatingBallComponent from "./FloatingBallComponent";
 import injectedStyle from "./floatingBallComponent.css?inline";
+
+console.log(OpenAI, 'inject ui');
 
 refreshOnUpdate("pages/content/injected/initBall");
 
