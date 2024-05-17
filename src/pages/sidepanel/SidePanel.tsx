@@ -22,7 +22,7 @@ function SidePanel() {
   const [text, setText] = useState<string>();
   const [currentText, setCurrentText] = useState<string>();
   const [generating, setGenerating] = useState<boolean>();
-  const { scrollToBottom, messagesRef } = useScrollAnchor();
+  const { scrollRef, scrollToBottom, messagesRef } = useScrollAnchor();
   const commandRef = useRef<boolean>();
 
   const [messages, setList] = React.useState<ChatMessage[]>([
@@ -98,7 +98,7 @@ function SidePanel() {
 
   return (
     <div className={styles.chat}>
-      <div className={styles.chatList} ref={messagesRef}>
+      <div className={styles.chatList} ref={scrollRef}>
         {messages
           .filter((msg) => msg.role != "system")
           .map((msg, i) => (
@@ -107,7 +107,7 @@ function SidePanel() {
         {generating && (
           <Message role="assistant" content={currentText}></Message>
         )}
-        <div className="scroll-helper"></div>
+        <div className="helper" ref={messagesRef}></div>
       </div>
 
       <div className={styles.form}>

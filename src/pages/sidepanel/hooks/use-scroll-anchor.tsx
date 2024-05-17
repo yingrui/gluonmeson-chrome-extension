@@ -1,8 +1,8 @@
 import { useCallback, useRef } from "react";
 
 export const useScrollAnchor = () => {
+  const scrollRef = useRef<HTMLDivElement>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
-  const visibilityRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback(() => {
     if (messagesRef.current) {
@@ -14,8 +14,8 @@ export const useScrollAnchor = () => {
   }, []);
 
   return {
+    scrollRef,
     messagesRef,
-    visibilityRef,
     scrollToBottom,
   };
 };
