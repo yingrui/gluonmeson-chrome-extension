@@ -1,10 +1,7 @@
-import OpenAI from "openai";
-import { matchURL } from '@pages/content/injected/listeners/utils';
-
-console.log(OpenAI, 'inject common listener');
+import { matchURL } from "@pages/content/injected/listeners/utils";
 
 const addCommands = () => {
-  if(matchURL('*')) {
+  if (matchURL("*")) {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       (async () => {
         if (message.type === "get_content") {
@@ -17,6 +14,6 @@ const addCommands = () => {
       })();
     });
   }
-}
+};
 
-addCommands()
+addCommands();
