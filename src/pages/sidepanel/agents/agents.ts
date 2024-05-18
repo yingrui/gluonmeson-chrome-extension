@@ -1,5 +1,7 @@
 import OpenAI from "openai";
 import TrelloAgent from "./TrelloAgent";
+import SummaryAgent from "./SummaryAgent";
+import TranslateAgent from "./TranslateAgent";
 import configureStorage from "@root/src/shared/storages/gluonConfig";
 
 const defaultModelName = "gpt-3.5-turbo";
@@ -12,64 +14,12 @@ configureStorage.get().then((config) => {
   });
 });
 
-class WebpageSummarizationAgent {
-  modelName = defaultModelName;
-
-  constructor() {}
-
-  private async get_content(): Promise<any> {
-    return new Promise<any>(function (resolve, reject) {
-      // send message to content script, call resolve() when received response"
-      chrome.tabs.query({ currentWindow: true, active: true }, (tabs) => {
-        chrome.tabs.sendMessage(
-          tabs[0].id,
-          { type: "get_content" },
-          (response) => {
-            resolve(response);
-          },
-        );
-      });
-    });
-  }
-
-  async execute(userInput) {
-    const content = await this.get_content();
-    const prompt = `You're an assistant and good at summarization, the user is reading an article: ${content.title}. 
-                    Please summarize the content according to user instruction: ${userInput}
-                    The content text is: ${content.text}`;
-
-    return await client.chat.completions.create({
-      messages: [{ role: "system", content: prompt }],
-      model: this.modelName,
-      stream: true,
-    });
-  }
-}
-
-class TranslateAgent {
-  modelName = defaultModelName;
-
-  constructor() {}
-
-  async execute(userInput) {
-    const prompt = `You're an assistant and good at translation.
-                    Please translate to Chinese according to user instruction, and generate result directly. 
-                    Here is user input: ${userInput}`;
-
-    return await client.chat.completions.create({
-      messages: [{ role: "system", content: prompt }],
-      model: this.modelName,
-      stream: true,
-    });
-  }
-}
-
 export const commands = {
   summary({ userInput }) {
-    return new WebpageSummarizationAgent().execute(userInput);
+    return new SummaryAgent(defaultModelName, client).execute(userInput);
   },
   translate({ userInput }) {
-    return new TranslateAgent().execute(userInput);
+    return new TranslateAgent(defaultModelName, client).execute(userInput);
   },
   trello({ userInput }) {
     return new TrelloAgent(defaultModelName, client).execute(userInput);
