@@ -61,7 +61,10 @@ class GluonMesonAgent {
     );
 
     if (matchedCommand) {
-      return [matchedCommand, userInput];
+      const input = userInput.match(
+        new RegExp(`(?:^|\\s)/${matchedCommand}\\s+(.*)`),
+      )[1];
+      return [matchedCommand, input];
     }
     return ["chat", userInput];
   }

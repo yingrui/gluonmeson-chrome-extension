@@ -10,9 +10,8 @@ class TranslateAgent {
   }
 
   async execute(userInput) {
-    const prompt = `You're an assistant and good at translation.
-                    Please translate to Chinese according to user instruction, and generate result directly. 
-                    Here is user input: ${userInput}`;
+    const prompt = `You're a translator and good at Chinese & English. Please translate to opposite language according to user input.
+Directly output the translation result, here is user input: ${userInput}`;
 
     return await this.client.chat.completions.create({
       messages: [{ role: "system", content: prompt }],
