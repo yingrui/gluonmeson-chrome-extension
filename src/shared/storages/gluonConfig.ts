@@ -8,6 +8,8 @@ type GluonConfigure = {
   apiKey: string;
   baseURL: string;
   organization: string;
+  defaultModel: string;
+  toolsCallModel: string;
   enableFloatingBall: boolean;
 };
 
@@ -17,6 +19,8 @@ export const DEFAULT_GM_CONFIG_VALUE = {
   apiKey: "",
   baseURL: "",
   organization: "",
+  defaultModel: "gpt-3.5-turbo",
+  toolsCallModel: "ChatGLM3-tools",
   enableFloatingBall: true,
 };
 

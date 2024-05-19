@@ -4,7 +4,8 @@ import SummaryAgent from "./SummaryAgent";
 import TranslateAgent from "./TranslateAgent";
 import configureStorage from "@root/src/shared/storages/gluonConfig";
 
-const defaultModelName = "gpt-3.5-turbo";
+let defaultModelName = "gpt-3.5-turbo";
+let toolsCallModel: string = null;
 let client: OpenAI;
 configureStorage.get().then((config) => {
   client = new OpenAI({
@@ -12,24 +13,66 @@ configureStorage.get().then((config) => {
     baseURL: config.baseURL,
     dangerouslyAllowBrowser: true,
   });
+  defaultModelName = config.defaultModel
+    ? config.defaultModel
+    : defaultModelName;
+  toolsCallModel = config.toolsCallModel
+    ? config.toolsCallModel
+    : toolsCallModel;
 });
 
 export const commands = {
   summary({ userInput }) {
-    return new SummaryAgent(defaultModelName, client).execute(userInput);
+    return new SummaryAgent(defaultModelName, client).summarize(userInput);
   },
   translate({ userInput }) {
-    return new TranslateAgent(defaultModelName, client).execute(userInput);
+    return new TranslateAgent(defaultModelName, client).translate(userInput);
   },
   trello({ userInput }) {
-    return new TrelloAgent(defaultModelName, client).execute(userInput);
+    return new TrelloAgent(defaultModelName, client).generateStory(userInput);
   },
 };
 
 class GluonMesonAgent {
   modelName = defaultModelName;
+  mapToolsAgents = {};
+  tools: OpenAI.Chat.Completions.ChatCompletionTool[] = [];
 
-  constructor() {}
+  constructor() {
+    this.addAgent(new SummaryAgent(defaultModelName, client));
+    this.addAgent(new TranslateAgent(defaultModelName, client));
+    this.addAgent(new TrelloAgent(defaultModelName, client));
+  }
+
+  private addAgent(agent: any) {
+    for (const tool of agent.getTools()) {
+      this.tools.push(tool);
+      this.mapToolsAgents[tool.name] = agent;
+    }
+  }
+
+  async callTool(messages: ChatMessage[]): Promise<any> {
+    const chatCompletion = await client.chat.completions.create({
+      model: toolsCallModel,
+      messages: messages as OpenAI.ChatCompletionMessageParam[],
+      stream: false,
+      tools: this.tools,
+    });
+
+    const tool_calls = chatCompletion.choices[0].message.tool_calls;
+    if (tool_calls) {
+      for (const tool of tool_calls) {
+        const agent = this.mapToolsAgents[tool.function.name];
+        return agent.execute(tool);
+      }
+    }
+
+    return client.chat.completions.create({
+      messages: messages as OpenAI.ChatCompletionMessageParam[],
+      model: this.modelName,
+      stream: true,
+    });
+  }
 
   async chat(messages: ChatMessage[]) {
     const [command, userInput] = this.parseCommand(
@@ -41,11 +84,15 @@ class GluonMesonAgent {
     if (commandExecutor) {
       return commandExecutor({ userInput });
     } else {
-      return client.chat.completions.create({
-        messages: messages as OpenAI.ChatCompletionMessageParam[],
-        model: this.modelName,
-        stream: true,
-      });
+      if (toolsCallModel) {
+        return this.callTool(messages);
+      } else {
+        return client.chat.completions.create({
+          messages: messages as OpenAI.ChatCompletionMessageParam[],
+          model: this.modelName,
+          stream: true,
+        });
+      }
     }
   }
 

@@ -34,7 +34,6 @@ const Popup = () => {
     }
   };
 
-
   async function reset() {
     form.setFieldsValue(DEFAULT_GM_CONFIG_VALUE);
   }
@@ -80,6 +79,12 @@ const Popup = () => {
           valuePropName="checked"
         >
           <Switch />
+        </Form.Item>
+        <Form.Item name="defaultModel" label="GPT Model">
+          <Input placeholder="gpt-3.5-turbo" />
+        </Form.Item>
+        <Form.Item name="toolsCallModel" label="Tools Call Model">
+          <Input placeholder="ChatGLM3-tools" />
         </Form.Item>
         <div className="popup-footer">
           <Button key="create" type="primary" htmlType="submit">
