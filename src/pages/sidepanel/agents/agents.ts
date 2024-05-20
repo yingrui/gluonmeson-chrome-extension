@@ -47,7 +47,7 @@ class GluonMesonAgent {
   private addAgent(agent: any) {
     for (const tool of agent.getTools()) {
       this.tools.push(tool);
-      this.mapToolsAgents[tool.name] = agent;
+      this.mapToolsAgents[tool.function.name] = agent;
     }
   }
 
