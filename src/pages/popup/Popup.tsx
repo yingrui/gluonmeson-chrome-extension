@@ -1,4 +1,4 @@
-import { Button, Form, Input, Switch, Modal } from "antd";
+import { Button, Form, Input, Switch, Modal, Tabs } from "antd";
 import { isEqual } from "lodash";
 import withSuspense from "@src/shared/hoc/withSuspense";
 import withErrorBoundary from "@src/shared/hoc/withErrorBoundary";
@@ -24,10 +24,6 @@ const Popup = () => {
         title: "Confirm to save configuration",
         async onOk() {
           await configureStorage.set(values);
-          chrome.runtime.sendMessage({
-            type: "enable_floating_ball",
-            enabled: !!values.enableFloatingBall,
-          });
           window.close();
         },
       });
@@ -38,6 +34,71 @@ const Popup = () => {
     form.setFieldsValue(DEFAULT_GM_CONFIG_VALUE);
   }
 
+  const tabItems = [
+    {
+      label: `Basic`,
+      key: `basic`,
+      children: (
+        <>
+          <Form.Item
+            name="apiKey"
+            label="API key"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input type="password" />
+          </Form.Item>
+          <Form.Item
+            name="baseURL"
+            label="Base URL"
+            rules={[
+              {
+                required: true,
+              },
+              { type: "url" },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item name="organization" label="Organization">
+            <Input />
+          </Form.Item>
+          <Form.Item name="defaultModel" label="GPT Model">
+            <Input placeholder="gpt-3.5-turbo" />
+          </Form.Item>
+          <Form.Item name="toolsCallModel" label="Tools Call Model">
+            <Input placeholder="ChatGLM3-tools" />
+          </Form.Item>
+          <Form.Item
+            label="Floating Ball"
+            name="enableFloatingBall"
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
+        </>
+      ),
+    },
+    {
+      label: `Trello`,
+      key: `trello`,
+      children: (
+        <>
+          <Form.Item
+            name="trelloSearchApi"
+            label="Search Api Url"
+            rules={[{ type: "url" }]}
+          >
+            <Input />
+          </Form.Item>
+        </>
+      ),
+    },
+  ];
+
   return (
     <div className="form-container">
       <Form
@@ -47,45 +108,13 @@ const Popup = () => {
         {...formItemLayout}
         onFinish={onSaveSettings}
       >
-        <Form.Item
-          name="apiKey"
-          label="API key"
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-        >
-          <Input type="password" />
-        </Form.Item>
-        <Form.Item
-          name="baseURL"
-          label="Base URL"
-          rules={[
-            {
-              required: true,
-            },
-            { type: "url" },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item name="organization" label="Organization">
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Floating Ball"
-          name="enableFloatingBall"
-          valuePropName="checked"
-        >
-          <Switch />
-        </Form.Item>
-        <Form.Item name="defaultModel" label="GPT Model">
-          <Input placeholder="gpt-3.5-turbo" />
-        </Form.Item>
-        <Form.Item name="toolsCallModel" label="Tools Call Model">
-          <Input placeholder="ChatGLM3-tools" />
-        </Form.Item>
+        <Tabs
+          style={{ height: "300px" }}
+          defaultActiveKey="1"
+          type="card"
+          size="small"
+          items={tabItems}
+        />
         <div className="popup-footer">
           <Button key="create" type="primary" htmlType="submit">
             Save

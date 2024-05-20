@@ -4,8 +4,8 @@ body {
 }
 
 .form-container {
-  width: 400px;
-  padding: 10px 0px;
+  width: 500px;
+  padding: 10px 20px;
 
   .popup-footer {
     display: flex;
