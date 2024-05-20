@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import withSuspense from "@src/shared/hoc/withSuspense";
 import withErrorBoundary from "@src/shared/hoc/withErrorBoundary";
 import { useScrollAnchor } from "./hooks/use-scroll-anchor";
@@ -10,6 +10,7 @@ import GluonMesonAgent, { commands } from "./agents/agents";
 import { delay } from "@pages/sidepanel/utils";
 import useStorage from "@root/src/shared/hooks/useStorage";
 import configureStorage from "@root/src/shared/storages/gluonConfig";
+import type { MentionsRef } from "antd/lib/mentions";
 
 const commandOptions = Object.keys(commands).map((key) => ({
   value: key,
@@ -19,13 +20,14 @@ const commandOptions = Object.keys(commands).map((key) => ({
 const { Text } = Typography;
 function SidePanel() {
   const configStorage = useStorage(configureStorage);
+  const mentionRef = useRef<MentionsRef>();
   const [text, setText] = useState<string>();
   const [currentText, setCurrentText] = useState<string>();
   const [generating, setGenerating] = useState<boolean>();
   const { scrollRef, scrollToBottom, messagesRef } = useScrollAnchor();
   const commandRef = useRef<boolean>();
 
-  const [messages, setList] = React.useState<ChatMessage[]>([
+  const [messages, setList] = useState<ChatMessage[]>([
     {
       role: "system",
       content:
@@ -33,6 +35,20 @@ function SidePanel() {
     },
     { role: "assistant", content: "Hello! How can I assist you today?" },
   ]);
+
+  useEffect(() => {
+    const focus = () => {
+      console.log("play");
+      if (mentionRef.current) {
+        mentionRef.current.focus();
+      }
+    };
+    focus();
+    window.addEventListener("focus", focus);
+    return () => {
+      window.removeEventListener("focus", focus);
+    };
+  }, []);
 
   if (!configStorage.apiKey || !configStorage.baseURL) {
     return (
@@ -118,9 +134,9 @@ function SidePanel() {
 
       <div className={styles.form}>
         <Mentions
+          ref={mentionRef}
           onSelect={handleSearchChange}
           onKeyUp={keypress}
-          autoFocus={true}
           prefix={"/"}
           value={text}
           options={commandOptions}
