@@ -25,6 +25,7 @@
     "bootstrap-icons": "^1.11.3",
     "construct-style-sheets-polyfill": "3.1.0",
     "copy-to-clipboard": "^3.3.3",
+    "jotai": "^2.8.0",
     "jquery": "^3.7.1",
     "lodash": "^4.17.21",
     "openai": "^4.39.0",
