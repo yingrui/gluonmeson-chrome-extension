@@ -66,6 +66,10 @@ function SidePanel() {
     if (generating) {
       return;
     }
+    if (!text || text.trim() === "") {
+      setText("");
+      return;
+    }
     setGenerating(true);
     try {
       setText("");
@@ -136,7 +140,7 @@ function SidePanel() {
         <Mentions
           ref={mentionRef}
           onSelect={handleSearchChange}
-          onKeyUp={keypress}
+          onKeyDown={keypress}
           prefix={"/"}
           value={text}
           options={commandOptions}
