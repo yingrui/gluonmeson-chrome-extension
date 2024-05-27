@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import Tool from "./tool";
 import TrelloAgent from "./TrelloAgent";
 import SummaryAgent from "./SummaryAgent";
 import TranslateAgent from "./TranslateAgent";
@@ -42,6 +43,7 @@ class GluonMesonAgent {
     this.addAgent(new SummaryAgent(defaultModelName, client));
     this.addAgent(new TranslateAgent(defaultModelName, client));
     this.addAgent(new TrelloAgent(defaultModelName, client));
+    this.initTools();
   }
 
   private addAgent(agent: any) {
@@ -49,6 +51,47 @@ class GluonMesonAgent {
       this.tools.push(tool);
       this.mapToolsAgents[tool.function.name] = agent;
     }
+  }
+
+  private initTools() {
+    const help = new Tool(
+      "help",
+      "Answer what can GluonMeson Chrome Extension do. The user might ask like: what can you do, or just say help.",
+    );
+    help.addStringParameter("question");
+    const tool = help.getFunction();
+    this.tools.push(tool);
+    this.mapToolsAgents[tool.function.name] = this;
+  }
+
+  async execute(
+    tool: OpenAI.Chat.Completions.ChatCompletionMessageToolCall,
+  ): Promise<any> {
+    if (tool.function.name === "help") {
+      const args = JSON.parse(tool.function.arguments);
+      return this.help(args["question"]);
+    }
+    throw new Error(
+      "Unexpected tool call in TranslateAgent: " + tool.function.name,
+    );
+  }
+
+  async help(question: string): Promise<any> {
+    const tools = this.tools
+      .map(
+        (t) =>
+          `${t.function.name}: ${t.function.description}: ${t.function.parameters}`,
+      )
+      .join("\n");
+    const prompt = `You're an assistant provided by GluonMeson, when user asked ${question}.
+Please tell user what you can do for them. There are tools:
+${tools}`;
+
+    return await client.chat.completions.create({
+      messages: [{ role: "system", content: prompt }],
+      model: this.modelName,
+      stream: true,
+    });
   }
 
   async callTool(messages: ChatMessage[]): Promise<any> {
