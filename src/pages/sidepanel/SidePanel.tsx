@@ -140,7 +140,7 @@ function SidePanel() {
         <Mentions
           ref={mentionRef}
           onSelect={handleSearchChange}
-          onKeyDown={keypress}
+          onKeyUp={keypress}
           prefix={"/"}
           value={text}
           options={commandOptions}
