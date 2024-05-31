@@ -18,7 +18,8 @@ Suggestions and pull requests are welcomed!.
 
 ### For Chrome: <a name="chrome"></a>
 
-1. Run:
+1. Run npm install
+2. Run build command:
     - Dev: `pnpm dev` or `npm run dev`
     - Prod: `pnpm build` or `npm run build`
 2. Open in browser - `chrome://extensions`

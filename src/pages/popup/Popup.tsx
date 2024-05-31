@@ -70,7 +70,7 @@ const Popup = () => {
             <Input placeholder="gpt-3.5-turbo" />
           </Form.Item>
           <Form.Item name="toolsCallModel" label="Tools Call Model">
-            <Input placeholder="ChatGLM3-tools" />
+            <Input placeholder="gpt-4-turbo" />
           </Form.Item>
           <Form.Item
             label="Floating Ball"
