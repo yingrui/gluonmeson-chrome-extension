@@ -19,6 +19,12 @@ class SummaryAgent {
     );
     summary.addStringParameter("instruct");
     this.tools.push(summary);
+    const page = new Tool(
+      "ask_page",
+      "Answer user's question based on current web page content",
+    );
+    page.addStringParameter("question");
+    this.tools.push(page);
   }
 
   getTools(): OpenAI.Chat.Completions.ChatCompletionTool[] {
@@ -46,6 +52,9 @@ class SummaryAgent {
     if (tool.function.name === "summary") {
       const args = JSON.parse(tool.function.arguments);
       return this.summarize(args["instruct"]);
+    } else if (tool.function.name === "ask_page") {
+      const args = JSON.parse(tool.function.arguments);
+      return this.askPage(args["question"]);
     }
     throw new Error(
       "Unexpected tool call in TranslateAgent: " + tool.function.name,
@@ -56,6 +65,19 @@ class SummaryAgent {
     const content = await this.get_content();
     const prompt = `You're an assistant and good at summarization, the user is reading an article: ${content.title}. 
 Please summarize the content according to user instruction: ${instruct}
+The content text is: ${content.text}`;
+
+    return await this.client.chat.completions.create({
+      messages: [{ role: "system", content: prompt }],
+      model: this.modelName,
+      stream: true,
+    });
+  }
+
+  async askPage(question: string) {
+    const content = await this.get_content();
+    const prompt = `You're an assistant, the user is reading an article: ${content.title}.
+Please answer user's question: ${question}
 The content text is: ${content.text}`;
 
     return await this.client.chat.completions.create({

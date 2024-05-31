@@ -26,7 +26,7 @@ function SidePanel() {
     {
       role: "system",
       content:
-        "You're an assistant, please direct answer questions, should not add assistant in anwser.",
+        "You're an assistant, please direct answer questions, should not add assistant in answer.",
     },
     { role: "assistant", content: "Hello! How can I assist you today?" },
   ]);

@@ -27,6 +27,9 @@ class GluonMesonAgent {
   mapToolsAgents = {};
   tools: OpenAI.Chat.Completions.ChatCompletionTool[] = [];
   commands = {
+    page({ userInput }) {
+      return new SummaryAgent(defaultModelName, client).askPage(userInput);
+    },
     summary({ userInput }) {
       return new SummaryAgent(defaultModelName, client).summarize(userInput);
     },
