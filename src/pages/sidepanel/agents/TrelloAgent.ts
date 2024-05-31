@@ -1,34 +1,16 @@
 import OpenAI from "openai";
 import Tool from "./tool";
+import AgentWithTools from "./AgentWithTools";
 
-class TrelloAgent {
-  modelName: string;
-  client: OpenAI;
-  tools: Tool[] = [];
-
+class TrelloAgent extends AgentWithTools {
   constructor(defaultModelName: string, client: OpenAI) {
-    this.modelName = defaultModelName;
-    this.client = client;
-    this.initTools();
-  }
-
-  private initTools() {
-    const generateStory = new Tool(
+    super(defaultModelName, client);
+    this.addTool(
       "generateStory",
       "generate story content for user before they want to create a new card in Trello board",
+      ["title", "keywords"],
     );
-    generateStory.addStringParameter("title");
-    generateStory.addStringParameter("keywords");
-    this.tools.push(generateStory);
-    // const createCard = new Tool("createCard", "create card in Trello board with given title and description");
-    // createCard.addStringParameter("title");
-    // createCard.addStringParameter("desc");
-    // createCard.addStringParameter("column");
-    // this.tools.push(createCard);
-  }
-
-  getTools(): OpenAI.Chat.Completions.ChatCompletionTool[] {
-    return this.tools.map((tool) => tool.getFunction());
+    // this.addTool("createCard", "create card in Trello board with given title and description", ["title", "desc", "column"]);
   }
 
   private async get_board(): Promise<any> {
@@ -49,11 +31,7 @@ class TrelloAgent {
   async handleCannotGetBoardError(): Promise<any> {
     const prompt = `You're an Business Analyst in Software Engineering Team.
 But you cannot get any information. Reply sorry and ask user to open or navigate to trello board, so you can get information from board.`;
-    return await this.client.chat.completions.create({
-      messages: [{ role: "system", content: prompt }],
-      model: this.modelName,
-      stream: true,
-    });
+    return await this.chatCompletion([{ role: "system", content: prompt }]);
   }
 
   async execute(
@@ -88,11 +66,7 @@ Use markdown format to beautify output.
 You need to consider other Columns & Cards information on board, they are: 
 ${context}`;
 
-    return await this.client.chat.completions.create({
-      messages: [{ role: "system", content: prompt }],
-      model: this.modelName,
-      stream: true,
-    });
+    return await this.chatCompletion([{ role: "system", content: prompt }]);
   }
 }
 

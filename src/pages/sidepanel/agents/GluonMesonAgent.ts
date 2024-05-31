@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import Tool from "./tool";
+import AgentWithTools from "./AgentWithTools";
 import TrelloAgent from "./TrelloAgent";
 import SummaryAgent from "./SummaryAgent";
 import TranslateAgent from "./TranslateAgent";
@@ -22,10 +23,10 @@ configureStorage.get().then((config) => {
     : toolsCallModel;
 });
 
-class GluonMesonAgent {
-  modelName = defaultModelName;
+class GluonMesonAgent extends AgentWithTools {
+  toolsCallModel: string = null;
   mapToolsAgents = {};
-  tools: OpenAI.Chat.Completions.ChatCompletionTool[] = [];
+  chatCompletionTools: OpenAI.Chat.Completions.ChatCompletionTool[] = [];
   commands = {
     page({ userInput }) {
       return new SummaryAgent(defaultModelName, client).askPage(userInput);
@@ -42,28 +43,26 @@ class GluonMesonAgent {
   };
 
   constructor() {
+    super(defaultModelName, client);
+    this.addTool(
+      "help",
+      "Answer what can GluonMeson Chrome Extension do. The user might ask like: what can you do, or just say help.",
+      ["question"],
+    );
+
     this.addAgent(new SummaryAgent(defaultModelName, client));
     this.addAgent(new TranslateAgent(defaultModelName, client));
     this.addAgent(new TrelloAgent(defaultModelName, client));
-    this.initTools();
+    this.addAgent(this);
+
+    this.toolsCallModel = toolsCallModel;
   }
 
   private addAgent(agent: any) {
     for (const tool of agent.getTools()) {
-      this.tools.push(tool);
+      this.chatCompletionTools.push(tool);
       this.mapToolsAgents[tool.function.name] = agent;
     }
-  }
-
-  private initTools() {
-    const help = new Tool(
-      "help",
-      "Answer what can GluonMeson Chrome Extension do. The user might ask like: what can you do, or just say help.",
-    );
-    help.addStringParameter("question");
-    const tool = help.getFunction();
-    this.tools.push(tool);
-    this.mapToolsAgents[tool.function.name] = this;
   }
 
   public getCommandOptions(): any[] {
@@ -86,7 +85,7 @@ class GluonMesonAgent {
   }
 
   async help(question: string): Promise<any> {
-    const tools = this.tools
+    const tools = this.chatCompletionTools
       .map(
         (t) =>
           `${t.function.name}: ${t.function.description}: ${t.function.parameters}`,
@@ -96,20 +95,15 @@ class GluonMesonAgent {
 Please tell user what you can do for them. There are tools:
 ${tools}`;
 
-    return await client.chat.completions.create({
-      messages: [{ role: "system", content: prompt }],
-      model: this.modelName,
-      stream: true,
-    });
+    return await this.chatCompletion([{ role: "system", content: prompt }]);
   }
 
   async callTool(messages: ChatMessage[]): Promise<any> {
-    const chatCompletion = await client.chat.completions.create({
-      model: toolsCallModel,
-      messages: messages as OpenAI.ChatCompletionMessageParam[],
-      stream: false,
-      tools: this.tools,
-    });
+    const chatCompletion = await this.toolsCall(
+      this.toolsCallModel,
+      messages,
+      this.chatCompletionTools,
+    );
 
     const tool_calls = chatCompletion.choices[0].message.tool_calls;
     if (tool_calls) {
@@ -119,11 +113,7 @@ ${tools}`;
       }
     }
 
-    return client.chat.completions.create({
-      messages: messages as OpenAI.ChatCompletionMessageParam[],
-      model: this.modelName,
-      stream: true,
-    });
+    return this.chatCompletion(messages);
   }
 
   async chat(messages: ChatMessage[]) {

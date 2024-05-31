@@ -1,29 +1,15 @@
 import OpenAI from "openai";
 import Tool from "./tool";
+import AgentWithTools from "./AgentWithTools";
 
-class TranslateAgent {
-  modelName: string;
-  client: OpenAI;
-  tools: Tool[] = [];
-
+class TranslateAgent extends AgentWithTools {
   constructor(defaultModelName: string, client: OpenAI) {
-    this.modelName = defaultModelName;
-    this.client = client;
-    this.initTools();
-  }
-
-  private initTools() {
-    const translate = new Tool(
+    super(defaultModelName, client);
+    this.addTool(
       "translate",
-      "tranlate given content to target language for user",
+      "translate given content to target language for user",
+      ["userInput", "targetLanguage"],
     );
-    translate.addStringParameter("userInput");
-    translate.addStringParameter("targetLanguage");
-    this.tools.push(translate);
-  }
-
-  getTools(): OpenAI.Chat.Completions.ChatCompletionTool[] {
-    return this.tools.map((tool) => tool.getFunction());
   }
 
   async execute(
@@ -42,11 +28,7 @@ class TranslateAgent {
     const prompt = `You're a translator and good at Chinese & English. Please translate to opposite language according to user input.
 Directly output the translation result, here is user input: ${userInput}`;
 
-    return await this.client.chat.completions.create({
-      messages: [{ role: "system", content: prompt }],
-      model: this.modelName,
-      stream: true,
-    });
+    return await this.chatCompletion([{ role: "system", content: prompt }]);
   }
 }
 

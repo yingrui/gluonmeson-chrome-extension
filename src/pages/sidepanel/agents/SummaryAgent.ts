@@ -1,34 +1,20 @@
 import OpenAI from "openai";
 import Tool from "./tool";
+import AgentWithTools from "./AgentWithTools";
 
-class SummaryAgent {
-  modelName: string;
-  client: OpenAI;
-  tools: Tool[] = [];
-
+class SummaryAgent extends AgentWithTools {
   constructor(defaultModelName: string, client: OpenAI) {
-    this.modelName = defaultModelName;
-    this.client = client;
-    this.initTools();
-  }
-
-  private initTools() {
-    const summary = new Tool(
+    super(defaultModelName, client);
+    this.addTool(
       "summary",
       "understand user's instruct and generate summary from given content for user",
+      ["instruct"],
     );
-    summary.addStringParameter("instruct");
-    this.tools.push(summary);
-    const page = new Tool(
+    this.addTool(
       "ask_page",
       "Answer user's question based on current web page content",
+      ["question"],
     );
-    page.addStringParameter("question");
-    this.tools.push(page);
-  }
-
-  getTools(): OpenAI.Chat.Completions.ChatCompletionTool[] {
-    return this.tools.map((tool) => tool.getFunction());
   }
 
   private async get_content(): Promise<any> {
@@ -57,7 +43,7 @@ class SummaryAgent {
       return this.askPage(args["question"]);
     }
     throw new Error(
-      "Unexpected tool call in TranslateAgent: " + tool.function.name,
+      "Unexpected tool call in SummaryAgent: " + tool.function.name,
     );
   }
 
@@ -67,11 +53,7 @@ class SummaryAgent {
 Please summarize the content according to user instruction: ${instruct}
 The content text is: ${content.text}`;
 
-    return await this.client.chat.completions.create({
-      messages: [{ role: "system", content: prompt }],
-      model: this.modelName,
-      stream: true,
-    });
+    return await this.chatCompletion([{ role: "system", content: prompt }]);
   }
 
   async askPage(question: string) {
@@ -80,11 +62,7 @@ The content text is: ${content.text}`;
 Please answer user's question: ${question}
 The content text is: ${content.text}`;
 
-    return await this.client.chat.completions.create({
-      messages: [{ role: "system", content: prompt }],
-      model: this.modelName,
-      stream: true,
-    });
+    return await this.chatCompletion([{ role: "system", content: prompt }]);
   }
 }
 
