@@ -27,20 +27,7 @@ class GluonMesonAgent extends AgentWithTools {
   toolsCallModel: string = null;
   mapToolsAgents = {};
   chatCompletionTools: OpenAI.Chat.Completions.ChatCompletionTool[] = [];
-  commands = {
-    page({ userInput }) {
-      return new SummaryAgent(defaultModelName, client).askPage(userInput);
-    },
-    summary({ userInput }) {
-      return new SummaryAgent(defaultModelName, client).summarize(userInput);
-    },
-    translate({ userInput }) {
-      return new TranslateAgent(defaultModelName, client).translate(userInput);
-    },
-    trello({ userInput }) {
-      return new TrelloAgent(defaultModelName, client).generateStory(userInput);
-    },
-  };
+  commands = ["page", "summary", "translate", "trello", "help"];
 
   constructor() {
     super(defaultModelName, client);
@@ -66,10 +53,12 @@ class GluonMesonAgent extends AgentWithTools {
   }
 
   public getCommandOptions(): any[] {
-    return Object.keys(this.commands).map((key) => ({
-      value: key,
-      label: key,
-    }));
+    return this.commands.map((key) => {
+      return {
+        value: key,
+        label: key,
+      };
+    });
   }
 
   async execute(
@@ -80,7 +69,7 @@ class GluonMesonAgent extends AgentWithTools {
       return this.help(args["question"]);
     }
     throw new Error(
-      "Unexpected tool call in TranslateAgent: " + tool.function.name,
+      "Unexpected tool call in GluonMesonAgent: " + tool.function.name,
     );
   }
 
@@ -116,6 +105,20 @@ ${tools}`;
     return this.chatCompletion(messages);
   }
 
+  async executeCommand(command: string, userInput: string): Promise<any> {
+    if (command === "help") {
+      return this.help(userInput);
+    } else if (command === "page") {
+      return this.mapToolsAgents[command].askPage(userInput);
+    } else if (command === "summary") {
+      return this.mapToolsAgents[command].summary(userInput);
+    } else if (command === "translate") {
+      return this.mapToolsAgents[command].translate(userInput);
+    } else if (command === "trello") {
+      return this.mapToolsAgents[command].generateStory(userInput);
+    }
+  }
+
   async chat(messages: ChatMessage[]) {
     const [command, userInput] = this.parseCommand(
       this.getLastUserInput(messages),
@@ -123,8 +126,8 @@ ${tools}`;
 
     const commandExecutor = this.commands[command];
 
-    if (commandExecutor) {
-      return commandExecutor({ userInput });
+    if (this.commands.includes(command)) {
+      return this.executeCommand(command, userInput);
     } else {
       if (toolsCallModel) {
         return this.callTool(messages);
