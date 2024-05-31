@@ -6,16 +6,11 @@ import { Mentions, Typography } from "antd";
 import styles from "./SidePanel.module.scss";
 
 import Message from "./components/Message";
-import GluonMesonAgent, { commands } from "./agents/agents";
+import GluonMesonAgent from "./agents/GluonMesonAgent";
 import { delay } from "@pages/sidepanel/utils";
 import useStorage from "@root/src/shared/hooks/useStorage";
 import configureStorage from "@root/src/shared/storages/gluonConfig";
 import type { MentionsRef } from "antd/lib/mentions";
-
-const commandOptions = Object.keys(commands).map((key) => ({
-  value: key,
-  label: key,
-}));
 
 const { Text } = Typography;
 function SidePanel() {
@@ -38,7 +33,6 @@ function SidePanel() {
 
   useEffect(() => {
     const focus = () => {
-      console.log("play");
       if (mentionRef.current) {
         mentionRef.current.focus();
       }
@@ -143,7 +137,7 @@ function SidePanel() {
           onKeyUp={keypress}
           prefix={"/"}
           value={text}
-          options={commandOptions}
+          options={agent.getCommandOptions()}
           placeholder="Hit Enter to send the message..."
           onChange={(value) => {
             setText(value);

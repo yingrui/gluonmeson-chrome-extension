@@ -22,22 +22,21 @@ configureStorage.get().then((config) => {
     : toolsCallModel;
 });
 
-export const commands = {
-  summary({ userInput }) {
-    return new SummaryAgent(defaultModelName, client).summarize(userInput);
-  },
-  translate({ userInput }) {
-    return new TranslateAgent(defaultModelName, client).translate(userInput);
-  },
-  trello({ userInput }) {
-    return new TrelloAgent(defaultModelName, client).generateStory(userInput);
-  },
-};
-
 class GluonMesonAgent {
   modelName = defaultModelName;
   mapToolsAgents = {};
   tools: OpenAI.Chat.Completions.ChatCompletionTool[] = [];
+  commands = {
+    summary({ userInput }) {
+      return new SummaryAgent(defaultModelName, client).summarize(userInput);
+    },
+    translate({ userInput }) {
+      return new TranslateAgent(defaultModelName, client).translate(userInput);
+    },
+    trello({ userInput }) {
+      return new TrelloAgent(defaultModelName, client).generateStory(userInput);
+    },
+  };
 
   constructor() {
     this.addAgent(new SummaryAgent(defaultModelName, client));
@@ -62,6 +61,13 @@ class GluonMesonAgent {
     const tool = help.getFunction();
     this.tools.push(tool);
     this.mapToolsAgents[tool.function.name] = this;
+  }
+
+  public getCommandOptions(): any[] {
+    return Object.keys(this.commands).map((key) => ({
+      value: key,
+      label: key,
+    }));
   }
 
   async execute(
@@ -122,7 +128,7 @@ ${tools}`;
       this.getLastUserInput(messages),
     );
 
-    const commandExecutor = commands[command];
+    const commandExecutor = this.commands[command];
 
     if (commandExecutor) {
       return commandExecutor({ userInput });
@@ -144,7 +150,7 @@ ${tools}`;
   }
 
   private parseCommand(userInput: string): [string, string] {
-    const commandKeys = Object.keys(commands);
+    const commandKeys = Object.keys(this.commands);
 
     const matchedCommand = commandKeys.find((commandKey) =>
       userInput.match(new RegExp(`(?:^|\\s)/${commandKey}\\s+`)),
