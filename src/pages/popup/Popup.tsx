@@ -67,10 +67,10 @@ const Popup = () => {
             <Input />
           </Form.Item>
           <Form.Item name="defaultModel" label="GPT Model">
-            <Input placeholder="gpt-3.5-turbo" />
+            <Input placeholder="please specify gpt model, eg. gpt-3.5-turbo" />
           </Form.Item>
           <Form.Item name="toolsCallModel" label="Tools Call Model">
-            <Input placeholder="gpt-4-turbo" />
+            <Input placeholder="please specify tools call model, eg. gpt-4-turbo" />
           </Form.Item>
           <Form.Item
             label="Floating Ball"

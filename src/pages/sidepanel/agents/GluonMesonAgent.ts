@@ -37,9 +37,9 @@ class GluonMesonAgent extends AgentWithTools {
       ["question"],
     );
 
-    this.addAgent(new SummaryAgent(defaultModelName, client));
-    this.addAgent(new TranslateAgent(defaultModelName, client));
-    this.addAgent(new TrelloAgent(defaultModelName, client));
+    this.addAgent(new SummaryAgent(defaultModelName, this.client));
+    this.addAgent(new TranslateAgent(defaultModelName, this.client));
+    this.addAgent(new TrelloAgent(defaultModelName, this.client));
     this.addAgent(this);
 
     this.toolsCallModel = toolsCallModel;
@@ -114,11 +114,7 @@ ${tools}`;
       if (toolsCallModel) {
         return this.callTool(messages);
       } else {
-        return client.chat.completions.create({
-          messages: messages as OpenAI.ChatCompletionMessageParam[],
-          model: this.modelName,
-          stream: true,
-        });
+        return this.chatCompletion(messages);
       }
     }
   }
