@@ -27,9 +27,22 @@ abstract class AgentWithTools {
     return this.tools.map((tool) => tool.getFunction());
   }
 
-  abstract async execute(
+  async execute(
     tool: OpenAI.Chat.Completions.ChatCompletionMessageToolCall,
-  ): Promise<any>;
+  ): Promise<any> {
+    let args = {};
+    try {
+      if (tool.function.arguments) {
+        args = JSON.parse(tool.function.arguments);
+      }
+    } catch (e) {
+      console.error("Error parsing tool arguments", e);
+      console.error("tool.function.arguments", tool.function.arguments);
+    }
+    return this.executeCommand(tool.function.name, args);
+  }
+
+  abstract async executeCommand(command: string, args: any): Promise<any>;
 
   async chatCompletion(
     messages: OpenAI.ChatCompletionMessageParam[],
@@ -39,6 +52,7 @@ abstract class AgentWithTools {
       messages: messages,
       model: this.modelName,
       stream: stream,
+      max_tokens: 4096,
     });
   }
 
@@ -52,6 +66,7 @@ abstract class AgentWithTools {
       messages: messages,
       stream: false,
       tools: tools,
+      max_tokens: 4096,
     });
   }
 }

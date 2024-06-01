@@ -12,16 +12,11 @@ class TranslateAgent extends AgentWithTools {
     );
   }
 
-  async execute(
-    tool: OpenAI.Chat.Completions.ChatCompletionMessageToolCall,
-  ): Promise<any> {
-    if (tool.function.name === "translate") {
-      const args = JSON.parse(tool.function.arguments);
+  async executeCommand(command: string, args: any): Promise<any> {
+    if (command === "translate") {
       return this.translate(args["userInput"], args["targetLanguage"]);
     }
-    throw new Error(
-      "Unexpected tool call in TranslateAgent: " + tool.function.name,
-    );
+    throw new Error("Unexpected tool call in TranslateAgent: " + command);
   }
 
   async translate(userInput: string, targetLanguage: string = "") {

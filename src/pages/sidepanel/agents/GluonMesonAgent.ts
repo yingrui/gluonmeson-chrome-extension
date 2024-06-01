@@ -61,16 +61,11 @@ class GluonMesonAgent extends AgentWithTools {
     });
   }
 
-  async execute(
-    tool: OpenAI.Chat.Completions.ChatCompletionMessageToolCall,
-  ): Promise<any> {
-    if (tool.function.name === "help") {
-      const args = JSON.parse(tool.function.arguments);
+  async executeCommand(command: string, args: any): Promise<any> {
+    if (command === "help") {
       return this.help(args["question"]);
     }
-    throw new Error(
-      "Unexpected tool call in GluonMesonAgent: " + tool.function.name,
-    );
+    throw new Error("Unexpected tool call in GluonMesonAgent: " + command);
   }
 
   async help(question: string): Promise<any> {
@@ -105,7 +100,7 @@ ${tools}`;
     return this.chatCompletion(messages);
   }
 
-  async executeCommand(command: string, userInput: string): Promise<any> {
+  async processCommand(command: string, userInput: string): Promise<any> {
     if (command === "help") {
       return this.help(userInput);
     } else if (command === "page") {
@@ -127,7 +122,7 @@ ${tools}`;
     const commandExecutor = this.commands[command];
 
     if (this.commands.includes(command)) {
-      return this.executeCommand(command, userInput);
+      return this.processCommand(command, userInput);
     } else {
       if (toolsCallModel) {
         return this.callTool(messages);

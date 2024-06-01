@@ -34,16 +34,11 @@ But you cannot get any information. Reply sorry and ask user to open or navigate
     return await this.chatCompletion([{ role: "system", content: prompt }]);
   }
 
-  async execute(
-    tool: OpenAI.Chat.Completions.ChatCompletionMessageToolCall,
-  ): Promise<any> {
-    if (tool.function.name === "generateStory") {
-      const args = JSON.parse(tool.function.arguments);
+  async executeCommand(command: string, args: any): Promise<any> {
+    if (command === "generateStory") {
       return this.generateStory(args["title"], args["keywords"]);
     }
-    throw new Error(
-      "Unexpected tool call in TrelloAgent: " + tool.function.name,
-    );
+    throw new Error("Unexpected tool call in TrelloAgent: " + command);
   }
 
   async generateStory(title, keywords = ""): Promise<any> {

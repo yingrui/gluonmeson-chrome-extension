@@ -32,19 +32,13 @@ class SummaryAgent extends AgentWithTools {
     });
   }
 
-  async execute(
-    tool: OpenAI.Chat.Completions.ChatCompletionMessageToolCall,
-  ): Promise<any> {
-    if (tool.function.name === "summary") {
-      const args = JSON.parse(tool.function.arguments);
+  async executeCommand(command: string, args: any): Promise<any> {
+    if (command === "summary") {
       return this.summarize(args["instruct"]);
-    } else if (tool.function.name === "ask_page") {
-      const args = JSON.parse(tool.function.arguments);
+    } else if (command === "ask_page") {
       return this.askPage(args["question"]);
     }
-    throw new Error(
-      "Unexpected tool call in SummaryAgent: " + tool.function.name,
-    );
+    throw new Error("Unexpected tool call in SummaryAgent: " + command);
   }
 
   async summarize(instruct: string) {
