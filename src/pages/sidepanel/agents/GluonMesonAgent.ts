@@ -4,6 +4,7 @@ import AgentWithTools from "./AgentWithTools";
 import TrelloAgent from "./TrelloAgent";
 import SummaryAgent from "./SummaryAgent";
 import TranslateAgent from "./TranslateAgent";
+import GoogleAgent from "./GoogleAgent";
 import configureStorage from "@root/src/shared/storages/gluonConfig";
 
 let defaultModelName = "gpt-3.5-turbo";
@@ -31,7 +32,7 @@ class GluonMesonAgent extends AgentWithTools {
   toolsCallModel: string = null;
   mapToolsAgents = {};
   chatCompletionTools: OpenAI.Chat.Completions.ChatCompletionTool[] = [];
-  commands = ["ask_page", "summary", "translate", "trello", "help"];
+  commands = ["ask_page", "google", "summary", "translate", "trello", "help"];
 
   constructor() {
     super(defaultModelName, client);
@@ -42,6 +43,7 @@ class GluonMesonAgent extends AgentWithTools {
     );
 
     this.addAgent(new SummaryAgent(this.modelName, this.client));
+    this.addAgent(new GoogleAgent(this.modelName, this.client));
     this.addAgent(new TranslateAgent(this.modelName, this.client));
     this.addAgent(new TrelloAgent(this.modelName, this.client));
     this.addAgent(this);
@@ -180,9 +182,7 @@ ${tools}`;
    * @returns {[string, string]} - Command and user input
    */
   private parseCommand(userInput: string): [string, string] {
-    const commandKeys = Object.keys(this.commands);
-
-    const matchedCommand = commandKeys.find((commandKey) =>
+    const matchedCommand = this.commands.find((commandKey) =>
       userInput.match(new RegExp(`(?:^|\\s)/${commandKey}\\s+`)),
     );
 
