@@ -19,9 +19,13 @@ class TranslateAgent extends AgentWithTools {
     throw new Error("Unexpected tool call in TranslateAgent: " + command);
   }
 
-  async translate(userInput: string, targetLanguage: string = "") {
-    const prompt = `You're a translator and good at Chinese & English. Please translate to opposite language according to user input.
-Directly output the translation result, here is user input: ${userInput}`;
+  async translate(
+    userInput: string,
+    targetLanguage: string = "opposite language according to user input",
+  ) {
+    const prompt = `You're a translator and good at Chinese & English. Please translate to ${targetLanguage}.
+Directly output the result, below is user input:
+${userInput}`;
 
     return await this.chatCompletion([{ role: "system", content: prompt }]);
   }

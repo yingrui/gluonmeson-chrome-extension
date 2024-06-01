@@ -27,7 +27,7 @@ class GluonMesonAgent extends AgentWithTools {
   toolsCallModel: string = null;
   mapToolsAgents = {};
   chatCompletionTools: OpenAI.Chat.Completions.ChatCompletionTool[] = [];
-  commands = ["page", "summary", "translate", "trello", "help"];
+  commands = ["ask_page", "summary", "translate", "trello", "help"];
 
   constructor() {
     super(defaultModelName, client);
@@ -100,20 +100,6 @@ ${tools}`;
     return this.chatCompletion(messages);
   }
 
-  async processCommand(command: string, userInput: string): Promise<any> {
-    if (command === "help") {
-      return this.help(userInput);
-    } else if (command === "page") {
-      return this.mapToolsAgents[command].askPage(userInput);
-    } else if (command === "summary") {
-      return this.mapToolsAgents[command].summary(userInput);
-    } else if (command === "translate") {
-      return this.mapToolsAgents[command].translate(userInput);
-    } else if (command === "trello") {
-      return this.mapToolsAgents[command].generateStory(userInput);
-    }
-  }
-
   async chat(messages: ChatMessage[]) {
     const [command, userInput] = this.parseCommand(
       this.getLastUserInput(messages),
@@ -122,7 +108,8 @@ ${tools}`;
     const commandExecutor = this.commands[command];
 
     if (this.commands.includes(command)) {
-      return this.processCommand(command, userInput);
+      const agent = this.mapToolsAgents[command];
+      return agent.executeCommandWithUserInput(command, userInput);
     } else {
       if (toolsCallModel) {
         return this.callTool(messages);

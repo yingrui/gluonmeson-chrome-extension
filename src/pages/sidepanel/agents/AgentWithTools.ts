@@ -15,10 +15,17 @@ abstract class AgentWithTools {
     name: string,
     description: string,
     stringParameters: string[],
+    userInputAsArgument: string = null,
   ): void {
     const tool = new Tool(name, description);
     for (const stringParameter of stringParameters) {
       tool.addStringParameter(stringParameter);
+    }
+
+    if (stringParameters.length > 0 && userInputAsArgument === null) {
+      tool.setUserInputAsArgument(stringParameters[0]);
+    } else if (userInputAsArgument) {
+      tool.setUserInputAsArgument(userInputAsArgument);
     }
     this.tools.push(tool);
   }
@@ -40,6 +47,20 @@ abstract class AgentWithTools {
       console.error("tool.function.arguments", tool.function.arguments);
     }
     return this.executeCommand(tool.function.name, args);
+  }
+
+  async executeCommandWithUserInput(
+    command: string,
+    userInput: string,
+  ): Promise<any> {
+    const args = {};
+    for (const tool of this.tools) {
+      if (tool.name === command) {
+        args[tool.userInputAsArgument] = userInput;
+        break;
+      }
+    }
+    return this.executeCommand(command, args);
   }
 
   abstract async executeCommand(command: string, args: any): Promise<any>;
