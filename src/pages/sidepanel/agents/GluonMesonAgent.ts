@@ -23,6 +23,10 @@ configureStorage.get().then((config) => {
     : toolsCallModel;
 });
 
+/**
+ * GluonMeson Agent
+ * @extends {AgentWithTools} - Agent with tools
+ */
 class GluonMesonAgent extends AgentWithTools {
   toolsCallModel: string = null;
   mapToolsAgents = {};
@@ -37,22 +41,35 @@ class GluonMesonAgent extends AgentWithTools {
       ["question"],
     );
 
-    this.addAgent(new SummaryAgent(defaultModelName, this.client));
-    this.addAgent(new TranslateAgent(defaultModelName, this.client));
-    this.addAgent(new TrelloAgent(defaultModelName, this.client));
+    this.addAgent(new SummaryAgent(this.modelName, this.client));
+    this.addAgent(new TranslateAgent(this.modelName, this.client));
+    this.addAgent(new TrelloAgent(this.modelName, this.client));
     this.addAgent(this);
 
     this.toolsCallModel = toolsCallModel;
   }
 
-  private addAgent(agent: any) {
+  /**
+   * Add the agent
+   * 1. Add agent tools to the chat completion tools
+   * 2. Map the tools agents
+   * @constructor
+   * @param {any} agent - Agent
+   * @returns {void}
+   */
+  private addAgent(agent: AgentWithTools): void {
     for (const tool of agent.getTools()) {
       this.chatCompletionTools.push(tool);
       this.mapToolsAgents[tool.function.name] = agent;
     }
   }
 
-  public getCommandOptions(): any[] {
+  /**
+   * Get the command options
+   * Commands are defined in field this.commands, eg.: ask_page, summary, translate, trello, help
+   * @returns {object[]} Command options
+   */
+  public getCommandOptions(): object[] {
     return this.commands.map((key) => {
       return {
         value: key,
@@ -61,13 +78,30 @@ class GluonMesonAgent extends AgentWithTools {
     });
   }
 
-  async executeCommand(command: string, args: any): Promise<any> {
+  /**
+   * Execute the command
+   * 1. If the command is help, call the help function
+   * 2. If the command is not help, throw an error
+   * @param {string} command - Command
+   * @param {object} args - Arguments
+   * @returns {Promise<any>} ChatCompletion
+   * @async
+   * @throws {Error} Unexpected tool call in GluonMesonAgent: {command}
+   */
+  async executeCommand(command: string, args: object): Promise<any> {
     if (command === "help") {
       return this.help(args["question"]);
     }
     throw new Error("Unexpected tool call in GluonMesonAgent: " + command);
   }
 
+  /**
+   * Answer what can GluonMeson Chrome Extension do
+   * 1. List all the tools
+   * 2. Ask GPT model to introduce the tools
+   * @param {string} question - User question
+   * @returns {Promise<any>} ChatCompletion
+   */
   async help(question: string): Promise<any> {
     const tools = this.chatCompletionTools
       .map(
@@ -82,6 +116,16 @@ ${tools}`;
     return await this.chatCompletion([{ role: "system", content: prompt }]);
   }
 
+  /**
+   * Choose the tool agent to execute the tool
+   * 1. Call the tool with the chat messages
+   * 2. Get the tool_calls from the chat completion
+   * 3. If the tool_calls exist, execute the tool
+   * 4. If the tool_calls do not exist, return the chat completion
+   * @param {ChatMessage[]} messages - Chat messages
+   * @returns {Promise<any>} ChatCompletion
+   * @async
+   */
   async callTool(messages: ChatMessage[]): Promise<any> {
     const chatCompletion = await this.toolsCall(
       this.toolsCallModel,
@@ -100,12 +144,21 @@ ${tools}`;
     return this.chatCompletion(messages);
   }
 
-  async chat(messages: ChatMessage[]) {
+  /**
+   * Handle the chat messages
+   * 1. Get the last user input from the chat messages
+   * 2. Parse the command from the user input
+   * 3. If the command is found, execute the command
+   * 4. If the command is not found and tools call model is specified, call the tool
+   * 5. If the tool call model is not specified, return the chat completion
+   * @param {ChatMessage[]} messages - Chat messages
+   * @returns {Promise<any>} ChatCompletion
+   * @async
+   */
+  async chat(messages: ChatMessage[]): Promise<any> {
     const [command, userInput] = this.parseCommand(
-      this.getLastUserInput(messages),
+      messages.slice(-1)[0].content, // Get the last user input from the chat messages
     );
-
-    const commandExecutor = this.commands[command];
 
     if (this.commands.includes(command)) {
       const agent = this.mapToolsAgents[command];
@@ -119,10 +172,13 @@ ${tools}`;
     }
   }
 
-  private getLastUserInput(messages: ChatMessage[]) {
-    return messages.slice(-1)[0].content;
-  }
-
+  /**
+   * Parse the command from the user input
+   * If the user input starts with /{command}, return the command and the user input
+   * If the user input does not starts with /{command}, return command ('chat') and the user input
+   * @param {string} userInput - input
+   * @returns {[string, string]} - Command and user input
+   */
   private parseCommand(userInput: string): [string, string] {
     const commandKeys = Object.keys(this.commands);
 
@@ -131,6 +187,7 @@ ${tools}`;
     );
 
     if (matchedCommand) {
+      // Use regex group match to extract the input after the command
       const input = userInput.match(
         new RegExp(`(?:^|\\s)/${matchedCommand}\\s+(.*)`),
       )[1];

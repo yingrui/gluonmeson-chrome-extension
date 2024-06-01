@@ -34,7 +34,7 @@ But you cannot get any information. Reply sorry and ask user to open or navigate
     return await this.chatCompletion([{ role: "system", content: prompt }]);
   }
 
-  async executeCommand(command: string, args: any): Promise<any> {
+  async executeCommand(command: string, args: object): Promise<any> {
     if (command === "generateStory") {
       return this.generateStory(args["title"], args["keywords"]);
     }

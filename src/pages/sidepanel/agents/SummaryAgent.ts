@@ -32,7 +32,7 @@ class SummaryAgent extends AgentWithTools {
     });
   }
 
-  async executeCommand(command: string, args: any): Promise<any> {
+  async executeCommand(command: string, args: object): Promise<any> {
     if (command === "summary") {
       return this.summarize(args["instruct"]);
     } else if (command === "ask_page") {
