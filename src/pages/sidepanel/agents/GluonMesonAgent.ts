@@ -146,6 +146,11 @@ ${tools}`;
     return this.chatCompletion(messages);
   }
 
+  async findAgentToExecute(toolName: string, args: any): Promise<any> {
+    const agent = this.mapToolsAgents[toolName];
+    return agent.executeCommand(toolName, args);
+  }
+
   /**
    * Handle the chat messages
    * 1. Get the last user input from the chat messages

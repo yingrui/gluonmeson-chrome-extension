@@ -55,12 +55,32 @@ function SidePanel() {
   }
 
   const agent = new GluonMesonAgent();
+
   chrome.storage.session.onChanged.addListener((changes) => {
     chrome.storage.session.get().then((data) => {
       // TODO: Handle the command from content script
-      console.log("Received command", data["command_from_content_script"]);
+      const command_from_content_script = data["command_from_content_script"];
+      if (command_from_content_script) {
+        console.log("Received command", command_from_content_script);
+        handleCommandFromContentScript(
+          command_from_content_script.tool,
+          command_from_content_script.args,
+          command_from_content_script.userInput,
+        );
+      }
     });
   });
+
+  async function handleCommandFromContentScript(
+    toolName: string,
+    args: any,
+    userInput: string,
+  ) {
+    if (generating) {
+      return;
+    }
+    generateReply(userInput, () => agent.findAgentToExecute(toolName, args));
+  }
 
   async function handleSubmit() {
     if (generating) {
@@ -70,12 +90,19 @@ function SidePanel() {
       setText("");
       return;
     }
+    generateReply(text, () => agent.chat(messages));
+  }
+
+  async function generateReply(
+    userInput: string,
+    generate_func: () => Promise<any>,
+  ) {
     setGenerating(true);
     try {
       setText("");
-      appendMessage("user", text);
+      appendMessage("user", userInput);
 
-      const stream = await agent.chat(messages);
+      const stream = await generate_func();
 
       let message = "";
 

@@ -57,6 +57,7 @@ const addCommands = () => {
           type: "command_from_content_script",
           command: {
             name: "trello",
+            userInput: "generate story content",
             tool: "generateStory",
             args: {
               title:

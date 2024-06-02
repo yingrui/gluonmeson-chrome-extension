@@ -7,7 +7,7 @@ class TranslateAgent extends AgentWithTools {
     super(defaultModelName, client);
     this.addTool(
       "translate",
-      "translate given content to target language for user",
+      "translate given content to target language for user, default languages are Chinese & English",
       ["userInput", "targetLanguage"],
     );
   }
