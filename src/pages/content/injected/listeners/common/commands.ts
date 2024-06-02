@@ -15,7 +15,7 @@ const addCommands = () => {
           sendResponse({
             title: document.title,
             text: document.body.innerText,
-            URL: document.URL,
+            url: document.URL,
           });
         }
       })();

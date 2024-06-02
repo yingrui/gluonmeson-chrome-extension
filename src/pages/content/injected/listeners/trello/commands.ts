@@ -38,7 +38,7 @@ class TrelloHelper {
   getCurrentBoard(): any {
     const currentBoard = {
       title: this.getBoardTitle(),
-      URL: document.URL,
+      url: document.URL,
       columns: this.getBoardCards(),
     };
 
