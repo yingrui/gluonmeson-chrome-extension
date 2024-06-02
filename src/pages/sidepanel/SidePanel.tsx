@@ -55,6 +55,12 @@ function SidePanel() {
   }
 
   const agent = new GluonMesonAgent();
+  chrome.storage.session.onChanged.addListener((changes) => {
+    chrome.storage.session.get().then((data) => {
+      // TODO: Handle the command from content script
+      console.log("Received command", data["command_from_content_script"]);
+    });
+  });
 
   async function handleSubmit() {
     if (generating) {

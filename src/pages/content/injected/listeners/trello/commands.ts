@@ -50,6 +50,25 @@ const addCommands = () => {
   if (matchURL("trello.com")) {
     const helper = new TrelloHelper();
 
+    document.addEventListener("keydown", function (event) {
+      if (event.shiftKey & event.altKey && event.key === "Enter") {
+        // Open side panel when press alt+enter
+        chrome.runtime.sendMessage({
+          type: "command_from_content_script",
+          command: {
+            name: "trello",
+            tool: "generateStory",
+            args: {
+              title:
+                "Generate story content for user before they want to create a new card in Trello board",
+            },
+            url: document.URL,
+            date: new Date().toISOString(),
+          },
+        });
+      }
+    });
+
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       (async () => {
         if (message.type === "get_trello_board") {
