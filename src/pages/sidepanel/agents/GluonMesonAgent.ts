@@ -48,6 +48,11 @@ class GluonMesonAgent extends AgentWithTools {
       "Answer what can GluonMeson Chrome Extension do. The user might ask like: what can you do, or just say help.",
       ["question"],
     );
+    this.addTool(
+      "generate_text",
+      "Based on user input, generate text content for user.",
+      ["userInput"],
+    );
 
     this.addAgent(new SummaryAgent(this.modelName, this.client));
     this.addAgent(new GoogleAgent(this.modelName, this.client));
@@ -100,6 +105,8 @@ class GluonMesonAgent extends AgentWithTools {
   async executeCommand(command: string, args: object): Promise<any> {
     if (command === "help") {
       return this.help(args["question"]);
+    } else if (command === "generate_text") {
+      return this.generate_text(args["userInput"]);
     }
     throw new Error("Unexpected tool call in GluonMesonAgent: " + command);
   }
@@ -123,6 +130,36 @@ Please tell user what you can do for them. There are tools:
 ${tools}`;
 
     return await this.chatCompletion([{ role: "system", content: prompt }]);
+  }
+
+  /**
+   * Generate text content for user
+   * @param {string} userInput - User input
+   * @returns {Promise<any>} ChatCompletion
+   */
+  async generate_text(userInput: string): Promise<any> {
+    const content = await this.get_content();
+    const prompt = `You're a good writer provided by GluonMeson,
+when user input: ${userInput}.
+the webpage text: ${content.text}.
+Please help user to beautify or complete the text with Markdown format.`;
+
+    return await this.chatCompletion([{ role: "system", content: prompt }]);
+  }
+
+  private async get_content(): Promise<any> {
+    return new Promise<any>(function (resolve, reject) {
+      // send message to content script, call resolve() when received response"
+      chrome.tabs.query({ currentWindow: true, active: true }, (tabs) => {
+        chrome.tabs.sendMessage(
+          tabs[0].id,
+          { type: "get_content" },
+          (response) => {
+            resolve(response);
+          },
+        );
+      });
+    });
   }
 
   /**
@@ -153,6 +190,15 @@ ${tools}`;
     return this.chatCompletion(messages);
   }
 
+  /**
+   * Find the agent to execute the tool
+   * 1. Get the agent from the mapToolsAgents
+   * 2. Execute the command with the agent
+   * @param {string} toolName - Tool name
+   * @param {any} args - Arguments
+   * @returns {Promise<any>} ChatCompletion
+   * @async
+   */
   async findAgentToExecute(toolName: string, args: any): Promise<any> {
     const agent = this.mapToolsAgents[toolName];
     return agent.executeCommand(toolName, args);

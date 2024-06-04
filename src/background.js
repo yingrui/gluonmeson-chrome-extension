@@ -14,3 +14,47 @@ chrome.runtime.onMessage.addListener((message, sender) => {
     }
   })();
 });
+
+// A generic onclick callback function.
+chrome.contextMenus.onClicked.addListener(genericOnClick);
+
+function genericOnClick(info, tab) {
+  if (info.editable) {
+    if (info.menuItemId === "generate_text") {
+      // Get the editing text
+      getActiveElementTextContent(tab.id).then((results) => {
+        const textContent = results[0].result;
+        chrome.storage.session.set({
+          command_from_content_script: {
+            name: "GluonMeson",
+            userInput: "generate text",
+            tool: "generate_text",
+            args: {
+              userInput: textContent,
+            },
+            date: new Date().toISOString(),
+          },
+        });
+      });
+    }
+  } else {
+    console.log("Context menu item clicked.", info);
+  }
+}
+
+function getActiveElementTextContent(tabId) {
+  return chrome.scripting.executeScript({
+    target: { tabId: tabId },
+    function: () => {
+      return document.activeElement.textContent;
+    },
+  });
+}
+
+chrome.runtime.onInstalled.addListener(function () {
+  chrome.contextMenus.create({
+    title: "Generate Text",
+    contexts: ["editable"],
+    id: "generate_text",
+  });
+});

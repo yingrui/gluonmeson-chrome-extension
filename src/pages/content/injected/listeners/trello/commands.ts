@@ -58,7 +58,7 @@ const addCommands = () => {
           command: {
             name: "trello",
             userInput: "generate story content",
-            tool: "generateStory",
+            tool: "generate_story",
             args: {
               title:
                 "Generate story content for user before they want to create a new card in Trello board",
