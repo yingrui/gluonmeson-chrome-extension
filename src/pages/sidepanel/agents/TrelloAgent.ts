@@ -6,7 +6,7 @@ class TrelloAgent extends AgentWithTools {
   constructor(defaultModelName: string, client: OpenAI) {
     super(defaultModelName, client);
     this.addTool(
-      "generateStory",
+      "generate_story",
       "generate story content for user before they want to create a new card in Trello board",
       ["title", "keywords"],
     );
@@ -35,7 +35,7 @@ But you cannot get any information. Reply sorry and ask user to open or navigate
   }
 
   async executeCommand(command: string, args: object): Promise<any> {
-    if (command === "generateStory") {
+    if (command === "generate_story") {
       return this.generateStory(args["title"], args["keywords"]);
     }
     throw new Error("Unexpected tool call in TrelloAgent: " + command);

@@ -32,7 +32,14 @@ class GluonMesonAgent extends AgentWithTools {
   toolsCallModel: string = null;
   mapToolsAgents = {};
   chatCompletionTools: OpenAI.Chat.Completions.ChatCompletionTool[] = [];
-  commands = ["ask_page", "google", "summary", "translate", "trello", "help"];
+  commands = [
+    "ask_page",
+    "google",
+    "summary",
+    "translate",
+    "generate_story",
+    "help",
+  ];
 
   constructor() {
     super(defaultModelName, client);
