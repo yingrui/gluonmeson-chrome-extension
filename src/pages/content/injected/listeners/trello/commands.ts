@@ -51,7 +51,7 @@ const addCommands = () => {
     const helper = new TrelloHelper();
 
     document.addEventListener("keydown", function (event) {
-      if (event.shiftKey & event.altKey && event.key === "Enter") {
+      if (event.shiftKey && event.altKey && event.key === "Enter") {
         // Open side panel when press alt+enter
         chrome.runtime.sendMessage({
           type: "command_from_content_script",

@@ -110,7 +110,7 @@ abstract class AgentWithTools {
    * @returns {Promise<any>} ChatCompletion
    * @abstract
    */
-  abstract async executeCommand(command: string, args: object): Promise<any>;
+  abstract executeCommand(command: string, args: object): Promise<any>;
 
   /**
    * Chat completion
@@ -120,7 +120,7 @@ abstract class AgentWithTools {
    */
   async chatCompletion(
     messages: OpenAI.ChatCompletionMessageParam[],
-    stream: bool = true,
+    stream: boolean = true,
   ): Promise<any> {
     return await this.client.chat.completions.create({
       messages: messages,
