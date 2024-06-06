@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import Tool from "./tool";
 import AgentWithTools from "./AgentWithTools";
+import { get_content } from "@pages/sidepanel/utils";
 
 class SummaryAgent extends AgentWithTools {
   constructor(defaultModelName: string, client: OpenAI) {
@@ -17,21 +18,6 @@ class SummaryAgent extends AgentWithTools {
     );
   }
 
-  private async get_content(): Promise<any> {
-    return new Promise<any>(function (resolve, reject) {
-      // send message to content script, call resolve() when received response"
-      chrome.tabs.query({ currentWindow: true, active: true }, (tabs) => {
-        chrome.tabs.sendMessage(
-          tabs[0].id,
-          { type: "get_content" },
-          (response) => {
-            resolve(response);
-          },
-        );
-      });
-    });
-  }
-
   async executeCommand(command: string, args: object): Promise<any> {
     if (command === "summary") {
       return this.summarize(args["instruct"]);
@@ -42,7 +28,7 @@ class SummaryAgent extends AgentWithTools {
   }
 
   async summarize(instruct: string) {
-    const content = await this.get_content();
+    const content = await get_content();
     const prompt = `You're an assistant and good at summarization, the user is reading an article: ${content.title}. 
 Please summarize the content according to user instruction: ${instruct}
 The content text is: ${content.text}`;
@@ -51,7 +37,7 @@ The content text is: ${content.text}`;
   }
 
   async askPage(question: string) {
-    const content = await this.get_content();
+    const content = await get_content();
     const prompt = `You're an assistant, the user is reading an article: ${content.title}.
 Please answer user's question: ${question}
 The content text is: ${content.text}`;

@@ -6,6 +6,7 @@ import SummaryAgent from "./SummaryAgent";
 import TranslateAgent from "./TranslateAgent";
 import GoogleAgent from "./GoogleAgent";
 import configureStorage from "@root/src/shared/storages/gluonConfig";
+import { get_content } from "@pages/sidepanel/utils";
 
 let defaultModelName = "gpt-3.5-turbo";
 let toolsCallModel: string = null;
@@ -138,28 +139,13 @@ ${tools}`;
    * @returns {Promise<any>} ChatCompletion
    */
   async generate_text(userInput: string): Promise<any> {
-    const content = await this.get_content();
+    const content = await get_content();
     const prompt = `You're a good writer provided by GluonMeson,
 when user input: ${userInput}.
 the webpage text: ${content.text}.
 Please help user to beautify or complete the text with Markdown format.`;
 
     return await this.chatCompletion([{ role: "system", content: prompt }]);
-  }
-
-  private async get_content(): Promise<any> {
-    return new Promise<any>(function (resolve, reject) {
-      // send message to content script, call resolve() when received response"
-      chrome.tabs.query({ currentWindow: true, active: true }, (tabs) => {
-        chrome.tabs.sendMessage(
-          tabs[0].id,
-          { type: "get_content" },
-          (response) => {
-            resolve(response);
-          },
-        );
-      });
-    });
   }
 
   /**
