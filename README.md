@@ -25,9 +25,9 @@ Suggestions and pull requests are welcomed!.
 2. Open in browser - `chrome://extensions`
 3. Check - `Developer mode`
 4. Find and Click - `Load unpacked extension`
-5. Select - `dist` folder
+5. Select - `dist` folder if you build from source code, or unzip the release zip file folder
 
----
+<img src="public/setup_chrome_extension.png"/>
 
-This project was bootstrapped with [Chrome Extension CLI](https://github.com/dutiyesh/chrome-extension-cli)
+
 
