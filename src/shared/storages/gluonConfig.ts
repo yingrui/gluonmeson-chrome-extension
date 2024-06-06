@@ -21,7 +21,7 @@ export const DEFAULT_GM_CONFIG_VALUE = {
   baseURL: "",
   organization: "",
   defaultModel: "gpt-3.5-turbo",
-  toolsCallModel: "ChatGLM3-tools",
+  toolsCallModel: "gpt-4-turbo",
   trelloSearchApi: "",
   enableFloatingBall: true,
 };
