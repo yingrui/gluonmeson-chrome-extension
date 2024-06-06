@@ -27,7 +27,10 @@ class TranslateAgent extends AgentWithTools {
 Directly output the result, below is user input:
 ${userInput}`;
 
-    return await this.chatCompletion([{ role: "system", content: prompt }]);
+    return await this.chatCompletion([
+      { role: "system", content: prompt },
+      { role: "user", content: "output:" },
+    ]);
   }
 }
 

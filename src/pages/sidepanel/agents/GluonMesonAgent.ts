@@ -108,11 +108,14 @@ class GluonMesonAgent extends AgentWithTools {
           `${t.function.name}: ${t.function.description}: ${t.function.parameters}`,
       )
       .join("\n");
-    const prompt = `You're an assistant provided by GluonMeson, when user asked ${question}.
-Please tell user what you can do for them. There are tools:
-${tools}`;
+    const prompt = `You're an assistant provided by GluonMeson. There are tools you can use:
+${tools}
+When user asked ${question}, please tell user what you can do for them.`;
 
-    return await this.chatCompletion([{ role: "system", content: prompt }]);
+    return await this.chatCompletion([
+      { role: "system", content: prompt },
+      { role: "user", content: "please tell user what you can do for them:" },
+    ]);
   }
 
   /**
@@ -127,7 +130,10 @@ when user input: ${userInput}.
 the webpage text: ${content.text}.
 Please help user to beautify or complete the text with Markdown format.`;
 
-    return await this.chatCompletion([{ role: "system", content: prompt }]);
+    return await this.chatCompletion([
+      { role: "system", content: prompt },
+      { role: "user", content: "please generate text:" },
+    ]);
   }
 
   /**

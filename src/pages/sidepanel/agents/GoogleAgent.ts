@@ -90,7 +90,10 @@ The search results page information are:
 - title: ${content.title}
 - text: ${content.text}`;
 
-    return await this.chatCompletion([{ role: "system", content: prompt }]);
+    return await this.chatCompletion([
+      { role: "system", content: prompt },
+      { role: "user", content: "please summarize this page: " },
+    ]);
   }
 }
 

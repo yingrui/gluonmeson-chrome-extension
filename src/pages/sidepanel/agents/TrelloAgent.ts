@@ -31,7 +31,10 @@ class TrelloAgent extends AgentWithTools {
   async handleCannotGetBoardError(): Promise<any> {
     const prompt = `You're an Business Analyst in Software Engineering Team.
 But you cannot get any information. Reply sorry and ask user to open or navigate to trello board, so you can get information from board.`;
-    return await this.chatCompletion([{ role: "system", content: prompt }]);
+    return await this.chatCompletion([
+      { role: "system", content: prompt },
+      { role: "user", content: "explain:" },
+    ]);
   }
 
   async executeCommand(command: string, args: object): Promise<any> {
@@ -61,7 +64,10 @@ Use markdown format to beautify output.
 You need to consider other Columns & Cards information on board, they are: 
 ${context}`;
 
-    return await this.chatCompletion([{ role: "system", content: prompt }]);
+    return await this.chatCompletion([
+      { role: "system", content: prompt },
+      { role: "user", content: "generate story:" },
+    ]);
   }
 }
 

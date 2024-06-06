@@ -33,7 +33,10 @@ class SummaryAgent extends AgentWithTools {
 Please summarize the content according to user instruction: ${instruct}
 The content text is: ${content.text}`;
 
-    return await this.chatCompletion([{ role: "system", content: prompt }]);
+    return await this.chatCompletion([
+      { role: "system", content: prompt },
+      { role: "user", content: "please summarize text:" },
+    ]);
   }
 
   async askPage(question: string) {
@@ -42,7 +45,10 @@ The content text is: ${content.text}`;
 Please answer user's question: ${question}
 The content text is: ${content.text}`;
 
-    return await this.chatCompletion([{ role: "system", content: prompt }]);
+    return await this.chatCompletion([
+      { role: "system", content: prompt },
+      { role: "user", content: "please answer:" },
+    ]);
   }
 }
 
