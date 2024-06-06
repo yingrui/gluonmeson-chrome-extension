@@ -5,25 +5,7 @@ import TrelloAgent from "./TrelloAgent";
 import SummaryAgent from "./SummaryAgent";
 import TranslateAgent from "./TranslateAgent";
 import GoogleAgent from "./GoogleAgent";
-import configureStorage from "@root/src/shared/storages/gluonConfig";
 import { get_content } from "@pages/sidepanel/utils";
-
-let defaultModelName = "gpt-3.5-turbo";
-let toolsCallModel: string = null;
-let client: OpenAI;
-configureStorage.get().then((config) => {
-  client = new OpenAI({
-    apiKey: config.apiKey,
-    baseURL: config.baseURL,
-    dangerouslyAllowBrowser: true,
-  });
-  defaultModelName = config.defaultModel
-    ? config.defaultModel
-    : defaultModelName;
-  toolsCallModel = config.toolsCallModel
-    ? config.toolsCallModel
-    : toolsCallModel;
-});
 
 /**
  * GluonMeson Agent
@@ -42,7 +24,7 @@ class GluonMesonAgent extends AgentWithTools {
     "help",
   ];
 
-  constructor() {
+  constructor(defaultModelName, toolsCallModel, client) {
     super(defaultModelName, client);
     this.addTool(
       "help",
@@ -210,7 +192,7 @@ Please help user to beautify or complete the text with Markdown format.`;
       const agent = this.mapToolsAgents[command];
       return agent.executeCommandWithUserInput(command, userInput);
     } else {
-      if (toolsCallModel) {
+      if (this.toolsCallModel) {
         return this.callTool(messages);
       } else {
         return this.chatCompletion(messages);

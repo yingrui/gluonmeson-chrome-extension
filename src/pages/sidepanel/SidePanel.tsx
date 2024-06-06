@@ -7,6 +7,7 @@ import styles from "./SidePanel.module.scss";
 
 import Message from "./components/Message";
 import GluonMesonAgent from "./agents/GluonMesonAgent";
+import AgentFactory from "./agents/agent";
 import { delay } from "@pages/sidepanel/utils";
 import useStorage from "@root/src/shared/hooks/useStorage";
 import configureStorage from "@root/src/shared/storages/gluonConfig";
@@ -55,7 +56,7 @@ function SidePanel() {
     );
   }
 
-  const agent = new GluonMesonAgent();
+  const agent = AgentFactory.createGluonMesonAgent();
 
   chrome.storage.session.onChanged.addListener((changes) => {
     chrome.storage.session.get().then((data) => {
