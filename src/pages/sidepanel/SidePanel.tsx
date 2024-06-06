@@ -22,14 +22,15 @@ function SidePanel() {
   const { scrollRef, scrollToBottom, messagesRef } = useScrollAnchor();
   const commandRef = useRef<boolean>();
 
-  const [messages, setList] = useState<ChatMessage[]>([
+  const initialMessages: ChatMessage[] = [
     {
       role: "system",
       content:
         "You're an assistant, please direct answer questions, should not add assistant in answer.",
     },
     { role: "assistant", content: "Hello! How can I assist you today?" },
-  ]);
+  ];
+  const [messages, setList] = useState<ChatMessage[]>(initialMessages);
 
   useEffect(() => {
     const focus = () => {
@@ -90,6 +91,12 @@ function SidePanel() {
       setText("");
       return;
     }
+    // when command is clear, then clear the chat history
+    if (text.startsWith("/clear")) {
+      setList(initialMessages);
+      setText("");
+      return;
+    }
     generateReply(text, () => agent.chat(messages));
   }
 
@@ -147,6 +154,12 @@ function SidePanel() {
     }
   }
 
+  function getCommandOptions() {
+    const options = agent.getCommandOptions();
+    options.push({ value: "clear", label: "clear" }); // add clear command
+    return options;
+  }
+
   return (
     <div className={styles.chat}>
       <div className={styles.chatList}>
@@ -170,7 +183,7 @@ function SidePanel() {
           onKeyUp={keypress}
           prefix={"/"}
           value={text}
-          options={agent.getCommandOptions()}
+          options={getCommandOptions()}
           placeholder="Hit Enter to send the message..."
           onChange={(value) => {
             setText(value);
