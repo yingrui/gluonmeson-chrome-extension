@@ -61,10 +61,10 @@ const Popup = () => {
               { type: "url" },
             ]}
           >
-            <Input />
+            <Input placeholder="https://api.openai.com/v1" />
           </Form.Item>
           <Form.Item name="organization" label="Organization">
-            <Input />
+            <Input placeholder="your team or your personal information" />
           </Form.Item>
           <Form.Item name="defaultModel" label="GPT Model">
             <Input placeholder="please specify gpt model, eg. gpt-3.5-turbo" />
