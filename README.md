@@ -28,14 +28,18 @@ GluonMeson Chrome Extension is Chrome Web Browser Copilot
 4. Find and Click - `Load unpacked extension`
 5. Select - unzipped file folder or `dist` folder if you build from source code
 
-<img src="public/setup_chrome_extension.png"/>
+<img src="docs/images/setup_chrome_extension.png"/>
 
 ### Setup Configurations
 Please setup below configurations in the extension popup page: 
-* **API Key**: Get from OpenAI or GluonMeson Platform
-* **Base URL**: OpenAI API URL or GluonMeson Model API URL
+* **API Key**: Get api key from OpenAI, Zhipu AI or GluonMeson Platform
+* **Base URL**: base url from OpenAI, Zhipu AI or GluonMeson Platform
 * **Organization**: Your Organization Name
 * **GPT Model**: gpt-3.5-turbo is default
-* **Tools Call Model**: gpt-4-turbo, if it's empty, will not use tools call to recognize user intents.
+* **Tools Call Model**: recommend gpt-4-turbo or glm-4, if it's empty, will not use tools call to recognize user intents.
 
-<img src="public/configuration.png"/>
+<img src="docs/images/configuration.png"/>
+
+## For Developers
+* [How to get Web page content](docs/tasking/how_to_get_web_page_content.md)
+* [How to add new agent and command](docs/tasking/how_to_add_new_agent_and_command.md)

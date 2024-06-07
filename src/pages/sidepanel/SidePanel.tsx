@@ -58,19 +58,16 @@ function SidePanel() {
 
   const agent = AgentFactory.createGluonMesonAgent();
 
-  chrome.storage.session.onChanged.addListener((changes) => {
-    chrome.storage.session.get().then((data) => {
-      // TODO: Handle the command from content script
-      const command_from_content_script = data["command_from_content_script"];
-      if (command_from_content_script) {
-        console.log("Received command", command_from_content_script);
-        handleCommandFromContentScript(
-          command_from_content_script.tool,
-          command_from_content_script.args,
-          command_from_content_script.userInput,
-        );
-      }
-    });
+  chrome.storage.session.onChanged.addListener(async (changes) => {
+    const data = await chrome.storage.session.get();
+    const command = data["command_from_content_script"];
+    if (command) {
+      await handleCommandFromContentScript(
+        command.tool,
+        command.args,
+        command.userInput,
+      );
+    }
   });
 
   async function handleCommandFromContentScript(
