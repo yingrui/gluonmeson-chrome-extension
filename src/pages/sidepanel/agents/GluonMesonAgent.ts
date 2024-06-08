@@ -150,18 +150,22 @@ Please help user to beautify or complete the text with Markdown format.`;
    * @async
    */
   async callTool(messages: ChatMessage[]): Promise<any> {
-    const chatCompletion = await this.toolsCall(
-      this.toolsCallModel,
-      messages,
-      this.chatCompletionTools,
-    );
+    try {
+      const chatCompletion = await this.toolsCall(
+        this.toolsCallModel,
+        messages,
+        this.chatCompletionTools,
+      );
 
-    const tool_calls = chatCompletion.choices[0].message.tool_calls;
-    if (tool_calls) {
-      for (const tool of tool_calls) {
-        const agent = this.mapToolsAgents[tool.function.name];
-        return agent.execute(tool);
+      const tool_calls = chatCompletion.choices[0].message.tool_calls;
+      if (tool_calls) {
+        for (const tool of tool_calls) {
+          const agent = this.mapToolsAgents[tool.function.name];
+          return agent.execute(tool);
+        }
       }
+    } catch (error) {
+      console.error(error);
     }
 
     return this.chatCompletion(messages);
