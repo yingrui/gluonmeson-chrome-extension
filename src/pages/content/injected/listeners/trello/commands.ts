@@ -35,14 +35,37 @@ class TrelloHelper {
       .get();
   }
 
-  getCurrentBoard(): any {
-    const currentBoard = {
-      title: this.getBoardTitle(),
-      url: document.URL,
-      columns: this.getBoardCards(),
-    };
+  private getCardTitle(): string {
+    const title = jQuery("#js-dialog-title");
+    return title ? title.text() : document.title;
+  }
 
-    return currentBoard;
+  private getCardDescription(): string {
+    const description = jQuery("div.js-fill-card-detail-desc div.js-desc");
+    return description ? description.text() : "";
+  }
+
+  getCurrentBoard(): any {
+    const url = document.URL;
+    if (url.startsWith("https://trello.com/b/")) {
+      // It is a board page
+      const currentBoard = {
+        type: "board",
+        title: this.getBoardTitle(),
+        url: document.URL,
+        columns: this.getBoardCards(),
+      };
+      return currentBoard;
+    } else {
+      // It is a card page
+      const card = {
+        type: "card",
+        title: this.getCardTitle(),
+        url: document.URL,
+        description: this.getCardDescription(),
+      };
+      return card;
+    }
   }
 }
 

@@ -37,4 +37,16 @@ async search(userInput: string): Promise<any> {
 ```
 
 ### Step 4: Add the agent to the agent list
-Add command `google` to GluonMesonAgent commands list. Call `addAgent` method in constructor method.
+* Add command `google` to GluonMesonAgent commands list.
+* Add the agent to the AgentFactory in file `src/pages/sidepanel/agents/agents.ts`.
+```typescript
+class AgentFactory {
+  ...
+  private static createAgents(): AgentWithTools[] {
+    return [
+      ...
+      new GoogleAgent(defaultModel, client),
+    ]
+  }
+}
+```

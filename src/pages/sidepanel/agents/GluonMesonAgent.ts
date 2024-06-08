@@ -1,10 +1,7 @@
 import OpenAI from "openai";
 import Tool from "./tool";
 import AgentWithTools from "./AgentWithTools";
-import TrelloAgent from "./TrelloAgent";
-import SummaryAgent from "./SummaryAgent";
-import TranslateAgent from "./TranslateAgent";
-import GoogleAgent from "./GoogleAgent";
+
 import { get_content } from "@pages/sidepanel/utils";
 
 /**
@@ -21,10 +18,16 @@ class GluonMesonAgent extends AgentWithTools {
     "summary",
     "translate",
     "generate_story",
+    "tasking",
     "help",
   ];
 
-  constructor(defaultModelName, toolsCallModel, client) {
+  constructor(
+    defaultModelName,
+    toolsCallModel,
+    client,
+    agents: AgentWithTools[] = [],
+  ) {
     super(defaultModelName, client);
     this.addTool(
       "help",
@@ -37,10 +40,9 @@ class GluonMesonAgent extends AgentWithTools {
       ["userInput"],
     );
 
-    this.addAgent(new SummaryAgent(this.modelName, this.client));
-    this.addAgent(new GoogleAgent(this.modelName, this.client));
-    this.addAgent(new TranslateAgent(this.modelName, this.client));
-    this.addAgent(new TrelloAgent(this.modelName, this.client));
+    for (const agent of agents) {
+      this.addAgent(agent);
+    }
     this.addAgent(this);
 
     this.toolsCallModel = toolsCallModel;
