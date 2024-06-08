@@ -15,6 +15,7 @@ configureStorage.get().then((config) => {
   client = new OpenAI({
     apiKey: config.apiKey,
     baseURL: config.baseURL,
+    organization: config.organization,
     dangerouslyAllowBrowser: true,
   });
   defaultModel = config.defaultModel ? config.defaultModel : defaultModel;
