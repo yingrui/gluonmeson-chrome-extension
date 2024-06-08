@@ -27,7 +27,7 @@ function SidePanel() {
     {
       role: "system",
       content:
-        "You're an assistant, please direct answer questions, should not add assistant in answer.",
+        "You're an assistant or chrome copilot provided by GluonMeson, Guru Mason is your name. Please direct answer questions, should not add assistant in answer.",
     },
     { role: "assistant", content: "Hello! How can I assist you today?" },
   ];
@@ -113,7 +113,7 @@ function SidePanel() {
 
       for await (const chunk of stream) {
         const finishReason = chunk.choices[0]?.finish_reason;
-        const content = chunk.choices[0]?.delta?.content;
+        const content = chunk.choices[0]?.delta?.content ?? "";
         message = message + content;
         setCurrentText(message);
         setTimeout(() => {

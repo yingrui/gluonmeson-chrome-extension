@@ -110,7 +110,8 @@ class GluonMesonAgent extends AgentWithTools {
           `${t.function.name}: ${t.function.description}: ${t.function.parameters}`,
       )
       .join("\n");
-    const prompt = `You're an assistant provided by GluonMeson. There are tools you can use:
+    const prompt = `You're an assistant or chrome copilot provided by GluonMeson, Guru Mason is your name.
+There are tools you can use:
 ${tools}
 When user asked ${question}, please tell user what you can do for them.`;
 
