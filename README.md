@@ -10,6 +10,7 @@ GluonMeson Chrome Extension is a Chrome Web Browser Copilot, his name is Guru Ma
 * **Translate**: Effortlessly translate content between Chinese and English or into other specified languages.
 * **Generate Story**: Automatically create engaging narrative content for new Trello board cards.
 * **Generate Text**: Craft specific texts for various purposes, boosting your creativity and efficiency.
+* **Generate Tasking**: Generate tasking results based on the description of the trello card you are currently viewing.
 * ... and more you can define by yourself!
 
 ## Build or Install
@@ -47,7 +48,13 @@ Please set up below configurations in the extension popup page:
 
 Please refer to [How to setup configurations](docs/tutorial/how_to_setup_configurations.md) for more details.
 
+## For Users
+For who want to use this extension, please refer to below documents:
+* [How to setup configurations](docs/tutorial/how_to_setup_configurations.md)
+* [How to use this chrome extension](docs/tutorial/how_to_use_this_chrome_extension.md)
+
 ## For Developers
-* [How to get Web page content](docs/tasking/how_to_get_web_page_content.md)
+For who want to contribute to this extension, please refer to below documents:
+* [How to get web page content](docs/tasking/how_to_get_web_page_content.md)
 * [How to add new agent and command](docs/tasking/how_to_add_new_agent_and_command.md)
 * [How to update popup window for configuration](docs/tasking/how_to_update_popup_window_for_configuration.md)
