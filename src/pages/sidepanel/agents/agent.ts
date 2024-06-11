@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import configureStorage from "@root/src/shared/storages/gluonConfig";
+import AgentWithTools from "./AgentWithTools";
 import GluonMesonAgent from "./GluonMesonAgent";
 import TrelloAgent from "./TrelloAgent";
 import SummaryAgent from "./SummaryAgent";
