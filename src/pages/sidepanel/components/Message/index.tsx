@@ -1,13 +1,19 @@
 import { Spin } from "antd";
 import "./index.css";
-import Markdown from "react-markdown";
 import CodeBlock from "@pages/sidepanel/components/Message/MarkDownBlock/CodeBlock";
+import Markdown from "react-markdown";
+import rehypeHighlight from "rehype-highlight";
+import rehypeKatex from "rehype-katex";
+import remarkMermaid from "remark-mermaidjs";
 import remarkGfm from "remark-gfm";
 
 interface Props {
   role: ChatMessage["role"];
   content: string;
 }
+
+const rehypePlugins = [rehypeKatex, [rehypeHighlight, { ignoreMissing: true }]];
+const remarkPlugins = [remarkGfm, remarkMermaid];
 
 const Message = (props: Props) => {
   const { role, content } = props;
@@ -21,7 +27,8 @@ const Message = (props: Props) => {
         >
           <Markdown
             components={{ code: CodeBlock }}
-            remarkPlugins={[remarkGfm]}
+            rehypePlugins={rehypePlugins}
+            remarkPlugins={remarkPlugins}
           >
             {content}
           </Markdown>
