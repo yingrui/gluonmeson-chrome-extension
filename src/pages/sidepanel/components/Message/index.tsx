@@ -2,6 +2,7 @@ import { Spin } from "antd";
 import "./index.css";
 import Markdown from "react-markdown";
 import CodeBlock from "@pages/sidepanel/components/Message/MarkDownBlock/CodeBlock";
+import remarkGfm from "remark-gfm";
 
 interface Props {
   role: ChatMessage["role"];
@@ -18,7 +19,12 @@ const Message = (props: Props) => {
         <div
           className={`message-content ${isAssistant ? "bot-message-content" : "user-message-content"}`}
         >
-          <Markdown components={{ code: CodeBlock }}>{content}</Markdown>
+          <Markdown
+            components={{ code: CodeBlock }}
+            remarkPlugins={[remarkGfm]}
+          >
+            {content}
+          </Markdown>
         </div>
       ) : (
         <div className="message-spin">
