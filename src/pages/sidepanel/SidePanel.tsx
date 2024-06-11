@@ -8,7 +8,7 @@ import styles from "./SidePanel.module.scss";
 import Message from "./components/Message";
 import GluonMesonAgent from "./agents/GluonMesonAgent";
 import AgentFactory from "./agents/agent";
-import { delay } from "@pages/sidepanel/utils";
+import { delay, installListener } from "@pages/sidepanel/utils";
 import useStorage from "@root/src/shared/hooks/useStorage";
 import configureStorage from "@root/src/shared/storages/gluonConfig";
 import type { MentionsRef } from "antd/lib/mentions";
@@ -58,18 +58,6 @@ function SidePanel() {
 
   const agent = AgentFactory.createGluonMesonAgent();
 
-  chrome.storage.session.onChanged.addListener(async (changes) => {
-    const data = await chrome.storage.session.get();
-    const command = data["command_from_content_script"];
-    if (command) {
-      await handleCommandFromContentScript(
-        command.tool,
-        command.args,
-        command.userInput,
-      );
-    }
-  });
-
   async function handleCommandFromContentScript(
     toolName: string,
     args: any,
@@ -80,6 +68,8 @@ function SidePanel() {
     }
     generateReply(userInput, () => agent.findAgentToExecute(toolName, args));
   }
+
+  installListener(handleCommandFromContentScript);
 
   async function handleSubmit() {
     if (generating) {

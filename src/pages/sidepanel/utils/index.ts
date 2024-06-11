@@ -15,3 +15,17 @@ export const get_content = async () => {
     });
   });
 };
+
+let listenerInstalled = false;
+export const installListener = (handler) => {
+  if (listenerInstalled) return;
+
+  listenerInstalled = true;
+  chrome.storage.session.onChanged.addListener(async (changes) => {
+    const data = await chrome.storage.session.get();
+    const command = data["command_from_content_script"];
+    if (command) {
+      handler(command.tool, command.args, command.userInput);
+    }
+  });
+};
