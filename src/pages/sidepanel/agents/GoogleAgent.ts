@@ -3,8 +3,8 @@ import Tool from "./tool";
 import AgentWithTools from "./AgentWithTools";
 
 class GoogleAgent extends AgentWithTools {
-  constructor(defaultModelName: string, client: OpenAI) {
-    super(defaultModelName, client);
+  constructor(defaultModelName: string, client: OpenAI, language: string) {
+    super(defaultModelName, client, language);
     this.addTool(
       "google",
       "search content from google according to user questions",
@@ -92,7 +92,10 @@ The search results page information are:
 
     return await this.chatCompletion([
       { role: "system", content: prompt },
-      { role: "user", content: "please summarize this page: " },
+      {
+        role: "user",
+        content: `please summarize this page in ${this.language}: `,
+      },
     ]);
   }
 }

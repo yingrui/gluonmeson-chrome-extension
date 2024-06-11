@@ -23,14 +23,8 @@ function SidePanel() {
   const { scrollRef, scrollToBottom, messagesRef } = useScrollAnchor();
   const commandRef = useRef<boolean>();
 
-  const initialMessages: ChatMessage[] = [
-    {
-      role: "system",
-      content:
-        "You're an assistant or chrome copilot provided by GluonMeson, Guru Mason is your name. Please direct answer questions, should not add assistant in answer.",
-    },
-    { role: "assistant", content: "Hello! How can I assist you today?" },
-  ];
+  const agent = AgentFactory.createGluonMesonAgent();
+  const initialMessages: ChatMessage[] = agent.getInitialMessages();
   const [messages, setList] = useState<ChatMessage[]>(initialMessages);
 
   useEffect(() => {
@@ -55,8 +49,6 @@ function SidePanel() {
       </div>
     );
   }
-
-  const agent = AgentFactory.createGluonMesonAgent();
 
   async function handleCommandFromContentScript(
     toolName: string,

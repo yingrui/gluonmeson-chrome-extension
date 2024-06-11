@@ -4,8 +4,8 @@ import AgentWithTools from "./AgentWithTools";
 import { get_content } from "@pages/sidepanel/utils";
 
 class SummaryAgent extends AgentWithTools {
-  constructor(defaultModelName: string, client: OpenAI) {
-    super(defaultModelName, client);
+  constructor(defaultModelName: string, client: OpenAI, language: string) {
+    super(defaultModelName, client, language);
     this.addTool(
       "summary",
       "understand user's instruct and generate summary from given content for user",
@@ -35,7 +35,7 @@ The content text is: ${content.text}`;
 
     return await this.chatCompletion([
       { role: "system", content: prompt },
-      { role: "user", content: "please summarize text:" },
+      { role: "user", content: `please summarize text in ${this.language}:` },
     ]);
   }
 
@@ -47,7 +47,7 @@ The content text is: ${content.text}`;
 
     return await this.chatCompletion([
       { role: "system", content: prompt },
-      { role: "user", content: "please answer:" },
+      { role: "user", content: `please answer in ${this.language}:` },
     ]);
   }
 }

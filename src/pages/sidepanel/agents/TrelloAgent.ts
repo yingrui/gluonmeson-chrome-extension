@@ -9,10 +9,11 @@ class TrelloAgent extends AgentWithTools {
   constructor(
     defaultModelName: string,
     client: OpenAI,
+    language: string,
     trelloSearchApi: string,
     apiKey: string,
   ) {
-    super(defaultModelName, client);
+    super(defaultModelName, client, language);
     this.addTool(
       "generate_story",
       "generate story content for user before they want to create a new card in Trello board",
@@ -49,7 +50,7 @@ class TrelloAgent extends AgentWithTools {
 But you cannot get any information. Reply sorry and ask user to open or navigate to trello board, so you can get information from board.`;
     return await this.chatCompletion([
       { role: "system", content: prompt },
-      { role: "user", content: "explain:" },
+      { role: "user", content: `explain in ${this.language}:` },
     ]);
   }
 
@@ -58,7 +59,7 @@ But you cannot get any information. Reply sorry and ask user to open or navigate
 But you cannot get any card information. Reply sorry and ask user to open or navigate to trello board card page, so you can get information of card.`;
     return await this.chatCompletion([
       { role: "system", content: prompt },
-      { role: "user", content: "explain:" },
+      { role: "user", content: `explain in ${this.language}:` },
     ]);
   }
 
@@ -103,7 +104,7 @@ Use markdown format to beautify output.`;
 
     return await this.chatCompletion([
       { role: "system", content: prompt },
-      { role: "user", content: "generate story:" },
+      { role: "user", content: `generate story in ${this.language}:` },
     ]);
   }
 
@@ -126,7 +127,7 @@ ${JSON.stringify(searchResult)}
       { role: "system", content: prompt },
       {
         role: "user",
-        content: "Use markdown format to beautify output, begin to breakdown:",
+        content: `Use markdown format to beautify output, begin to breakdown in ${this.language}:`,
       },
     ]);
   }

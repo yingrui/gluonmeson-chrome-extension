@@ -26,9 +26,10 @@ class GluonMesonAgent extends AgentWithTools {
     defaultModelName,
     toolsCallModel,
     client,
+    language,
     agents: AgentWithTools[] = [],
   ) {
-    super(defaultModelName, client);
+    super(defaultModelName, client, language);
     this.addTool(
       "help",
       "Answer what can GluonMeson Chrome Extension do. The user might ask like: what can you do, or just say help.",
@@ -117,7 +118,10 @@ When user asked ${question}, please tell user what you can do for them.`;
 
     return await this.chatCompletion([
       { role: "system", content: prompt },
-      { role: "user", content: "please tell user what you can do for them:" },
+      {
+        role: "user",
+        content: `please tell user what you can do for them in ${this.language}:`,
+      },
     ]);
   }
 
@@ -135,7 +139,7 @@ Please help user to beautify or complete the text with Markdown format.`;
 
     return await this.chatCompletion([
       { role: "system", content: prompt },
-      { role: "user", content: "please generate text:" },
+      { role: "user", content: `please generate text in ${this.language}:` },
     ]);
   }
 
@@ -211,6 +215,21 @@ Please help user to beautify or complete the text with Markdown format.`;
         return this.chatCompletion(messages);
       }
     }
+  }
+
+  /**
+   * Get initial messages
+   * @returns {ChatMessage[]} Initial messages
+   */
+  getInitialMessages(): ChatMessage[] {
+    return [
+      {
+        role: "system",
+        content: `You're an assistant or chrome copilot provided by GluonMeson, Guru Mason is your name.
+Please direct answer questions in ${this.language}, should not add assistant in answer.`,
+      },
+      { role: "assistant", content: "Hello! How can I assist you today?" },
+    ];
   }
 
   /**

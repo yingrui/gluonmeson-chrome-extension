@@ -72,6 +72,9 @@ const Popup = () => {
           <Form.Item name="toolsCallModel" label="Tools Call Model">
             <Input placeholder="please specify tools call model, eg. gpt-4-turbo" />
           </Form.Item>
+          <Form.Item name="language" label="Language">
+            <Input placeholder="please specify prefer language, eg. Chinese or 中文" />
+          </Form.Item>
           <Form.Item
             label="Floating Ball"
             name="enableFloatingBall"

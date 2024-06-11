@@ -11,6 +11,7 @@ type GluonConfigure = {
   defaultModel: string;
   toolsCallModel: string;
   trelloSearchApi: string;
+  language: string;
   enableFloatingBall: boolean;
 };
 
@@ -23,6 +24,7 @@ export const DEFAULT_GM_CONFIG_VALUE = {
   defaultModel: "gpt-3.5-turbo",
   toolsCallModel: "gpt-4-turbo",
   trelloSearchApi: "",
+  language: "English",
   enableFloatingBall: true,
 };
 

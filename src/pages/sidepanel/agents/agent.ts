@@ -10,6 +10,7 @@ let defaultModel = "gpt-3.5-turbo";
 let toolsCallModel: string = null;
 let client: OpenAI;
 let trelloSearchApi = "";
+let language = "English";
 let apiKey = "";
 configureStorage.get().then((config) => {
   client = new OpenAI({
@@ -26,6 +27,7 @@ configureStorage.get().then((config) => {
     ? config.trelloSearchApi
     : trelloSearchApi;
   apiKey = config.apiKey ? config.apiKey : apiKey;
+  language = config.language ? config.language : language;
 });
 
 class AgentFactory {
@@ -34,16 +36,17 @@ class AgentFactory {
       defaultModel,
       toolsCallModel,
       client,
+      language,
       AgentFactory.createAgents(),
     );
   }
 
   private static createAgents(): AgentWithTools[] {
     return [
-      new SummaryAgent(defaultModel, client),
-      new GoogleAgent(defaultModel, client),
-      new TranslateAgent(defaultModel, client),
-      new TrelloAgent(defaultModel, client, trelloSearchApi, apiKey),
+      new SummaryAgent(defaultModel, client, language),
+      new GoogleAgent(defaultModel, client, language),
+      new TranslateAgent(defaultModel, client, language),
+      new TrelloAgent(defaultModel, client, language, trelloSearchApi, apiKey),
     ];
   }
 }

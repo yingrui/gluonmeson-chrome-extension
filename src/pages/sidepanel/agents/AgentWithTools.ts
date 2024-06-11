@@ -7,11 +7,13 @@ import Tool from "./tool";
 abstract class AgentWithTools {
   modelName: string;
   client: OpenAI;
+  language: string;
   tools: Tool[] = [];
 
-  constructor(defaultModelName: string, client: OpenAI) {
+  constructor(defaultModelName: string, client: OpenAI, language: string) {
     this.modelName = defaultModelName;
     this.client = client;
+    this.language = language;
   }
 
   /**

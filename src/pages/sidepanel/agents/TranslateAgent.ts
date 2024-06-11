@@ -3,8 +3,8 @@ import Tool from "./tool";
 import AgentWithTools from "./AgentWithTools";
 
 class TranslateAgent extends AgentWithTools {
-  constructor(defaultModelName: string, client: OpenAI) {
-    super(defaultModelName, client);
+  constructor(defaultModelName: string, client: OpenAI, language: string) {
+    super(defaultModelName, client, language);
     this.addTool(
       "translate",
       "translate given content to target language for user, default languages are Chinese & English",
