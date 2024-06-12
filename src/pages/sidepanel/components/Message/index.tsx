@@ -3,19 +3,20 @@ import "./index.css";
 import CodeBlock from "@pages/sidepanel/components/Message/MarkDownBlock/CodeBlock";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
-import remarkMermaid from "remark-mermaidjs";
 import remarkGfm from "remark-gfm";
 
 interface Props {
   role: ChatMessage["role"];
   content: string;
+  isLast?: boolean;
+  isStreaming?: boolean;
 }
 
 const rehypePlugins = [rehypeKatex];
-const remarkPlugins = [remarkGfm, remarkMermaid];
+const remarkPlugins = [remarkGfm];
 
 const Message = (props: Props) => {
-  const { role, content } = props;
+  const { role, content, isStreaming } = props;
   const isAssistant = role === "assistant";
   return (
     <div className={`message-item ${isAssistant ? "message-assistant" : ""}`}>
@@ -25,7 +26,11 @@ const Message = (props: Props) => {
           className={`message-content ${isAssistant ? "bot-message-content" : "user-message-content"}`}
         >
           <ReactMarkdown
-            components={{ code: CodeBlock }}
+            components={{
+              code: (props) => {
+                return <CodeBlock {...props} isStreaming={isStreaming} />;
+              },
+            }}
             rehypePlugins={rehypePlugins as any}
             remarkPlugins={remarkPlugins as any}
           >
