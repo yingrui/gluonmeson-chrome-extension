@@ -112,7 +112,7 @@ const Popup = () => {
         onFinish={onSaveSettings}
       >
         <Tabs
-          style={{ height: "300px" }}
+          style={{ height: "340px" }}
           defaultActiveKey="1"
           type="card"
           size="small"

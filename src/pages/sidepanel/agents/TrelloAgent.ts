@@ -115,11 +115,11 @@ Use markdown format to beautify output.`;
 
     const prompt = `You're an software engineer in Team.
 You're working on a story card on: ${board.title}
-And the description is:
+And the story description is:
 ${board.description}
-Please breakdown story to implementation tasks according to other tasking results, and generate result directly.
-Here is user input: ${userInput}
-Other tasking results are:
+Please breakdown story to implementation tasks follow the instruction from user: ${userInput}
+Please follow the search result to breakdown the tasks, and focus on where and how to implement the story.
+Below are found classic example of tasking results:
 ${JSON.stringify(searchResult)}
 `;
 
