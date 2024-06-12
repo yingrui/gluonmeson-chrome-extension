@@ -27,8 +27,8 @@ const Message = (props: Props) => {
         >
           <Markdown
             components={{ code: CodeBlock }}
-            rehypePlugins={rehypePlugins}
-            remarkPlugins={remarkPlugins}
+            rehypePlugins={rehypePlugins as any}
+            remarkPlugins={remarkPlugins as any}
           >
             {content}
           </Markdown>
