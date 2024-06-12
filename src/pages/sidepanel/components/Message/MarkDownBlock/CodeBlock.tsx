@@ -21,7 +21,7 @@ function CodeBlock(props: HTMLAttributes<HTMLElement>) {
       <SyntaxHighlighter {...rest} PreTag="div" language={match[1]} style={coy}>
         {text}
       </SyntaxHighlighter>
-      <Button icon={<CopyOutlined />} onClick={handleCopy}></Button>
+      <CopyOutlined className={style.copy} onClick={handleCopy} />
     </div>
   ) : (
     <code {...rest} className={className}>
