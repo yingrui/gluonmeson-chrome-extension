@@ -3,15 +3,15 @@ import mermaid from "mermaid";
 
 interface Props {
   chart: string;
-  isStreaming?: boolean;
+  loading?: boolean;
 }
 
-const Mermaid = ({ chart, isStreaming }: Props) => {
+const Mermaid = ({ chart, loading }: Props) => {
   const containerRef = useRef(null);
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    if (!isStreaming) {
+    if (!loading) {
       mermaid.parse(chart).then((value) => {
         if (value) {
           mermaid.initialize({ startOnLoad: true });
@@ -24,7 +24,7 @@ const Mermaid = ({ chart, isStreaming }: Props) => {
         }
       });
     }
-  }, [chart, isStreaming]);
+  }, [chart, loading]);
 
   return (
     <div className="mermaid" ref={containerRef}>

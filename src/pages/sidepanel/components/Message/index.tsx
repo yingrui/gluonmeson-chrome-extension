@@ -8,15 +8,14 @@ import remarkGfm from "remark-gfm";
 interface Props {
   role: ChatMessage["role"];
   content: string;
-  isLast?: boolean;
-  isStreaming?: boolean;
+  loading?: boolean;
 }
 
 const rehypePlugins = [rehypeKatex];
 const remarkPlugins = [remarkGfm];
 
 const Message = (props: Props) => {
-  const { role, content, isStreaming } = props;
+  const { role, content, loading } = props;
   const isAssistant = role === "assistant";
   return (
     <div className={`message-item ${isAssistant ? "message-assistant" : ""}`}>
@@ -28,7 +27,7 @@ const Message = (props: Props) => {
           <ReactMarkdown
             components={{
               code: (props) => {
-                return <CodeBlock {...props} isStreaming={isStreaming} />;
+                return <CodeBlock {...props} loading={loading} />;
               },
             }}
             rehypePlugins={rehypePlugins as any}

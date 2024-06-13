@@ -150,12 +150,7 @@ function SidePanel() {
               <Message key={i} role={msg.role} content={msg.content}></Message>
             ))}
           {generating && (
-            <Message
-              role="assistant"
-              content={currentText}
-              isLast
-              isStreaming
-            ></Message>
+            <Message role="assistant" content={currentText} loading></Message>
           )}
           <div className="helper" ref={messagesRef}></div>
         </div>

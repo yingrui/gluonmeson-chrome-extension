@@ -7,10 +7,8 @@ import { message } from "antd";
 import Mermaid from "./MermaidBlock";
 import copy from "copy-to-clipboard";
 
-function CodeBlock(
-  props: HTMLAttributes<HTMLElement> & { isStreaming?: boolean },
-) {
-  const { children, className, ...rest } = props;
+function CodeBlock(props: HTMLAttributes<HTMLElement> & { loading?: boolean }) {
+  const { children, className, loading, ...rest } = props;
   const match = /language-(\w+)/.exec(className || "");
   const text = String(children).replace(/\n$/, "");
 
@@ -24,7 +22,7 @@ function CodeBlock(
   return match ? (
     <div className={style.block}>
       {isMermaid ? (
-        <Mermaid chart={children as string} isStreaming={props.isStreaming} />
+        <Mermaid chart={children as string} loading={loading} />
       ) : (
         <SyntaxHighlighter
           {...rest}
