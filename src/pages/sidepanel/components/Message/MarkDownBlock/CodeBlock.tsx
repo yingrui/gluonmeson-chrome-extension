@@ -24,7 +24,7 @@ function CodeBlock(
   return match ? (
     <div className={style.block}>
       {isMermaid ? (
-        <Mermaid chart={children} isStreaming={props.isStreaming} />
+        <Mermaid chart={children as string} isStreaming={props.isStreaming} />
       ) : (
         <SyntaxHighlighter
           {...rest}

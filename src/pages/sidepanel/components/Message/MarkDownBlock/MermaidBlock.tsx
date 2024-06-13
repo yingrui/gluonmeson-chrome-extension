@@ -3,7 +3,7 @@ import mermaid from "mermaid";
 
 interface Props {
   chart: string;
-  isStreaming?: string;
+  isStreaming?: boolean;
 }
 
 const Mermaid = ({ chart, isStreaming }: Props) => {
