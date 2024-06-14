@@ -13,7 +13,7 @@ const manifest = {
    * if you want to support multiple languages, you can use the following reference
    * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Internationalization
    */
-  name: "GluonMeson",
+  name: "Guru Mason",
   version: packageJson.version,
   description: "GluonMeson Chrome Extension",
   host_permissions: ["<all_urls>"],
