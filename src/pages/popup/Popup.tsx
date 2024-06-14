@@ -38,6 +38,7 @@ const Popup = () => {
     {
       label: `Basic`,
       key: `basic`,
+      forceRender: true,
       children: (
         <>
           <Form.Item
@@ -88,6 +89,7 @@ const Popup = () => {
     {
       label: `Trello`,
       key: `trello`,
+      forceRender: true,
       children: (
         <>
           <Form.Item
