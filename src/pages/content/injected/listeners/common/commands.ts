@@ -1,4 +1,8 @@
-import { matchURL } from "@pages/content/injected/listeners/utils";
+import {
+  matchURL,
+  getContentSelector,
+} from "@pages/content/injected/listeners/utils";
+import jQuery from "jquery";
 
 const addCommands = () => {
   if (matchURL("*")) {
@@ -12,10 +16,12 @@ const addCommands = () => {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       (async () => {
         if (message.type === "get_content") {
+          const url = document.URL;
+          const selector = getContentSelector(url);
           sendResponse({
+            url: url,
             title: document.title,
-            text: document.body.innerText,
-            url: document.URL,
+            text: jQuery(selector).text(),
           });
         }
       })();
