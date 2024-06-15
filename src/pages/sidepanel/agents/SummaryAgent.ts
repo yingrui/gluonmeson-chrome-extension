@@ -40,8 +40,20 @@ class SummaryAgent extends AgentWithTools {
     throw new Error("Unexpected tool call in SummaryAgent: " + command);
   }
 
+  async handleCannotGetContentError(): Promise<any> {
+    const prompt = `You're an assistant or chrome copilot provided by GluonMeson, Guru Mason is your name.
+The user is viewing the page, but you cannot get any information, it's possible because the you're detached from the webpage.
+Reply sorry and ask user to refresh webpage, so you can get information from webpage.`;
+    return await this.chatCompletion([
+      { role: "system", content: prompt },
+      { role: "user", content: `explain in ${this.language}:` },
+    ]);
+  }
+
   async summarize(instruct: string) {
     const content = await get_content();
+    if (!content) return this.handleCannotGetContentError();
+
     const prompt = `You're an assistant and good at summarization, the user is reading an article: ${content.title}. 
 Please summarize the content according to user instruction: ${instruct}
 The content text is: ${content.text}
@@ -55,6 +67,8 @@ The links are: ${JSON.stringify(content.links)}`;
 
   async askPage(question: string) {
     const content = await get_content();
+    if (!content) return this.handleCannotGetContentError();
+
     const prompt = `You're an assistant, the user is reading an article: ${content.title}.
 Please answer user's question: ${question}
 The content text is: ${content.text}
