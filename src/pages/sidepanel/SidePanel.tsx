@@ -58,7 +58,9 @@ function SidePanel() {
     if (generating) {
       return;
     }
-    generateReply(userInput, () => agent.findAgentToExecute(toolName, args));
+    generateReply(userInput, () =>
+      agent.findAgentToExecute(toolName, args, messages),
+    );
   }
 
   installListener(handleCommandFromContentScript);

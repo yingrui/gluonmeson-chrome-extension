@@ -165,7 +165,7 @@ Please help user to beautify or complete the text with Markdown format.`;
       if (tool_calls) {
         for (const tool of tool_calls) {
           const agent = this.mapToolsAgents[tool.function.name];
-          return agent.execute(tool);
+          return agent.execute(tool, messages);
         }
       }
     } catch (error) {
@@ -181,12 +181,17 @@ Please help user to beautify or complete the text with Markdown format.`;
    * 2. Execute the command with the agent
    * @param {string} toolName - Tool name
    * @param {any} args - Arguments
+   * @param {ChatMessage[]} messages - Chat messages
    * @returns {Promise<any>} ChatCompletion
    * @async
    */
-  async findAgentToExecute(toolName: string, args: any): Promise<any> {
+  async findAgentToExecute(
+    toolName: string,
+    args: any,
+    messages: ChatMessage[],
+  ): Promise<any> {
     const agent = this.mapToolsAgents[toolName];
-    return agent.executeCommand(toolName, args);
+    return agent.executeCommand(toolName, args, messages);
   }
 
   /**
@@ -207,7 +212,7 @@ Please help user to beautify or complete the text with Markdown format.`;
 
     if (this.commands.includes(command)) {
       const agent = this.mapToolsAgents[command];
-      return agent.executeCommandWithUserInput(command, userInput);
+      return agent.executeCommandWithUserInput(command, userInput, messages);
     } else {
       if (this.toolsCallModel) {
         return this.callTool(messages);

@@ -12,7 +12,19 @@ class TranslateAgent extends AgentWithTools {
     );
   }
 
-  async executeCommand(command: string, args: object): Promise<any> {
+  /**
+   * Execute command: translate
+   * @param {string} command - Command
+   * @param {object} args - Arguments
+   * @param {ChatMessage[]} messages - Messages
+   * @returns {Promise<any>} ChatCompletion
+   * @throws {Error} Unexpected tool call
+   */
+  async executeCommand(
+    command: string,
+    args: object,
+    messages: ChatMessage[],
+  ): Promise<any> {
     if (command === "translate") {
       return this.translate(args["userInput"], args["targetLanguage"]);
     }

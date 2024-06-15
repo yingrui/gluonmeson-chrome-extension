@@ -63,11 +63,13 @@ abstract class AgentWithTools {
    * 1. Execute the tool
    * 2. Parse the tool arguments
    * @param {OpenAI.Chat.Completions.ChatCompletionMessageToolCall} tool - Tool
+   * @param {ChatMessage[]} messages - Messages
    * @returns {Promise<any>} ChatCompletion
    * @throws {Error} Unexpected tool call, or error parsing tool arguments
    */
   async execute(
     tool: OpenAI.Chat.Completions.ChatCompletionMessageToolCall,
+    messages: ChatMessage[],
   ): Promise<any> {
     let args = {};
     try {
@@ -78,7 +80,7 @@ abstract class AgentWithTools {
       console.error("Error parsing tool arguments", e);
       console.error("tool.function.arguments", tool.function.arguments);
     }
-    return this.executeCommand(tool.function.name, args);
+    return this.executeCommand(tool.function.name, args, messages);
   }
 
   /**
@@ -86,12 +88,14 @@ abstract class AgentWithTools {
    * The user input should be set to object args, need to figure out which parameter is the user input.
    * @param {string} command - Command
    * @param {string} userInput - User input
+   * @param {ChatMessage[]} messages - Messages
    * @returns {Promise<any>} ChatCompletion
    * @throws {Error} Unexpected tool call
    */
   async executeCommandWithUserInput(
     command: string,
     userInput: string,
+    messages: ChatMessage[],
   ): Promise<any> {
     const args = {};
     // Find the tool with the given command
@@ -102,30 +106,35 @@ abstract class AgentWithTools {
         break;
       }
     }
-    return this.executeCommand(command, args);
+    return this.executeCommand(command, args, messages);
   }
 
   /**
    * Execute command
    * @param {string} command - Command
    * @param {object} args - Pojo object as Arguments
+   * @param {ChatMessage[]} messages - Messages
    * @returns {Promise<any>} ChatCompletion
    * @abstract
    */
-  abstract executeCommand(command: string, args: object): Promise<any>;
+  abstract executeCommand(
+    command: string,
+    args: object,
+    messages: ChatMessage[],
+  ): Promise<any>;
 
   /**
    * Chat completion
-   * @param {OpenAI.Chat.Completions.ChatCompletionMessageParam[]} messages - Messages
+   * @param {ChatMessage[]} messages - Messages
    * @param {bool} stream - Stream
    * @returns {Promise<any>} ChatCompletion
    */
   async chatCompletion(
-    messages: OpenAI.ChatCompletionMessageParam[],
+    messages: ChatMessage[],
     stream: boolean = true,
   ): Promise<any> {
     return await this.client.chat.completions.create({
-      messages: messages,
+      messages: messages as OpenAI.ChatCompletionMessageParam[],
       model: this.modelName,
       stream: stream,
       max_tokens: 4096,
@@ -141,12 +150,12 @@ abstract class AgentWithTools {
    */
   async toolsCall(
     toolsCallModel: string,
-    messages: OpenAI.ChatCompletionMessageParam[],
+    messages: ChatMessage[],
     tools: OpenAI.Chat.Completions.ChatCompletionTool[],
   ): Promise<any> {
     return await this.client.chat.completions.create({
       model: toolsCallModel,
-      messages: messages,
+      messages: messages as OpenAI.ChatCompletionMessageParam[],
       stream: false,
       tools: tools,
       max_tokens: 4096,
