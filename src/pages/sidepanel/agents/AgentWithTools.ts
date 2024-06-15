@@ -144,7 +144,7 @@ abstract class AgentWithTools {
   /**
    * Tools call
    * @param {string} toolsCallModel - Tools call model
-   * @param {OpenAI.Chat.Completions.ChatCompletionMessageParam[]} messages - Messages
+   * @param {ChatMessage[]} messages - Messages
    * @param {OpenAI.Chat.Completions.ChatCompletionTool[]} tools - Tools
    * @returns {Promise<any>} ChatCompletion
    */
