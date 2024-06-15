@@ -63,7 +63,19 @@ But you cannot get any card information. Reply sorry and ask user to open or nav
     ]);
   }
 
-  async executeCommand(command: string, args: object): Promise<any> {
+  /**
+   * Execute command: generate_story and tasking
+   * @param {string} command - Command
+   * @param {object} args - Arguments
+   * @param {ChatMessage[]} messages - Messages
+   * @returns {Promise<any>} ChatCompletion
+   * @throws {Error} Unexpected tool call
+   */
+  async executeCommand(
+    command: string,
+    args: object,
+    messages: ChatMessage[],
+  ): Promise<any> {
     if (command === "generate_story") {
       return this.generateStory(args["title"], args["keywords"]);
     }
@@ -87,7 +99,7 @@ Cards: ${cards}
       });
       prompt = `You're an Business Analyst in Software Engineering Team.
 You're working on a board on: ${board.title}
-Please write a story according to user instruction, and generate result directly.
+Please write a story according to user instruction, and generate story in ${this.language} directly.
 Here is user input: ${title}
 Generate title and story content, and story format should be Given/When/Then, and should include Test Cases as well.
 Use markdown format to beautify output.
@@ -96,7 +108,7 @@ ${context}`;
     } else if (board.type === "card") {
       prompt = `You're an Business Analyst in Software Engineering Team.
 You're working on a trello card on: ${board.title}, and the description is: ${board.description}
-Please write or complete the story according to user instruction, and generate result directly.
+Please write or complete the story according to user instruction, and generate story in ${this.language} directly.
 Here is user input: ${title}
 The story format should be Given/When/Then, and should include Test Cases as well.
 Use markdown format to beautify output.`;

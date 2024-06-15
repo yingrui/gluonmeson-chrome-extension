@@ -18,11 +18,24 @@ class SummaryAgent extends AgentWithTools {
     );
   }
 
-  async executeCommand(command: string, args: object): Promise<any> {
-    if (command === "summary") {
-      return this.summarize(args["instruct"]);
-    } else if (command === "ask_page") {
-      return this.askPage(args["question"]);
+  /**
+   * Execute command: summary and ask_page
+   * @param {string} command - Command
+   * @param {object} args - Arguments
+   * @param {ChatMessage[]} messages - Messages
+   * @returns {Promise<any>} ChatCompletion
+   * @throws {Error} Unexpected tool call
+   */
+  async executeCommand(
+    command: string,
+    args: object,
+    messages: ChatMessage[],
+  ): Promise<any> {
+    switch (command) {
+      case "summary":
+        return this.summarize(args["instruct"]);
+      case "ask_page":
+        return this.askPage(args["question"]);
     }
     throw new Error("Unexpected tool call in SummaryAgent: " + command);
   }
