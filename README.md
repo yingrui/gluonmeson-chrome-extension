@@ -50,6 +50,7 @@ Please refer to [How to setup configurations](docs/tutorial/how_to_setup_configu
 
 ## For Users
 For who want to use this extension, please refer to below documents:
+* [An Introduction to GluonMeson Chrome Extension](docs/tutorial/an_introduction_to_gluonmeson_chrome_extension.md)
 * [How to setup configurations](docs/tutorial/how_to_setup_configurations.md)
 * [How to use this chrome extension](docs/tutorial/how_to_use_this_chrome_extension.md)
 
