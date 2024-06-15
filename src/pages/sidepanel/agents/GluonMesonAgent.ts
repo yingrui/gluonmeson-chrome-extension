@@ -1,5 +1,4 @@
 import OpenAI from "openai";
-import Tool from "./tool";
 import AgentWithTools from "./AgentWithTools";
 
 import { get_content } from "@pages/sidepanel/utils";
@@ -182,13 +181,14 @@ Please help user to beautify or complete the text with Markdown format.`;
    * Update the system messages with current page information.
    * If the text content length is greater than 2048, slice the content.
    * @param {ChatMessage[]} messages - Chat messages
-   * @returns {ChatMessage[]} Updated messages
+   * @returns {Promise<ChatMessage[]>} Updated messages
    */
-  private async updateSystemMessages(messages: ChatMessage[]): ChatMessage[] {
-    // get all messages except the first system message
-    const conversation = messages.slice(1);
-    try {
-      const content = await get_content();
+  private async updateSystemMessages(
+    messages: ChatMessage[],
+  ): Promise<ChatMessage[]> {
+    const content = await get_content();
+    return new Promise((resolve) => {
+      if (!content) resolve(messages);
       const textContent =
         content.text.length > 2048 ? content.text.slice(0, 2048) : content.text;
       const systemMessage = {
@@ -197,12 +197,12 @@ Please help user to beautify or complete the text with Markdown format.`;
 The user is viewing the page: ${content.title}, the url is ${content.url}.
 The page content is: ${content.text}.
 Please direct answer questions in ${this.language}, should not add assistant in answer.`,
-      };
-      return [systemMessage, ...conversation];
-    } catch (error) {
-      console.error(error);
-    }
-    return messages;
+      } as ChatMessage;
+
+      // get all messages except the first system message
+      const conversation = messages.slice(1);
+      resolve([systemMessage, ...conversation]);
+    });
   }
 
   /**
