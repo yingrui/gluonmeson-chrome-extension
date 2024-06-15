@@ -154,10 +154,13 @@ Please help user to beautify or complete the text with Markdown format.`;
    * @async
    */
   async callTool(messages: ChatMessage[]): Promise<any> {
+    // Reset system message, so the agent can understand the context
+    const messagesWithWebpageContext =
+      await this.updateSystemMessages(messages);
     try {
       const chatCompletion = await this.toolsCall(
         this.toolsCallModel,
-        messages,
+        messagesWithWebpageContext,
         this.chatCompletionTools,
       );
 
@@ -172,7 +175,34 @@ Please help user to beautify or complete the text with Markdown format.`;
       console.error(error);
     }
 
-    return this.chatCompletion(messages);
+    return this.chatCompletion(messagesWithWebpageContext);
+  }
+
+  /**
+   * Update the system messages with current page information.
+   * If the text content length is greater than 2048, slice the content.
+   * @param {ChatMessage[]} messages - Chat messages
+   * @returns {ChatMessage[]} Updated messages
+   */
+  private async updateSystemMessages(messages: ChatMessage[]): ChatMessage[] {
+    // get all messages except the first system message
+    const conversation = messages.slice(1);
+    try {
+      const content = await get_content();
+      const textContent =
+        content.text.length > 2048 ? content.text.slice(0, 2048) : content.text;
+      const systemMessage = {
+        role: "system",
+        content: `You're an assistant or chrome copilot provided by GluonMeson, Guru Mason is your name.
+The user is viewing the page: ${content.title}, the url is ${content.url}.
+The page content is: ${content.text}.
+Please direct answer questions in ${this.language}, should not add assistant in answer.`,
+      };
+      return [systemMessage, ...conversation];
+    } catch (error) {
+      console.error(error);
+    }
+    return messages;
   }
 
   /**
