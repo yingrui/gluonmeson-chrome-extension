@@ -56,7 +56,8 @@ Reply sorry and ask user to refresh webpage, so you can get information from web
 
     const prompt = `You're an assistant and good at summarization, the user is reading an article: ${content.title}. 
 Please summarize the content according to user instruction: ${instruct}
-The content text is: ${content.text}`;
+The content text is: ${content.text}
+The links are: ${JSON.stringify(content.links)}`;
 
     return await this.chatCompletion([
       { role: "system", content: prompt },
@@ -70,7 +71,8 @@ The content text is: ${content.text}`;
 
     const prompt = `You're an assistant, the user is reading an article: ${content.title}.
 Please answer user's question: ${question}
-The content text is: ${content.text}`;
+The content text is: ${content.text}
+The links are: ${JSON.stringify(content.links)}`;
 
     return await this.chatCompletion([
       { role: "system", content: prompt },
