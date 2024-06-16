@@ -1,0 +1,22 @@
+# Interesting Use Cases
+There are many interesting use cases for the GluonMeson Chrome extension. In this document, we will explore some of the most common and useful use cases for the extension, including information extraction and business analysis. By following the steps outlined in this document, you can make the most of the extension's capabilities and enjoy a more efficient and productive browsing experience.
+
+## Use Cases Categories
+
+### 1. Information Extraction
+
+#### 1.1 List Programming Languages and Average Salary
+When you're doing research on software engineer, and you find out some webpage listed the popular programming languages and their average salary, you can use the `/ask_page` command to extract the table data.
+
+<img src="../images/usecases/extract_information_from_webpage.png"/>
+
+You can try sorting the table by chat with the agent.
+
+<img src="../images/usecases/sort_programming_language_by_average_salary.png"/>
+
+### 2. Business Analysis
+
+#### 2.1 Learn Overseas warehouse operation process
+When you're investigating overseas warehouse operation process flow, you can use the `/ask_page` command to draw the flow in mermaid format.
+
+<img src="../images/usecases/mermaid_sequence_diagram.png"/>
