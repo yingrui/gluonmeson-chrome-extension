@@ -38,11 +38,11 @@ GluonMeson Chrome Extension is a Chrome Web Browser Copilot, his name is Guru Ma
 
 ### Setup Configurations
 Please set up below configurations in the extension popup page: 
-* **API Key**: Set api key from OpenAI, Zhipu AI or GluonMeson Platform
-* **Base URL**: base url from OpenAI, Zhipu AI or GluonMeson Platform
+* **API Key**: Set api key from OpenAI, Zhipu AI, Baichuan or GluonMeson Platform
+* **Base URL**: base url from OpenAI, Zhipu AI, Baichuan or GluonMeson Platform
 * **Organization**: Your Organization Name
 * **GPT Model**: gpt-3.5-turbo is default
-* **Tools Call Model**: recommend gpt-4-turbo or glm-4, if it's empty, will not use tools call to recognize user intents.
+* **Tools Call Model**: If it's empty, will not use tools call to recognize user intents.
 
 <img src="docs/images/configure_in_popup_window.png"/>
 
