@@ -88,13 +88,14 @@ Tell user you helped them to navigate to ${url}, if user input is empty, just op
 The search results page information are:
 - url: ${content.url}
 - title: ${content.title}
-- text: ${content.text}`;
+- text: ${content.text}
+The links are: ${JSON.stringify(content.links)}`;
 
     return await this.chatCompletion([
       { role: "system", content: prompt },
       {
         role: "user",
-        content: `please summarize this page in ${this.language}: `,
+        content: `please summarize this page in ${this.language}, and recommend links or new search query: `,
       },
     ]);
   }

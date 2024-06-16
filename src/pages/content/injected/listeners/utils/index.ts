@@ -5,19 +5,23 @@ export const matchURL = (url) => {
   return location.host === url.toLowerCase();
 };
 
-const contentSelectors = [
-  { regex: /^https:\/\/www.google.com\/search.*/, selector: "#rcnt" },
+const selectors = [
+  {
+    regex: /^https:\/\/www.google.com\/search.*/,
+    contentSelector: "#rcnt",
+    linkSelector: 'a:visible[jsname="UWckNb"]',
+  },
   {
     regex: /^https:\/\/stackoverflow.com\/questions\/.*/,
-    selector: "#mainbar",
+    contentSelector: "#mainbar",
   },
 ];
 
-export const getContentSelector = (url) => {
-  for (const { regex, selector } of contentSelectors) {
-    if (regex.test(url)) {
+export const getSelectorSettings = (url) => {
+  for (const selector of selectors) {
+    if (selector.regex.test(url)) {
       return selector;
     }
   }
-  return "body";
+  return { regex: "*", contentSelector: "body" };
 };
