@@ -19,4 +19,9 @@ You can try sorting the table by chat with the agent.
 #### 2.1 Learn Overseas warehouse operation process
 When you're investigating overseas warehouse operation process flow, you can use the `/ask_page` command to draw the flow in mermaid format.
 
-<img src="../images/usecases/mermaid_sequence_diagram.png"/>
+<img src="../images/usecases/mermaid_sequence_diagram_en.png"/>
+
+#### 2.2 Sentiment analysis for company news
+When you're analyzing the sentiment of company news, you can use the `/ask_page` command to extract the news content and analyze the sentiment.
+
+<img src="../images/usecases/news_sentiment_analysis.png"/>
