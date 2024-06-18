@@ -1,4 +1,10 @@
 ## Get Web Page Content
+This task provides a util method to get the content of the current web page.
+
+* Most of utils are implemented in `index.ts` (located in corresponding `/utils` folder).
+* Add a new util method to send message to and wait for the response (include text and links) from content script.
+* If you want to remove the advertisement from the page, you can provide selectors to content script, so content script can extract better content according to selectors.
+
 ### Step 1: Add util methods
 Add `get_content` util method to `src/pages/sidepanel/utils`  
 ```typescript
@@ -30,10 +36,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   (async () => {
     // Add message handler for get_content
     if (message.type === "get_content") {
+      const url = document.URL;
+      const selector = getSelectorSettings(url);
+      const elements = jQuery(selector.contentSelector);
+      // Get innerText of the first element if there is any, otherwise get innerText of the body
+      const content = elements && elements.length > 0 ? elements[0].innerText : document.body.innerText;
+      // Get links from the page according to the selector, if selector is empty, return empty array
+      const links = getLinks(selector.linkSelector);
       sendResponse({
+        url: url,
         title: document.title,
-        text: document.body.innerText,
-        url: document.URL,
+        text: content,
+        links: links,
       });
     }
   })();
@@ -47,4 +61,23 @@ chrome.scripting.executeScript({
     return document.activeElement.textContent;
   },
 });
+```
+
+### Step 4: Provide selectors to content script
+Since the content script needs to extract the content from the page, you can provide selectors in file `pages/content/injected/listeners/utils/index.ts` to the content script.
+
+For example, you can provide selectors for Google search result page and StackOverflow page as below.
+```typescript
+const selectors = [
+  {
+    regex: /^https:\/\/www.google.com\/search.*/,
+    contentSelector: "#rcnt",
+    linkSelector: 'a:visible[jsname="UWckNb"]',
+  },
+  {
+    regex: /^https:\/\/stackoverflow.com\/questions\/.*/,
+    contentSelector: "#mainbar",
+  },
+  ...
+];
 ```

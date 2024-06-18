@@ -1,11 +1,25 @@
 ## Add an Agent and Command for Google Search
+
+This document will guide you on how to add a new agent and command to the GluonMeson Chrome Extension. 
+
+The new agent will be used to search on Google, and user can use the `/google` command to trigger the agent.
+
+* The agent should be a Python class that inherits from `AgentWithTools` and implements the `executeCommand` method. The `executeCommand` method should return `Promise<Stream<ChatCompletionChunk> | ChatCompletion>`. 
+* The agent should also implement a `search` method that takes a search query as input and returns the search results.
+* The agent should be added to the agent list in the `AgentFactory` class.
+
 ### Step 1: Add a new agent
-Add a new agent to the `src/pages/sidepanel/agents` directory. The agent should be a Python class that inherits from `AgentWithTools` and implements the `executeCommand` method. The `executeCommand` method should return `Promise<Stream<ChatCompletionChunk> | ChatCompletion>`. 
+Add a new agent to the `src/pages/sidepanel/agents` directory. This agent should declare that it can handle the `google` command in constructor.
 ```typescript
 // This is the GoogleAgent, it can be used to search on Google
 class GoogleAgent extends AgentWithTools {
   constructor(defaultModelName: string, client: OpenAI) {
     super(defaultModelName, client);
+    this.addTool(
+      "google",
+      "search content from google according to user questions",
+      ["userInput"],
+    );
   }
   ...
 ```
@@ -37,7 +51,6 @@ async search(userInput: string): Promise<any> {
 ```
 
 ### Step 4: Add the agent to the agent list
-* Add command `google` to GluonMesonAgent commands list.
 * Add the agent to the AgentFactory in file `src/pages/sidepanel/agents/agents.ts`.
 ```typescript
 class AgentFactory {
@@ -48,5 +61,19 @@ class AgentFactory {
       new GoogleAgent(defaultModel, client),
     ]
   }
+}
+```
+
+### Step 5: Add the `/google` command to GluonMesonAgent
+* Add command `google` to GluonMesonAgent commands list. So when use type `/google` command, the agent can recognize it as command and then trigger the GoogleAgent.
+```typescript
+class GluonMesonAgent extends AgentWithTools {
+  ...
+  commands = [
+    "ask_page",
+    "google",
+    ...
+  ];
+  ...
 }
 ```
