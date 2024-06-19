@@ -25,3 +25,12 @@ When you're investigating overseas warehouse operation process flow, you can use
 When you're analyzing the sentiment of company news, you can use the `/ask_page` command to extract the news content and analyze the sentiment.
 
 <img src="../images/usecases/news_sentiment_analysis.png"/>
+
+### 3. Data Analysis
+
+#### 3.1 Data Visualization in Spreadsheet
+When you're analysis data in google spreadsheet, and you don't know how to insert chart, you can use the `/ask_page` command to ask Guru Mason.
+
+<img src="../images/usecases/insert_pie_chart_in_google_spreadsheet.png"/>
+
+In this case, many users may don't the formula `=QUERY(E:I, "SELECT E, SUM(I) GROUP BY E")` before. Guru Mason can help you to learn new formula.
