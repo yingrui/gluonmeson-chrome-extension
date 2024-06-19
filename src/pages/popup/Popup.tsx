@@ -93,14 +93,14 @@ const Popup = () => {
       ),
     },
     {
-      label: `Trello`,
-      key: `trello`,
+      label: `BA Copilot`,
+      key: `ba_copilot`,
       forceRender: true,
       children: (
         <>
           <Form.Item
-            name="trelloSearchApi"
-            label="Search Api Url"
+            name="baCopilotKnowledgeApi"
+            label="Knowledge Api"
             rules={[{ type: "url" }]}
           >
             <Input />

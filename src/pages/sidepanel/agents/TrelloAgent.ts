@@ -3,14 +3,14 @@ import Tool from "./tool";
 import AgentWithTools from "./AgentWithTools";
 
 class TrelloAgent extends AgentWithTools {
-  trelloSearchApi: string;
+  baCopilotKnowledgeApi: string;
   apiKey: string;
 
   constructor(
     defaultModelName: string,
     client: OpenAI,
     language: string,
-    trelloSearchApi: string,
+    baCopilotKnowledgeApi: string,
     apiKey: string,
   ) {
     super(defaultModelName, client, language);
@@ -26,7 +26,7 @@ class TrelloAgent extends AgentWithTools {
     );
     // this.addTool("createCard", "create card in Trello board with given title and description", ["title", "desc", "column"]);
 
-    this.trelloSearchApi = trelloSearchApi;
+    this.baCopilotKnowledgeApi = baCopilotKnowledgeApi;
     this.apiKey = apiKey;
   }
 
@@ -36,7 +36,7 @@ class TrelloAgent extends AgentWithTools {
       chrome.tabs.query({ currentWindow: true, active: true }, (tabs) => {
         chrome.tabs.sendMessage(
           tabs[0].id,
-          { type: "get_trello_board" },
+          { type: "get_story_board" },
           (response) => {
             resolve(response);
           },
@@ -145,10 +145,10 @@ ${JSON.stringify(searchResult)}
   }
 
   private async search(cardDescription: string): Promise<any> {
-    if (this.trelloSearchApi.length <= 0) {
+    if (this.baCopilotKnowledgeApi.length <= 0) {
       return { total: 0, items: [] };
     }
-    const response = await fetch(this.trelloSearchApi, {
+    const response = await fetch(this.baCopilotKnowledgeApi, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

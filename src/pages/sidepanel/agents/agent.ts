@@ -10,7 +10,7 @@ import GoogleAgent from "./GoogleAgent";
 let defaultModel = "gpt-3.5-turbo";
 let toolsCallModel: string = null;
 let client: OpenAI;
-let trelloSearchApi = "";
+let baCopilotKnowledgeApi = "";
 let language = "English";
 let apiKey = "";
 configureStorage.get().then((config) => {
@@ -24,9 +24,9 @@ configureStorage.get().then((config) => {
   toolsCallModel = config.toolsCallModel
     ? config.toolsCallModel
     : toolsCallModel;
-  trelloSearchApi = config.trelloSearchApi
-    ? config.trelloSearchApi
-    : trelloSearchApi;
+  baCopilotKnowledgeApi = config.baCopilotKnowledgeApi
+    ? config.baCopilotKnowledgeApi
+    : baCopilotKnowledgeApi;
   apiKey = config.apiKey ? config.apiKey : apiKey;
   language = config.language ? config.language : language;
 });
@@ -47,7 +47,13 @@ class AgentFactory {
       new SummaryAgent(defaultModel, client, language),
       new GoogleAgent(defaultModel, client, language),
       new TranslateAgent(defaultModel, client, language),
-      new TrelloAgent(defaultModel, client, language, trelloSearchApi, apiKey),
+      new TrelloAgent(
+        defaultModel,
+        client,
+        language,
+        baCopilotKnowledgeApi,
+        apiKey,
+      ),
     ];
   }
 }
