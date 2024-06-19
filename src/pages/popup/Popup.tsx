@@ -34,6 +34,12 @@ const Popup = () => {
     form.setFieldsValue(DEFAULT_GM_CONFIG_VALUE);
   }
 
+  async function open_side_panel() {
+    chrome.tabs.query({ currentWindow: true, active: true }, (tabs) => {
+      chrome.sidePanel.open({ tabId: tabs[0].id });
+    });
+  }
+
   const tabItems = [
     {
       label: `Basic`,
@@ -127,7 +133,23 @@ const Popup = () => {
           <Button key="cancel" htmlType="button" onClick={reset}>
             Reset
           </Button>
+          <Button
+            key="open_side_panel"
+            htmlType="button"
+            onClick={open_side_panel}
+            data-toggle="tooltip"
+            data-placement="top"
+            title="Type Alt + Enter can also open side panel"
+          >
+            Open Side Panel
+          </Button>
         </div>
+        <p style={{ textAlign: "center" }}>
+          <a href="https://github.com/yingrui/gluonmeson-chrome-extension">
+            Guru Mason
+          </a>{" "}
+          is glad to help you, type `Alt + Enter` can also open side panel.
+        </p>
       </Form>
       {contextHolder}
     </div>
