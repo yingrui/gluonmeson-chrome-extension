@@ -105,6 +105,13 @@ const Popup = () => {
           >
             <Input />
           </Form.Item>
+          <Form.Item
+            name="baCopilotApi"
+            label="Copilot Api"
+            rules={[{ type: "url" }]}
+          >
+            <Input />
+          </Form.Item>
         </>
       ),
     },

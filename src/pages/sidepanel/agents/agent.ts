@@ -11,6 +11,7 @@ let defaultModel = "gpt-3.5-turbo";
 let toolsCallModel: string = null;
 let client: OpenAI;
 let baCopilotKnowledgeApi = "";
+let baCopilotApi = "";
 let language = "English";
 let apiKey = "";
 configureStorage.get().then((config) => {
@@ -27,6 +28,7 @@ configureStorage.get().then((config) => {
   baCopilotKnowledgeApi = config.baCopilotKnowledgeApi
     ? config.baCopilotKnowledgeApi
     : baCopilotKnowledgeApi;
+  baCopilotApi = config.baCopilotApi ? config.baCopilotApi : baCopilotApi;
   apiKey = config.apiKey ? config.apiKey : apiKey;
   language = config.language ? config.language : language;
 });
@@ -52,6 +54,7 @@ class AgentFactory {
         client,
         language,
         baCopilotKnowledgeApi,
+        baCopilotApi,
         apiKey,
       ),
     ];

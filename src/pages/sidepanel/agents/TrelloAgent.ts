@@ -4,6 +4,7 @@ import AgentWithTools from "./AgentWithTools";
 
 class TrelloAgent extends AgentWithTools {
   baCopilotKnowledgeApi: string;
+  baCopilotApi: string;
   apiKey: string;
 
   constructor(
@@ -11,22 +12,24 @@ class TrelloAgent extends AgentWithTools {
     client: OpenAI,
     language: string,
     baCopilotKnowledgeApi: string,
+    baCopilotApi: string,
     apiKey: string,
   ) {
     super(defaultModelName, client, language);
     this.addTool(
       "generate_story",
-      "generate story content for user before they want to create a new card in Trello board",
+      "generate story content for user before they want to create a new card in story board",
       ["title", "keywords"],
     );
     this.addTool(
       "tasking",
-      "Help developer to breakdown tasks for story in trello card, when user is browsing trello card page",
+      "Help developer to breakdown tasks for story in story card, when user is browsing story card page",
       ["userInput"],
     );
-    // this.addTool("createCard", "create card in Trello board with given title and description", ["title", "desc", "column"]);
+    // this.addTool("createCard", "create card in story board with given title and description", ["title", "desc", "column"]);
 
     this.baCopilotKnowledgeApi = baCopilotKnowledgeApi;
+    this.baCopilotApi = baCopilotApi;
     this.apiKey = apiKey;
   }
 
@@ -47,7 +50,7 @@ class TrelloAgent extends AgentWithTools {
 
   async handleCannotGetBoardError(): Promise<any> {
     const prompt = `You're an Business Analyst in Software Engineering Team.
-But you cannot get any information. Reply sorry and ask user to open or navigate to trello board, so you can get information from board.`;
+But you cannot get any information. Reply sorry and ask user to open or navigate to story board, so you can get information from board.`;
     return await this.chatCompletion([
       { role: "system", content: prompt },
       { role: "user", content: `explain in ${this.language}:` },
@@ -56,7 +59,7 @@ But you cannot get any information. Reply sorry and ask user to open or navigate
 
   async handleCannotGetCardError(): Promise<any> {
     const prompt = `You're an Business Analyst or software engineer in Software Engineering Team.
-But you cannot get any card information. Reply sorry and ask user to open or navigate to trello board card page, so you can get information of card.`;
+But you cannot get any card information. Reply sorry and ask user to open or navigate to story board card page, so you can get information of card.`;
     return await this.chatCompletion([
       { role: "system", content: prompt },
       { role: "user", content: `explain in ${this.language}:` },
@@ -85,9 +88,7 @@ But you cannot get any card information. Reply sorry and ask user to open or nav
     throw new Error("Unexpected tool call in TrelloAgent: " + command);
   }
 
-  async generateStory(title, keywords = ""): Promise<any> {
-    const board = await this.get_board();
-    if (!board) return this.handleCannotGetBoardError();
+  async generateStoryWithGPTModel(board, title, keywords = ""): Promise<any> {
     let prompt = "";
     if (board.type === "board") {
       const context = board.columns.map((column) => {
@@ -107,7 +108,7 @@ You need to consider other Columns & Cards information on board, they are:
 ${context}`;
     } else if (board.type === "card") {
       prompt = `You're an Business Analyst in Software Engineering Team.
-You're working on a trello card on: ${board.title}, and the description is: ${board.description}
+You're working on a story card on: ${board.title}, and the description is: ${board.description}
 Please write or complete the story according to user instruction, and generate story in ${this.language} directly.
 Here is user input: ${title}
 The story format should be Given/When/Then, and should include Test Cases as well.
@@ -118,6 +119,12 @@ Use markdown format to beautify output.`;
       { role: "system", content: prompt },
       { role: "user", content: `generate story in ${this.language}:` },
     ]);
+  }
+
+  async generateStory(title, keywords = ""): Promise<any> {
+    const board = await this.get_board();
+    if (!board) return this.handleCannotGetBoardError();
+    return this.generateStoryWithGPTModel(board, title, keywords);
   }
 
   async tasking(userInput: string): Promise<any> {
