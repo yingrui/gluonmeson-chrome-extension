@@ -1,11 +1,13 @@
 import OpenAI from "openai";
 import Tool from "./tool";
 import AgentWithTools from "./AgentWithTools";
+import { fromReadableStream } from "../utils/streaming";
 
-class TrelloAgent extends AgentWithTools {
+class BACopilotAgent extends AgentWithTools {
   baCopilotKnowledgeApi: string;
   baCopilotApi: string;
   apiKey: string;
+  conversationIds = {};
 
   constructor(
     defaultModelName: string,
@@ -85,7 +87,7 @@ But you cannot get any card information. Reply sorry and ask user to open or nav
     if (command === "tasking") {
       return this.tasking(args["userInput"]);
     }
-    throw new Error("Unexpected tool call in TrelloAgent: " + command);
+    throw new Error("Unexpected tool call in BACopilotAgent: " + command);
   }
 
   async generateStoryWithGPTModel(board, title, keywords = ""): Promise<any> {
@@ -124,7 +126,81 @@ Use markdown format to beautify output.`;
   async generateStory(title, keywords = ""): Promise<any> {
     const board = await this.get_board();
     if (!board) return this.handleCannotGetBoardError();
+    if (this.baCopilotApi) {
+      return this.generateStoryWithGluonMesonAgent(board, title, keywords);
+    } else {
+      return this.generateStoryWithGPTModel(board, title, keywords);
+    }
+  }
+
+  async generateStoryWithGluonMesonAgent(
+    board,
+    title,
+    keywords = "",
+  ): Promise<any> {
+    try {
+      const conversation = await this.createConversation(
+        board,
+        title,
+        keywords,
+      );
+      const conversationId = conversation.id;
+      const response = await fetch(
+        this.baCopilotApi + "/conversations/" + conversationId + "/chat",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.apiKey,
+          },
+          body: JSON.stringify({ message: title }),
+        },
+      );
+      return fromReadableStream(response.body);
+    } catch (error) {
+      console.error(error);
+      return this.generateStoryWithGPTModel(board, title, keywords);
+    }
+
     return this.generateStoryWithGPTModel(board, title, keywords);
+  }
+
+  private async createConversation(board, title, keywords = ""): Promise<any> {
+    if (this.conversationIds[board.url]) {
+      console.log("found conversation id", this.conversationIds[board.url]);
+      const data = this.conversationIds[board.url];
+      return new Promise<any>(function (resolve, reject) {
+        resolve(data);
+      });
+    }
+
+    const payload = {
+      variables: [
+        { name: "title", value: board.type === "board" ? title : board.title },
+        { name: "description", value: board.description ?? "" },
+      ],
+    };
+
+    const response = await fetch(this.baCopilotApi + "/conversations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + this.apiKey,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (response.status == 200) {
+      const jsonResult = await response.json();
+      if (jsonResult["status"] === "Success") {
+        this.conversationIds[board.url] = jsonResult.data;
+        return jsonResult.data;
+      } else {
+        throw new Error("Failed to create conversation: " + jsonResult.status);
+      }
+    } else {
+      throw new Error("Failed to create conversation: " + response.statusText);
+    }
   }
 
   async tasking(userInput: string): Promise<any> {
@@ -167,4 +243,4 @@ ${JSON.stringify(searchResult)}
   }
 }
 
-export default TrelloAgent;
+export default BACopilotAgent;

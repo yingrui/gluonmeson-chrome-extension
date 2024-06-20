@@ -6,7 +6,6 @@ import { Mentions, Typography } from "antd";
 import styles from "./SidePanel.module.scss";
 
 import Message from "./components/Message";
-import GluonMesonAgent from "./agents/GluonMesonAgent";
 import AgentFactory from "./agents/agent";
 import { delay, installListener } from "@pages/sidepanel/utils";
 import useStorage from "@root/src/shared/hooks/useStorage";
@@ -96,9 +95,14 @@ function SidePanel() {
       let message = "";
 
       for await (const chunk of stream) {
-        const finishReason = chunk.choices[0]?.finish_reason;
-        const content = chunk.choices[0]?.delta?.content ?? "";
-        message = message + content;
+        if (chunk.choices) {
+          const finishReason = chunk.choices[0]?.finish_reason;
+          const content = chunk.choices[0]?.delta?.content ?? "";
+          message = message + content;
+        } else {
+          message = message + chunk.data;
+        }
+
         setCurrentText(message);
         setTimeout(() => {
           scrollToBottom();

@@ -13,10 +13,10 @@ class GluonMesonAgent extends AgentWithTools {
   chatCompletionTools: OpenAI.Chat.Completions.ChatCompletionTool[] = [];
   commands = [
     "ask_page",
+    "generate_story",
     "google",
     "summary",
     "translate",
-    "generate_story",
     "tasking",
     "help",
   ];

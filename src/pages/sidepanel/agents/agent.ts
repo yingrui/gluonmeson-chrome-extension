@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import configureStorage from "@root/src/shared/storages/gluonConfig";
 import AgentWithTools from "./AgentWithTools";
 import GluonMesonAgent from "./GluonMesonAgent";
-import TrelloAgent from "./TrelloAgent";
+import BACopilotAgent from "./BACopilotAgent";
 import SummaryAgent from "./SummaryAgent";
 import TranslateAgent from "./TranslateAgent";
 import GoogleAgent from "./GoogleAgent";
@@ -33,15 +33,20 @@ configureStorage.get().then((config) => {
   language = config.language ? config.language : language;
 });
 
+let agent: GluonMesonAgent = null;
+
 class AgentFactory {
   static createGluonMesonAgent(): GluonMesonAgent {
-    return new GluonMesonAgent(
-      defaultModel,
-      toolsCallModel,
-      client,
-      language,
-      AgentFactory.createAgents(),
-    );
+    if (!agent) {
+      agent = new GluonMesonAgent(
+        defaultModel,
+        toolsCallModel,
+        client,
+        language,
+        AgentFactory.createAgents(),
+      );
+    }
+    return agent;
   }
 
   private static createAgents(): AgentWithTools[] {
@@ -49,7 +54,7 @@ class AgentFactory {
       new SummaryAgent(defaultModel, client, language),
       new GoogleAgent(defaultModel, client, language),
       new TranslateAgent(defaultModel, client, language),
-      new TrelloAgent(
+      new BACopilotAgent(
         defaultModel,
         client,
         language,
