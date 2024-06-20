@@ -5,7 +5,13 @@ export const matchURL = (url) => {
   return location.host === url.toLowerCase();
 };
 
-const selectors = [
+type Selector = {
+  regex?: RegExp;
+  contentSelector: string;
+  linkSelector?: string;
+};
+
+const selectors: Selector[] = [
   {
     regex: /^https:\/\/www.google.com\/search.*/,
     contentSelector: "#rcnt",
@@ -17,11 +23,11 @@ const selectors = [
   },
 ];
 
-export const getSelectorSettings = (url) => {
+export const getSelectorSettings = (url): Selector => {
   for (const selector of selectors) {
     if (selector.regex.test(url)) {
       return selector;
     }
   }
-  return { regex: "*", contentSelector: "body" };
+  return { contentSelector: "body" };
 };
