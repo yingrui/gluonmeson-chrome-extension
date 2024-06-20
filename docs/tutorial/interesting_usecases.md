@@ -12,7 +12,7 @@ When you're doing research on software engineer, and you find out some webpage l
 
 You can try sorting the table by chat with the agent.
 
-<img src="../images/usecases/sort_programming_language_by_average_salary.png"/>
+<img src="../images/usecases/sort_programming_language_by_average_salary.png" width="278" height="445"/>
 
 ### 2. Business Analysis
 
@@ -34,3 +34,10 @@ When you're analysis data in google spreadsheet, and you don't know how to inser
 <img src="../images/usecases/insert_pie_chart_in_google_spreadsheet.png"/>
 
 In this case, many users may don't the formula `=QUERY(E:I, "SELECT E, SUM(I) GROUP BY E")` before. Guru Mason can help you to learn new formula.
+
+#### 3.2 Generate SQL in Superset
+When you're analyzing data in Superset, and if you would like to generate SQL for the data analysis, you can use the `/ask_page` command to ask Guru Mason.
+
+<img src="../images/usecases/generate_sql_when_use_superset.png"/>
+
+In this case, the user asked Guru Mason to generate SQL to count the name and group by version.
