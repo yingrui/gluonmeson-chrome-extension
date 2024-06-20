@@ -5,6 +5,7 @@ import GluonMesonAgent from "./GluonMesonAgent";
 import BACopilotAgent from "./BACopilotAgent";
 import SummaryAgent from "./SummaryAgent";
 import TranslateAgent from "./TranslateAgent";
+import UiTestAgent from "./UiTestAgent";
 import GoogleAgent from "./GoogleAgent";
 
 let defaultModel = "gpt-3.5-turbo";
@@ -54,6 +55,7 @@ class AgentFactory {
       new SummaryAgent(defaultModel, client, language),
       new GoogleAgent(defaultModel, client, language),
       new TranslateAgent(defaultModel, client, language),
+      new UiTestAgent(defaultModel, client, language),
       new BACopilotAgent(
         defaultModel,
         client,

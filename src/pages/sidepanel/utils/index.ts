@@ -1,19 +1,22 @@
 export const delay = (time: number) =>
   new Promise((resolve) => setTimeout(resolve, time));
 
-export const get_content = async () => {
+function sendMessageToContentScript(message): Promise<any> {
   return new Promise<any>(function (resolve, reject) {
-    // send message to content script, call resolve() when received response"
     chrome.tabs.query({ currentWindow: true, active: true }, (tabs) => {
-      chrome.tabs.sendMessage(
-        tabs[0].id,
-        { type: "get_content" },
-        (response) => {
-          resolve(response);
-        },
-      );
+      chrome.tabs.sendMessage(tabs[0].id, message, (response) => {
+        resolve(response);
+      });
     });
   });
+}
+
+export const get_content = async () => {
+  return sendMessageToContentScript({ type: "get_content" });
+};
+
+export const get_html = async () => {
+  return sendMessageToContentScript({ type: "get_html" });
 };
 
 let listenerInstalled = false;

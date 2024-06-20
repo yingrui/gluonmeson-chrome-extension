@@ -50,6 +50,16 @@ const addCommands = () => {
             text: content,
             links: links,
           });
+        } else if (message.type === "get_html") {
+          const bodyClone = document.querySelector("body").cloneNode(true);
+          bodyClone
+            .querySelectorAll("script, svg, style")
+            .forEach((elem) => elem.remove());
+          sendResponse({
+            url: document.URL,
+            title: document.title,
+            html: bodyClone.innerHTML,
+          });
         }
       })();
     });

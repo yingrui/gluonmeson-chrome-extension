@@ -14,6 +14,7 @@ class GluonMesonAgent extends AgentWithTools {
   commands = [
     "ask_page",
     "generate_story",
+    "generate_test",
     "google",
     "summary",
     "translate",
