@@ -60,3 +60,4 @@ For who want to contribute to this extension, please refer to below documents:
 * [How to get web page content](docs/tasking/how_to_get_web_page_content.md)
 * [How to add new agent and command](docs/tasking/how_to_add_new_agent_and_command.md)
 * [How to update popup window for configuration](docs/tasking/how_to_update_popup_window_for_configuration.md)
+* [How to develop test generation tool](docs/tasking/how_to_develop_test_generation_tool.md)

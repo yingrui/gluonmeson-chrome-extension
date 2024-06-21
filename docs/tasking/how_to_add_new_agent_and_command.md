@@ -4,7 +4,7 @@ This document will guide you on how to add a new agent and command to the GluonM
 
 The new agent will be used to search on Google, and user can use the `/google` command to trigger the agent.
 
-* The agent should be a Python class that inherits from `AgentWithTools` and implements the `executeCommand` method. The `executeCommand` method should return `Promise<Stream<ChatCompletionChunk> | ChatCompletion>`. 
+* The agent should be a Typescript class that inherits from `AgentWithTools` and implements the `executeCommand` method. The `executeCommand` method should return `Promise<Stream<ChatCompletionChunk> | ChatCompletion>`. 
 * The agent should also implement a `search` method that takes a search query as input and returns the search results.
 * The agent should be added to the agent list in the `AgentFactory` class.
 
