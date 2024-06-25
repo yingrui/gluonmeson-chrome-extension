@@ -19,8 +19,8 @@ class BACopilotAgent extends AgentWithTools {
     super(defaultModelName, client, language);
     this.addTool(
       "generate_story",
-      "generate story content for user before they want to create a new card in story board",
-      ["title", "keywords"],
+      "generate story content for user before they want to create a new card in story board. userInput is interactive message between agent & human.",
+      ["userInput"],
     );
     this.addTool(
       "tasking",
@@ -81,7 +81,7 @@ But you cannot get any card information. Reply sorry and ask user to open or nav
     messages: ChatMessage[],
   ): Promise<any> {
     if (command === "generate_story") {
-      return this.generateStory(args["title"], args["keywords"]);
+      return this.generateStory(args["userInput"]);
     }
     if (command === "tasking") {
       return this.tasking(args["userInput"]);
@@ -89,7 +89,7 @@ But you cannot get any card information. Reply sorry and ask user to open or nav
     throw new Error("Unexpected tool call in BACopilotAgent: " + command);
   }
 
-  async generateStoryWithGPTModel(board, title, keywords = ""): Promise<any> {
+  async generateStoryWithGPTModel(board: any, userInput: string): Promise<any> {
     let prompt = "";
     if (board.type === "board") {
       const context = board.columns.map((column) => {
@@ -102,8 +102,10 @@ Cards: ${cards}
       prompt = `You're an Business Analyst in Software Engineering Team.
 You're working on a board on: ${board.title}
 Please write a story according to user instruction, and generate story in ${this.language} directly.
-Here is user input: ${title}
-Generate title and story content, and story format should be Given/When/Then, and should include Test Cases as well.
+Here is user input: ${userInput}
+Generate title and story content, and story format should be Given/When/Then,
+and follow SMART principle (SMART stands for Specific, Measurable, Achievable, Relevant and Time-bound),
+A good user story should be – INVEST (Independent, Negotiable, Valuable, Estimable, Small, Testable).
 Use markdown format to beautify output.
 You need to consider other Columns & Cards information on board, they are:
 ${context}`;
@@ -111,7 +113,7 @@ ${context}`;
       prompt = `You're an Business Analyst in Software Engineering Team.
 You're working on a story card on: ${board.title}, and the description is: ${board.description}
 Please write or complete the story according to user instruction, and generate story in ${this.language} directly.
-Here is user input: ${title}
+Here is user input: ${userInput}
 The story format should be Given/When/Then, and should include Test Cases as well.
 Use markdown format to beautify output.`;
     }
@@ -122,27 +124,22 @@ Use markdown format to beautify output.`;
     ]);
   }
 
-  async generateStory(title, keywords = ""): Promise<any> {
+  async generateStory(userInput: string): Promise<any> {
     const board = await this.get_board();
     if (!board) return this.handleCannotGetBoardError();
     if (this.baCopilotApi) {
-      return this.generateStoryWithGluonMesonAgent(board, title, keywords);
+      return this.generateStoryWithGluonMesonAgent(board, userInput);
     } else {
-      return this.generateStoryWithGPTModel(board, title, keywords);
+      return this.generateStoryWithGPTModel(board, userInput);
     }
   }
 
   async generateStoryWithGluonMesonAgent(
-    board,
-    title,
-    keywords = "",
+    board: any,
+    userInput: string,
   ): Promise<any> {
     try {
-      const conversation = await this.createConversation(
-        board,
-        title,
-        keywords,
-      );
+      const conversation = await this.createConversation(board, userInput);
       const conversationId = conversation.id;
       const response = await fetch(
         this.baCopilotApi + "/conversations/" + conversationId + "/chat",
@@ -152,21 +149,23 @@ Use markdown format to beautify output.`;
             "Content-Type": "application/json",
             Authorization: "Bearer " + this.apiKey,
           },
-          body: JSON.stringify({ message: title }),
+          body: JSON.stringify({ message: userInput }),
         },
       );
       return fromReadableStream(response.body);
     } catch (error) {
       console.error(error);
-      return this.generateStoryWithGPTModel(board, title, keywords);
+      return this.generateStoryWithGPTModel(board, userInput);
     }
 
-    return this.generateStoryWithGPTModel(board, title, keywords);
+    return this.generateStoryWithGPTModel(board, userInput);
   }
 
-  private async createConversation(board, title, keywords = ""): Promise<any> {
+  private async createConversation(
+    board: any,
+    userInput: string,
+  ): Promise<any> {
     if (this.conversationIds[board.url]) {
-      console.log("found conversation id", this.conversationIds[board.url]);
       const data = this.conversationIds[board.url];
       return new Promise<any>(function (resolve, reject) {
         resolve(data);
@@ -175,7 +174,10 @@ Use markdown format to beautify output.`;
 
     const payload = {
       variables: [
-        { name: "title", value: board.type === "board" ? title : board.title },
+        {
+          name: "title",
+          value: board.type === "board" ? userInput : board.title,
+        },
         { name: "description", value: board.description ?? "" },
       ],
     };
