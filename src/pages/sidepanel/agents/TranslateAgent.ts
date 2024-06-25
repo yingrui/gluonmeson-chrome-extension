@@ -1,5 +1,4 @@
 import OpenAI from "openai";
-import Tool from "./tool";
 import AgentWithTools from "./AgentWithTools";
 
 class TranslateAgent extends AgentWithTools {

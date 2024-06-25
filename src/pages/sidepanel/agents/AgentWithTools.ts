@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import Tool from "./tool";
+import Tool from "./Tool";
 
 /**
  * Agent with tools

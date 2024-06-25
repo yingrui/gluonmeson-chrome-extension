@@ -6,7 +6,7 @@ import { Mentions, Typography } from "antd";
 import styles from "./SidePanel.module.scss";
 
 import Message from "./components/Message";
-import AgentFactory from "./agents/agent";
+import AgentFactory from "./agents/AgentFactory";
 import { delay, installListener } from "@pages/sidepanel/utils";
 import useStorage from "@root/src/shared/hooks/useStorage";
 import configureStorage from "@root/src/shared/storages/gluonConfig";

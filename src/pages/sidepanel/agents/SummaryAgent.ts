@@ -1,5 +1,4 @@
 import OpenAI from "openai";
-import Tool from "./tool";
 import AgentWithTools from "./AgentWithTools";
 import { get_content } from "@pages/sidepanel/utils";
 

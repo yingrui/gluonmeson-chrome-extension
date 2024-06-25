@@ -52,13 +52,13 @@ const addCommands = () => {
           });
         } else if (message.type === "get_html") {
           const bodyClone = document.querySelector("body").cloneNode(true);
-          bodyClone
+          (bodyClone as HTMLElement)
             .querySelectorAll("script, svg, style")
             .forEach((elem) => elem.remove());
           sendResponse({
             url: document.URL,
             title: document.title,
-            html: bodyClone.innerHTML,
+            html: (bodyClone as HTMLElement).innerHTML,
           });
         }
       })();
