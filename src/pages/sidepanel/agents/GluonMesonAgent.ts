@@ -12,14 +12,13 @@ class GluonMesonAgent extends AgentWithTools {
   mapToolsAgents = {};
   chatCompletionTools: OpenAI.Chat.Completions.ChatCompletionTool[] = [];
   commands = [
-    "ask_page",
-    "generate_story",
-    "generate_test",
-    "google",
-    "summary",
-    "translate",
-    "tasking",
-    "help",
+    { value: "ask_page", label: "/ask_page" },
+    { value: "generate_story", label: "/generate_story" },
+    { value: "generate_test", label: "/generate_test" },
+    { value: "google", label: "/google" },
+    { value: "summary", label: "/summary" },
+    { value: "translate", label: "/translate" },
+    { value: "tasking", label: "/tasking" },
   ];
 
   constructor(
@@ -70,12 +69,7 @@ class GluonMesonAgent extends AgentWithTools {
    * @returns {object[]} Command options
    */
   public getCommandOptions(): object[] {
-    return this.commands.map((key) => {
-      return {
-        value: key,
-        label: key,
-      };
-    });
+    return [...this.commands]; // clone commands
   }
 
   /**
@@ -241,7 +235,7 @@ Please direct answer questions in ${this.language}, should not add assistant in 
       messages.slice(-1)[0].content, // Get the last user input from the chat messages
     );
 
-    if (this.commands.includes(command)) {
+    if (this.commands.find((c) => c.value === command)) {
       const agent = this.mapToolsAgents[command];
       return agent.executeCommandWithUserInput(command, userInput, messages);
     } else {
@@ -276,16 +270,16 @@ Please direct answer questions in ${this.language}, should not add assistant in 
    * @returns {[string, string]} - Command and user input
    */
   private parseCommand(userInput: string): [string, string] {
-    const matchedCommand = this.commands.find((commandKey) =>
-      userInput.match(new RegExp(`(?:^|\\s)/${commandKey}\\s+`)),
+    const matchedCommand = this.commands.find((command) =>
+      userInput.match(new RegExp(`(?:^|\\s)/${command.value}\\s+`)),
     );
 
     if (matchedCommand) {
       // Use regex group match to extract the input after the command
       const input = userInput.match(
-        new RegExp(`(?:^|\\s)/${matchedCommand}\\s+(.*)`),
+        new RegExp(`(?:^|\\s)/${matchedCommand.value}\\s+(.*)`),
       )[1];
-      return [matchedCommand, input];
+      return [matchedCommand.value, input];
     }
     return ["chat", userInput];
   }

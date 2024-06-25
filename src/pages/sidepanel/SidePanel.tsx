@@ -142,7 +142,7 @@ function SidePanel() {
 
   function getCommandOptions() {
     const options = agent.getCommandOptions();
-    options.push({ value: "clear", label: "clear" }); // add clear command
+    options.push({ value: "clear", label: "/clear" }); // add clear command
     return options;
   }
 
