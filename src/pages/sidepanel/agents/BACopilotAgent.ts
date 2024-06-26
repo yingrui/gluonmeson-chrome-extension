@@ -5,6 +5,7 @@ import { fromReadableStream } from "../utils/streaming";
 class BACopilotAgent extends AgentWithTools {
   baCopilotKnowledgeApi: string;
   baCopilotApi: string;
+  baCopilotTechDescription: string;
   apiKey: string;
   conversationIds = {};
 
@@ -15,6 +16,7 @@ class BACopilotAgent extends AgentWithTools {
     language: string,
     baCopilotKnowledgeApi: string,
     baCopilotApi: string,
+    baCopilotTechDescription: string,
     apiKey: string,
   ) {
     super(defaultModelName, toolsCallModel, client, language);
@@ -32,6 +34,7 @@ class BACopilotAgent extends AgentWithTools {
 
     this.baCopilotKnowledgeApi = baCopilotKnowledgeApi;
     this.baCopilotApi = baCopilotApi;
+    this.baCopilotTechDescription = baCopilotTechDescription;
     this.apiKey = apiKey;
   }
 
@@ -210,14 +213,28 @@ Use markdown format to beautify output.`;
     if (!board || board.type !== "card") return this.handleCannotGetCardError();
     const searchResult = await this.search(board.description);
 
-    const prompt = `You're an software engineer in Team.
+    const prompt = `## Role: Software Engineer
+
+## Situation: the user story you're working on
 You're working on a story card on: ${board.title}
 And the story description is:
 ${board.description}
-Please breakdown story to implementation tasks follow the instruction from user: ${userInput}
-Please follow the search result to breakdown the tasks, and focus on where and how to implement the story.
-Below are found classic example of tasking results:
+
+## Context: technical description
+${this.baCopilotTechDescription}
+
+## Reference: some technical blogs you could refer to
+Please follow the search result to breakdown the tasks.
 ${JSON.stringify(searchResult)}
+
+## Task: breakdown tasks
+Please breakdown story to implementation tasks follow the instruction from user: ${userInput}, and focus on where and how to implement the story.
+
+## Output Format
+Use markdown format to beautify output, for each task, you should include:
+* Objective
+* Actions & Sample Code (if possible)
+* Expected Results & Time Estimation
 `;
 
     return await this.chatCompletion([

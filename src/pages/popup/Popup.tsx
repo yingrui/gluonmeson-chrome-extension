@@ -112,6 +112,12 @@ const Popup = () => {
           >
             <Input />
           </Form.Item>
+          <Form.Item
+            name="baCopilotTechDescription"
+            label="Technical Description"
+          >
+            <Input.TextArea style={{ height: 120 }} />
+          </Form.Item>
         </>
       ),
     },

@@ -4,16 +4,30 @@ This Chrome extension has been designed to provide a seamless experience for use
 
 The interactions with this extension include:
 
-* **Chat in Side Panel**: have a conversation with GluonMesonAgent in the side panel.
+* **Chat in Side Panel**: This is a conversation UI extension, you can have a conversation with GluonMesonAgent in the side panel. 
 * **Right-click**: when you right-click the mouse in webpage, the context menu will showup. Currently, it only supports `Generate Text` action.
 * **Shortcut key**: Use `alt + enter` to open side panel. In the future, there will be more shortcuts to trigger new functions.
 
 Before we dive in, let's introduce some concepts in this Chrome extension:
 
-* **Agents & Commands**: in this extension, there are many agents with different tools, such as `GluonMesonAgent`, `SummaryAgent`, `GoogleAgent`, `TranslateAgent`, `TrelloAgent`, etc. But you're only have conversation with GluonMesonAgent, this agent will try to understand your intent and then call other agents to help you. Some tools of agent have been set as commands, you can type `/` in the chat box to execute corresponding tools directly.
-* **Side Panel**: the side panel is used to chat with GluonMesonAgent, and it will show the results of the tools you executed.
+* **Popup Window**: Manages additional settings and can save configurations specifically for the agent operations within the Side Panel.
+* **Agents & Commands**: in this extension, there are many agents with different tools, such as `GluonMesonAgent`, `SummaryAgent`, `GoogleAgent`, `TranslateAgent`, `TrelloAgent`, etc. These agents are packed in side panel, the agent can recognize your intent and then call other agents to help you. Some tools of agent have been set as commands, you can type `/` in the chat box to execute corresponding tools directly.
+* **Side Panel**: the side panel is used to chat with GluonMesonAgent, and it will show the results of the tools you executed. All the results will be displayed in Markdown format. Other agents do not need to write code for displaying.
 * **Context Menus**: in Chrome extension, when you right-click the mouse it can provide some quick actions, it is called context menu. This extension provide `Generate Text` action when you are writing in a text area and right-click the mouse.
 * **Content Script**: Some actions need to get more details information from webpage, or need to execute automatically in webpage. For example, if you think the generated story is good, then you want to create a Trello card automatically.
+* **Background Service Worker**: Extension service workers are an extension's central event handler, it is processing layer that manages interactions and data flow between the Content Script and the Side Panel.
+
+```mermaid
+graph TD;
+    B[Popup Window] -->|saves config for| C[AI Agents & Commands are in Side Panel]
+    C -->|sends message & instruction to| D[Content Script]
+    D -->|gets info from| E[Web Page]
+    D -->|sends info to| F[Background Service Worker]
+    F -->|processes or forwards info & commands to| C
+
+    classDef className fill:#f9,stroke:#333,stroke-width:2px;
+    class B,C,D,E,F className;
+```
 
 ## 1. Agents & Commands
 
@@ -47,6 +61,24 @@ Agent has tools as below:
 * **Summary**: Quickly grasp the main points of any extensive text with our efficient summarization tool.
 * **Ask Page**: Receive answers based on the content of the web page you are currently viewing.
 
+The sequence diagram for the `/summary` command:
+```mermaid
+sequenceDiagram
+    participant User
+    participant GluonMesonAgent
+    participant SummaryAgent
+    participant Content Script
+    participant GluonMeson Model Service
+
+    User->>GluonMesonAgent: Enters command (e.g., /summary)
+    GluonMesonAgent->>SummaryAgent: parse command and forward to summary agent
+    SummaryAgent->>Content Script: send get_content message to content script
+    Content Script->>SummaryAgent: send content to agent
+    SummaryAgent->>GluonMeson Model Service: generate summary, return streaming message
+    SummaryAgent->>GluonMesonAgent: display on side panel
+    GluonMesonAgent->>User: View summary of current webpage
+```
+
 ### 1.3. GoogleAgent
 
 GoogleAgent allows you to conduct Google searches right from chat box, ensuring you get the most relevant information swiftly.
@@ -67,9 +99,9 @@ Agent has tools as below:
 
 * **Translate**: Effortlessly translate content between Chinese and English or into other specified languages.
 
-### 1.5. TrelloAgent
+### 1.5. BACopilotAgent
 
-TrelloAgent provides tools to help you to generate stories and breakdown these stories with Trello.
+BACopilotAgent provides tools to help you to generate stories and breakdown these stories with story board.
 
 **Supported Command**: generate_story, tasking
 
@@ -77,6 +109,27 @@ Agent has tools as below:
 
 * **Generate Story**: Automatically create engaging narrative content for new Trello board cards.
 * **Tasking**: Generate tasking results based on the description of the trello card you are currently viewing.
+
+The sequence diagram for the `/tasking` command:
+```mermaid
+sequenceDiagram
+    participant User
+    participant GluonMesonAgent
+    participant BACopilotAgent
+    participant Content Script
+    participant GluonMeson KnowledgeService
+    participant GluonMeson Model Service
+
+    User->>GluonMesonAgent: Enters command (e.g., /tasking)
+    GluonMesonAgent->>BACopilotAgent: parse command and forward to BA Copilot agent
+    BACopilotAgent->>Content Script: send get_board message to content script
+    Content Script->>BACopilotAgent: send details of board or card to agent
+    BACopilotAgent->>GluonMeson KnowledgeService: retrieve tasking example or implementation reference via knowledge api
+    GluonMeson KnowledgeService->>BACopilotAgent: return search results
+    BACopilotAgent->>GluonMeson Model Service: generate tasking results, return streaming message
+    BACopilotAgent->>GluonMesonAgent: display on side panel
+    GluonMesonAgent->>User: View tasking results
+```
 
 ## 2. Side Panel
 
@@ -90,9 +143,34 @@ You will see the floating ball on the right side of the webpage, you can click i
 
 If it doesn't work, please refresh the webpage or reload the extension.
 
+
+The floating ball is implemented in content script, and it can open side panel by sending a message to the background service worker. The code is like this:
+```typescript
+// in content script
+chrome.runtime.sendMessage({ type: "open_side_panel" });
+
+// in background service worker
+chrome.runtime.onMessage.addListener((message, sender) => {
+  (async () => {
+    if (message.type === "open_side_panel") {
+      await chrome.sidePanel.open({ tabId: sender.tab.id });
+    }
+  })();
+});
+```
+
 ### 2.2. Shortcut Key
 
 You can type `alt + enter` to open the side panel. If it doesn't work, please refresh the webpage or reload the extension.
+
+This is also implemented in content script, and it can open side panel by sending a message to the background service worker:
+```typescript
+document.addEventListener("keydown", (event) => {
+  if (event.altKey && event.key === "Enter") {
+    chrome.runtime.sendMessage({ type: "open_side_panel" });
+  }
+});
+```
 
 ### 2.3. Click the Toolbar to Open Side Panel
 

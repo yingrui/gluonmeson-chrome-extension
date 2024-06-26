@@ -13,6 +13,7 @@ let toolsCallModel: string = null;
 let client: OpenAI;
 let baCopilotKnowledgeApi = "";
 let baCopilotApi = "";
+let baCopilotTechDescription = "";
 let language = "English";
 let apiKey = "";
 configureStorage.get().then((config) => {
@@ -29,6 +30,9 @@ configureStorage.get().then((config) => {
   baCopilotKnowledgeApi = config.baCopilotKnowledgeApi
     ? config.baCopilotKnowledgeApi
     : baCopilotKnowledgeApi;
+  baCopilotTechDescription = config.baCopilotTechDescription
+    ? config.baCopilotTechDescription
+    : baCopilotTechDescription;
   baCopilotApi = config.baCopilotApi ? config.baCopilotApi : baCopilotApi;
   apiKey = config.apiKey ? config.apiKey : apiKey;
   language = config.language ? config.language : language;
@@ -63,6 +67,7 @@ class AgentFactory {
         language,
         baCopilotKnowledgeApi,
         baCopilotApi,
+        baCopilotTechDescription,
         apiKey,
       ),
     ];

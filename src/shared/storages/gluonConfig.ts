@@ -12,6 +12,7 @@ type GluonConfigure = {
   toolsCallModel: string;
   baCopilotKnowledgeApi: string;
   baCopilotApi: string;
+  baCopilotTechDescription: string;
   language: string;
   enableFloatingBall: boolean;
 };
@@ -26,6 +27,7 @@ export const DEFAULT_GM_CONFIG_VALUE = {
   toolsCallModel: "gpt-4-turbo",
   baCopilotKnowledgeApi: "",
   baCopilotApi: "",
+  baCopilotTechDescription: "",
   language: "English",
   enableFloatingBall: true,
 };
