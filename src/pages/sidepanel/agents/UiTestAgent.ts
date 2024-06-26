@@ -3,8 +3,13 @@ import AgentWithTools from "./AgentWithTools";
 import { get_html } from "@pages/sidepanel/utils";
 
 class UiTestAgent extends AgentWithTools {
-  constructor(defaultModelName: string, client: OpenAI, language: string) {
-    super(defaultModelName, client, language);
+  constructor(
+    defaultModelName: string,
+    toolsCallModel: string,
+    client: OpenAI,
+    language: string,
+  ) {
+    super(defaultModelName, toolsCallModel, client, language);
     this.addTool(
       "generate_test",
       "understand user's instruct and generate an E2E test for current viewing webpage",

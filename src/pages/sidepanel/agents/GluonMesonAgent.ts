@@ -29,22 +29,12 @@ class GluonMesonAgent extends AgentWithTools {
     language,
     agents: AgentWithTools[] = [],
   ) {
-    super(defaultModelName, client, language);
-    this.addTool(
-      "help",
-      "Answer what can GluonMeson Chrome Extension do. The user might ask like: what can you do, or just say help.",
-      ["question"],
-    );
-    this.addTool(
-      "generate_text",
-      "Based on user input, generate text content for user.",
-      ["userInput"],
-    );
+    super(defaultModelName, toolsCallModel, client, language);
 
+    this.addSelfAgentTools();
     for (const agent of agents) {
       this.addAgent(agent);
     }
-    this.addAgent(this);
 
     this.toolsCallModel = toolsCallModel;
   }
@@ -59,8 +49,31 @@ class GluonMesonAgent extends AgentWithTools {
    */
   private addAgent(agent: AgentWithTools): void {
     for (const tool of agent.getTools()) {
-      this.chatCompletionTools.push(tool);
-      this.mapToolsAgents[tool.function.name] = agent;
+      this.getTools().push(tool);
+      const toolCall = tool.getFunction();
+      this.chatCompletionTools.push(toolCall);
+      this.mapToolsAgents[toolCall.function.name] = agent;
+    }
+  }
+
+  /**
+   * Add the self agent tools to chatCompletionTools and mapToolsAgents.
+   */
+  private addSelfAgentTools(): void {
+    this.addTool(
+      "help",
+      "Answer what can GluonMeson Chrome Extension do. The user might ask like: what can you do, or just say help.",
+      ["question"],
+    );
+    this.addTool(
+      "generate_text",
+      "Based on user input, generate text content for user.",
+      ["userInput"],
+    );
+    for (const tool of this.getTools()) {
+      const toolCall = tool.getFunction();
+      this.chatCompletionTools.push(toolCall);
+      this.mapToolsAgents[toolCall.function.name] = this;
     }
   }
 
@@ -100,7 +113,7 @@ class GluonMesonAgent extends AgentWithTools {
    * @returns {Promise<any>} ChatCompletion
    */
   async help(question: string): Promise<any> {
-    const tools = this.chatCompletionTools
+    const toolsDescription = this.chatCompletionTools
       .map(
         (t) =>
           `${t.function.name}: ${t.function.description}: ${t.function.parameters}`,
@@ -108,7 +121,7 @@ class GluonMesonAgent extends AgentWithTools {
       .join("\n");
     const prompt = `You're an assistant or chrome copilot provided by GluonMeson, Guru Mason is your name.
 There are tools you can use:
-${tools}
+${toolsDescription}
 When user asked ${question}, please tell user what you can do for them.`;
 
     return await this.chatCompletion([
@@ -153,20 +166,16 @@ Please help user to beautify or complete the text with Markdown format.`;
     const messagesWithWebpageContext =
       await this.updateSystemMessages(messages);
     try {
-      const chatCompletion = await this.toolsCall(
-        this.toolsCallModel,
-        messagesWithWebpageContext,
-        this.chatCompletionTools,
-      );
+      const choices = await this.plan(messagesWithWebpageContext);
 
-      const tool_calls = chatCompletion.choices[0].message.tool_calls;
+      const tool_calls = choices[0].message.tool_calls;
       if (tool_calls) {
         for (const tool of tool_calls) {
           const agent = this.mapToolsAgents[tool.function.name];
           return agent.execute(tool, messages);
         }
       }
-      const content = chatCompletion.choices[0].message.content;
+      const content = choices[0].message.content;
       if (content) {
         return stringToAsyncIterator(content);
       }

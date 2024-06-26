@@ -10,13 +10,14 @@ class BACopilotAgent extends AgentWithTools {
 
   constructor(
     defaultModelName: string,
+    toolsCallModel: string,
     client: OpenAI,
     language: string,
     baCopilotKnowledgeApi: string,
     baCopilotApi: string,
     apiKey: string,
   ) {
-    super(defaultModelName, client, language);
+    super(defaultModelName, toolsCallModel, client, language);
     this.addTool(
       "generate_story",
       "generate story content for user before they want to create a new card in story board. userInput is interactive message between agent & human.",

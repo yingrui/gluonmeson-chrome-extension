@@ -1,18 +1,20 @@
 import OpenAI from "openai";
 import Tool from "./Tool";
+import ThoughtAgent from "./ThoughtAgent";
 
 /**
  * Agent with tools
  */
-abstract class AgentWithTools {
-  modelName: string;
-  client: OpenAI;
+abstract class AgentWithTools extends ThoughtAgent {
   language: string;
-  tools: Tool[] = [];
 
-  constructor(defaultModelName: string, client: OpenAI, language: string) {
-    this.modelName = defaultModelName;
-    this.client = client;
+  constructor(
+    defaultModelName: string,
+    toolsCallModel: string,
+    client: OpenAI,
+    language: string,
+  ) {
+    super(defaultModelName, toolsCallModel, client);
     this.language = language;
   }
 
@@ -47,15 +49,7 @@ abstract class AgentWithTools {
     } else if (userInputAsArgument) {
       tool.setUserInputAsArgument(userInputAsArgument);
     }
-    this.tools.push(tool);
-  }
-
-  /**
-   * Get tools
-   * @returns {OpenAI.Chat.Completions.ChatCompletionTool[]} Tools
-   */
-  getTools(): OpenAI.Chat.Completions.ChatCompletionTool[] {
-    return this.tools.map((tool) => tool.getFunction());
+    this.getTools().push(tool);
   }
 
   /**
@@ -137,27 +131,6 @@ abstract class AgentWithTools {
       messages: messages as OpenAI.ChatCompletionMessageParam[],
       model: this.modelName,
       stream: stream,
-      max_tokens: 4096,
-    });
-  }
-
-  /**
-   * Tools call
-   * @param {string} toolsCallModel - Tools call model
-   * @param {ChatMessage[]} messages - Messages
-   * @param {OpenAI.Chat.Completions.ChatCompletionTool[]} tools - Tools
-   * @returns {Promise<any>} ChatCompletion
-   */
-  async toolsCall(
-    toolsCallModel: string,
-    messages: ChatMessage[],
-    tools: OpenAI.Chat.Completions.ChatCompletionTool[],
-  ): Promise<any> {
-    return await this.client.chat.completions.create({
-      model: toolsCallModel,
-      messages: messages as OpenAI.ChatCompletionMessageParam[],
-      stream: false,
-      tools: tools,
       max_tokens: 4096,
     });
   }

@@ -52,12 +52,13 @@ class AgentFactory {
 
   private static createAgents(): AgentWithTools[] {
     return [
-      new SummaryAgent(defaultModel, client, language),
-      new GoogleAgent(defaultModel, client, language),
-      new TranslateAgent(defaultModel, client, language),
-      new UiTestAgent(defaultModel, client, language),
+      new SummaryAgent(defaultModel, toolsCallModel, client, language),
+      new GoogleAgent(defaultModel, toolsCallModel, client, language),
+      new TranslateAgent(defaultModel, toolsCallModel, client, language),
+      new UiTestAgent(defaultModel, toolsCallModel, client, language),
       new BACopilotAgent(
         defaultModel,
+        toolsCallModel,
         client,
         language,
         baCopilotKnowledgeApi,

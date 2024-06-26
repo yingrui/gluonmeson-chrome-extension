@@ -3,8 +3,13 @@ import AgentWithTools from "./AgentWithTools";
 import { get_content } from "@pages/sidepanel/utils";
 
 class SummaryAgent extends AgentWithTools {
-  constructor(defaultModelName: string, client: OpenAI, language: string) {
-    super(defaultModelName, client, language);
+  constructor(
+    defaultModelName: string,
+    toolsCallModel: string,
+    client: OpenAI,
+    language: string,
+  ) {
+    super(defaultModelName, toolsCallModel, client, language);
     this.addTool(
       "summary",
       "understand user's instruct and generate summary from given content for user",

@@ -2,8 +2,13 @@ import OpenAI from "openai";
 import AgentWithTools from "./AgentWithTools";
 
 class GoogleAgent extends AgentWithTools {
-  constructor(defaultModelName: string, client: OpenAI, language: string) {
-    super(defaultModelName, client, language);
+  constructor(
+    defaultModelName: string,
+    toolsCallModel: string,
+    client: OpenAI,
+    language: string,
+  ) {
+    super(defaultModelName, toolsCallModel, client, language);
     this.addTool(
       "google",
       "search content from google according to user questions",
