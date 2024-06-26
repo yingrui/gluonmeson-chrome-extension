@@ -1,5 +1,24 @@
 type Bytes = string | ArrayBuffer | Uint8Array | Buffer | null | undefined;
 
+export const stringToAsyncIterator = async (content: string): Promise<any> => {
+  let message = content;
+  return {
+    [Symbol.asyncIterator]: () => {
+      return {
+        async next() {
+          if (message) {
+            const result = { done: false, value: { data: message } };
+            message = "";
+            return result;
+          } else {
+            return { done: true };
+          }
+        },
+      };
+    },
+  };
+};
+
 export const fromReadableStream = async (
   readableStream: ReadableStream<Uint8Array>,
 ): Promise<any> => {

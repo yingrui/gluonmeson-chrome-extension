@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import AgentWithTools from "./AgentWithTools";
 
 import { get_content } from "@pages/sidepanel/utils";
+import { stringToAsyncIterator } from "@pages/sidepanel/utils/streaming";
 
 /**
  * GluonMeson Agent
@@ -164,6 +165,10 @@ Please help user to beautify or complete the text with Markdown format.`;
           const agent = this.mapToolsAgents[tool.function.name];
           return agent.execute(tool, messages);
         }
+      }
+      const content = chatCompletion.choices[0].message.content;
+      if (content) {
+        return stringToAsyncIterator(content);
       }
     } catch (error) {
       console.error(error);
