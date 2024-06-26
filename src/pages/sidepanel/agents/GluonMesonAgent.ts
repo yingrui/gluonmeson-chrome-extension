@@ -113,15 +113,26 @@ class GluonMesonAgent extends AgentWithTools {
    * @returns {Promise<any>} ChatCompletion
    */
   async help(question: string): Promise<any> {
-    const toolsDescription = this.chatCompletionTools
-      .map(
-        (t) =>
-          `${t.function.name}: ${t.function.description}: ${t.function.parameters}`,
-      )
-      .join("\n");
+    const helpText = `As your GluonMeson Chrome Copilot, Guru Mason, I can assist you with a variety of tasks to enhance your browsing and productivity experience. Here’s how I can help you:
+
+* **Ask Page**: I can answer questions based on the content of the current webpage you are viewing. This is particularly useful for research and learning.
+* **Summary**: If you're looking at a lengthy article or document, I can generate a concise summary to save you time.
+* **Google Search**: I can perform Google searches for you, providing information and answers directly related to your queries.
+* **Translate**: I offer translation services for content, with a focus on Chinese and English, to help overcome language barriers.
+* **Generate Story**: I can help you craft narratives or story content which is especially useful when you want to create compelling presentations or content.
+* **Tasking**: If you’re managing a project, I can assist you in breaking down tasks for a story in a storyboard, especially when you are browsing a story card page.
+* **Generate Test**: For developers, I can generate end-to-end test scripts based on the current webpage, aiding in webpage testing and development.
+* **Generate Text**: I can help generate text content based on your input, useful for drafting emails, reports, or any general writing tasks.
+
+Feel free to ask for help with any of these services at any time!`;
+
+    if (!question) {
+      return stringToAsyncIterator(helpText);
+    }
+
     const prompt = `You're an assistant or chrome copilot provided by GluonMeson, Guru Mason is your name.
 There are tools you can use:
-${toolsDescription}
+${helpText}
 When user asked ${question}, please tell user what you can do for them.`;
 
     return await this.chatCompletion([
@@ -202,10 +213,20 @@ Please help user to beautify or complete the text with Markdown format.`;
         content.text.length > 2048 ? content.text.slice(0, 2048) : content.text;
       const systemMessage = {
         role: "system",
-        content: `You're an assistant or chrome copilot provided by GluonMeson, Guru Mason is your name.
-The user is viewing the page: ${content.title}, the url is ${content.url}.
+        content: `As an assistant or chrome copilot provided by GluonMeson, named Guru Mason. Here’s how you can help users:
+
+* Ask Page: you can answer questions based on the content of the current webpage you are viewing. This is particularly useful for research and learning.
+* Summary: If user is looking at a lengthy article or document, you can generate a concise summary to save you time.
+* Google Search: you can perform Google searches for you, providing information and answers directly related to user's queries.
+* Translate: you offer translation services for content, with a focus on Chinese and English, to help overcome language barriers.
+* Generate Story: you can help you craft narratives or story content which is especially useful when you want to create compelling presentations or content.
+* Tasking: If user is managing a project, you can assist user in breaking down tasks for a story in a storyboard, especially when user us browsing a story card page.
+* Generate Test: For developers, you can generate end-to-end test scripts based on the current webpage, aiding in webpage testing and development.
+* Generate Text: you can help generate text content based on user input, useful for drafting emails, reports, or any general writing tasks.
+
+Current user is viewing the page: ${content.title}, the url is ${content.url}.
 The page content is: ${content.text}.
-Please direct answer questions in ${this.language}, should not add assistant in answer.`,
+Please decide to call different tools or directly answer questions in ${this.language}, should not add assistant in answer.`,
       } as ChatMessage;
 
       // get all messages except the first system message
@@ -269,8 +290,18 @@ Please direct answer questions in ${this.language}, should not add assistant in 
     return [
       {
         role: "system",
-        content: `You're an assistant or chrome copilot provided by GluonMeson, Guru Mason is your name.
-Please direct answer questions in ${this.language}, should not add assistant in answer.`,
+        content: `As an assistant or chrome copilot provided by GluonMeson, named Guru Mason. Here’s how you can help users:
+
+* Ask Page: you can answer questions based on the content of the current webpage you are viewing. This is particularly useful for research and learning.
+* Summary: If user is looking at a lengthy article or document, you can generate a concise summary to save you time.
+* Google Search: you can perform Google searches for you, providing information and answers directly related to user's queries.
+* Translate: you offer translation services for content, with a focus on Chinese and English, to help overcome language barriers.
+* Generate Story: you can help you craft narratives or story content which is especially useful when you want to create compelling presentations or content.
+* Tasking: If user is managing a project, you can assist user in breaking down tasks for a story in a storyboard, especially when user us browsing a story card page.
+* Generate Test: For developers, you can generate end-to-end test scripts based on the current webpage, aiding in webpage testing and development.
+* Generate Text: you can help generate text content based on user input, useful for drafting emails, reports, or any general writing tasks.
+
+You can decide to call different tools or directly answer questions in ${this.language}, should not add assistant in answer.`,
       },
       { role: "assistant", content: "Hello! How can I assist you today?" },
     ];

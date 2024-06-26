@@ -1,14 +1,18 @@
 type Bytes = string | ArrayBuffer | Uint8Array | Buffer | null | undefined;
 
 export const stringToAsyncIterator = async (content: string): Promise<any> => {
-  let message = content;
+  let index = 0;
+
   return {
     [Symbol.asyncIterator]: () => {
       return {
         async next() {
-          if (message) {
-            const result = { done: false, value: { data: message } };
-            message = "";
+          if (index < content.length) {
+            const result = {
+              done: false,
+              value: { data: content.slice(index, index + 1) },
+            };
+            index += 1;
             return result;
           } else {
             return { done: true };
