@@ -231,17 +231,23 @@ ${JSON.stringify(searchResult)}
 Please breakdown story to implementation tasks follow the instruction from user: ${userInput}, and focus on where and how to implement the story.
 
 ## Output Format
-Use markdown format to beautify output, for each task, you should include:
-* Objective
-* Actions & Sample Code (if possible)
-* Expected Results & Time Estimation
-`;
+At first, think about how to implement this user story. If there is any question, please ask the user.
+
+Second, use markdown format to output a simple list of tasks.
+1. ...
+2. ...
+
+At last, use markdown format to output the details of some tasks, including:
+* Components need to be added or changed
+* Sample Code (if possible)
+
+Output language: ${this.language}`;
 
     return await this.chatCompletion([
       { role: "system", content: prompt },
       {
         role: "user",
-        content: `Use markdown format to beautify output, begin to breakdown in ${this.language}:`,
+        content: `${userInput}`,
       },
     ]);
   }

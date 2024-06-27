@@ -2,9 +2,14 @@
 
 Add configurations in the extension Popup page to allow users to set up configurations in the Web UI. This document provides a step-by-step guide on how to set up configurations in the extension Popup page.
 
+### Tasking
+1. Define configurations in the `configureStorage`, so other components can get configurations from it.
+2. Add UI input in the Popup page to set up configurations.
+3. Agent can get configurations from `configureStorage`.
+
 ### Step 1: Define configurations
-Add a configuration named `trelloSearchApi` in the `configurationStorage` to store the search API URL.
-The `configurationStorage` is defined in the `src/shared/storages/gluonConfig.ts` file. Please add new configurations as needed.
+Add a configuration named `trelloSearchApi` in the `configureStorage` to store the search API URL.
+The `configureStorage` is defined in the `src/shared/storages/gluonConfig.ts` file. Please add new configurations as needed.
 ```typescript
 type GluonConfigure = {
   apiKey: string;

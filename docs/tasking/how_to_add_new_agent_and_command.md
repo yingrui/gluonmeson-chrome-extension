@@ -8,6 +8,15 @@ The new agent will be used to search on Google, and user can use the `/google` c
 * The agent should also implement a `search` method that takes a search query as input and returns the search results.
 * The agent should be added to the agent list in the `AgentFactory` class.
 
+### Tasking
+1. Add a new agent to the `src/pages/sidepanel/agents` directory.
+2. Implement the `executeCommand` method in the agent.
+3. Be able to check and open google webpage and get search result in `search` method.
+4. Send prompt to gpt service and get result in `search` method.
+5. Add the agent to the agent list in the `AgentFactory` class.
+6. Add the `/google` command to the `GluonMesonAgent` commands list.
+7. Test the new agent and command in side panel.
+
 ### Step 1: Add a new agent
 Add a new agent to the `src/pages/sidepanel/agents` directory. This agent should declare that it can handle the `google` command in constructor.
 ```typescript

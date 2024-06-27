@@ -75,7 +75,15 @@ ${page.html}`;
   }
 ```
 
-### Other Implementations
+### Tasking
+1. Add a new agent to the `src/pages/sidepanel/agents` directory.
+2. Implement the `executeCommand` method in the agent.
+3. Be able to get html from current page in `generate_test` method.
+4. Send prompt to gpt service and get result in `generate_test` method.
+5. Add the agent to the agent list in the `AgentFactory` class.
+6. Add the `/generate_test` command to the `GluonMesonAgent` commands list.
+7. Test the new agent and command in side panel.
+
 All the changes are in this commit: [Add E2E Test Generation Tool `b51555c`](https://github.com/yingrui/gluonmeson-chrome-extension/commit/b51555c2192b2b60a9a01f6466f94a96bb302677)
 
 I spent only 2 hours to develop this feature, there are only 5 files need to be changed or added:

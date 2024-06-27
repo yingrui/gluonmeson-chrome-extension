@@ -5,6 +5,14 @@ This task provides a util method to get the content of the current web page.
 * Add a new util method to send message to and wait for the response (include text and links) from content script.
 * If you want to remove the advertisement from the page, you can provide selectors to content script, so content script can extract better content according to selectors.
 
+### Tasking
+1. Add a `get_content` method to the `src/pages/sidepanel/utils` directory.
+2. Get current tab and send message to content script.
+3. Add `get_content` message handler to the content script.
+4. Get text and links from the page according to the selector.
+5. Provide selectors for specified website.
+6. Send the response to the message sender.
+
 ### Step 1: Add util methods
 Add `get_content` util method to `src/pages/sidepanel/utils`  
 ```typescript
