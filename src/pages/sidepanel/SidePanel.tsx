@@ -22,9 +22,10 @@ function SidePanel() {
   const { scrollRef, scrollToBottom, messagesRef } = useScrollAnchor();
   const commandRef = useRef<boolean>();
 
-  const agent = AgentFactory.createGluonMesonAgent();
-  const initialMessages: ChatMessage[] = agent.getInitialMessages();
-  const [messages, setList] = useState<ChatMessage[]>(initialMessages);
+  const agentRef = useRef(AgentFactory.createGluonMesonAgent());
+  const [messages, setList] = useState<ChatMessage[]>(
+    agentRef.current.getInitialMessages(),
+  );
 
   useEffect(() => {
     const focus = () => {
@@ -58,7 +59,7 @@ function SidePanel() {
       return;
     }
     generateReply(userInput, () =>
-      agent.findAgentToExecute(toolName, args, messages),
+      agentRef.current.findAgentToExecute(toolName, args, messages),
     );
   }
 
@@ -74,11 +75,11 @@ function SidePanel() {
     }
     // when command is clear, then clear the chat history
     if (text.startsWith("/clear")) {
-      setList(initialMessages);
+      setList(agentRef.current.getInitialMessages());
       setText("");
       return;
     }
-    generateReply(text, () => agent.chat(messages));
+    generateReply(text, () => agentRef.current.chat(messages));
   }
 
   async function generateReply(
@@ -141,7 +142,7 @@ function SidePanel() {
   }
 
   function getCommandOptions() {
-    const options = agent.getCommandOptions();
+    const options = agentRef.current.getCommandOptions();
     options.push({ value: "clear", label: "/clear" }); // add clear command
     return options;
   }
