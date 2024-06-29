@@ -36,13 +36,14 @@ class AgentWithTools extends ThoughtAgent {
     name: string,
     description: string,
     stringParameters: string[],
-  ): void {
+  ): Tool {
     const tool = new Tool(name, description);
     for (const stringParameter of stringParameters) {
       tool.addStringParameter(stringParameter);
     }
 
     this.getTools().push(tool);
+    return tool;
   }
 
   /**

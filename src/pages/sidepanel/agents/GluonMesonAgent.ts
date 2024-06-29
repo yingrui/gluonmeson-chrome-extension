@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import AgentWithTools from "./AgentWithTools";
+import _ from "lodash";
 
 import { get_content } from "@pages/sidepanel/utils";
 import { stringToAsyncIterator } from "@pages/sidepanel/utils/streaming";
@@ -13,11 +14,10 @@ class GluonMesonAgent extends AgentWithTools {
   mapToolsAgents = {};
   chatCompletionTools: OpenAI.Chat.Completions.ChatCompletionTool[] = [];
   commands = [
-    { value: "ask_page", label: "/ask_page" },
+    { value: "page", label: "/page" },
     { value: "generate_story", label: "/generate_story" },
     { value: "generate_test", label: "/generate_test" },
     { value: "google", label: "/google" },
-    { value: "summary", label: "/summary" },
     { value: "translate", label: "/translate" },
     { value: "tasking", label: "/tasking" },
   ];
@@ -83,7 +83,12 @@ class GluonMesonAgent extends AgentWithTools {
    * @returns {object[]} Command options
    */
   public getCommandOptions(): object[] {
-    return [...this.commands]; // clone commands
+    const validCommands = this.commands.filter(
+      (command) =>
+        _.findIndex(this.getTools(), (tool) => tool.name === command.value) >=
+        0,
+    );
+    return [...validCommands]; // clone commands
   }
 
   /**
@@ -149,7 +154,6 @@ class GluonMesonAgent extends AgentWithTools {
     const helpText = `As your GluonMeson Chrome Copilot, Guru Mason, I can assist you with a variety of tasks to enhance your browsing and productivity experience. Here’s how I can help you:
 
 * **Ask Page**: I can answer questions based on the content of the current webpage you are viewing. This is particularly useful for research and learning.
-* **Summary**: If you're looking at a lengthy article or document, I can generate a concise summary to save you time.
 * **Google Search**: I can perform Google searches for you, providing information and answers directly related to your queries.
 * **Translate**: I offer translation services for content, with a focus on Chinese and English, to help overcome language barriers.
 * **Generate Story**: I can help you craft narratives or story content which is especially useful when you want to create compelling presentations or content.
@@ -212,7 +216,6 @@ Please help user to beautify or complete the text with Markdown format.`;
       return `As an assistant or chrome copilot provided by GluonMeson, named Guru Mason. Here’s how you can help users:
 
 * Ask Page: you can answer questions based on the content of the current webpage you are viewing. This is particularly useful for research and learning.
-* Summary: If user is looking at a lengthy article or document, you can generate a concise summary to save you time.
 * Google Search: you can perform Google searches for you, providing information and answers directly related to user's queries.
 * Translate: you offer translation services for content, with a focus on Chinese and English, to help overcome language barriers.
 * Generate Story: you can help you craft narratives or story content which is especially useful when you want to create compelling presentations or content.
@@ -255,7 +258,6 @@ ${textContent}.`;
     return `As an assistant or chrome copilot provided by GluonMeson, named Guru Mason. Here’s how you can help users:
 
 * Ask Page: you can answer questions based on the content of the current webpage you are viewing. This is particularly useful for research and learning.
-* Summary: If user is looking at a lengthy article or document, you can generate a concise summary to save you time.
 * Google Search: you can perform Google searches for you, providing information and answers directly related to user's queries.
 * Translate: you offer translation services for content, with a focus on Chinese and English, to help overcome language barriers.
 * Generate Story: you can help you craft narratives or story content which is especially useful when you want to create compelling presentations or content.

@@ -10,16 +10,17 @@ class SummaryAgent extends AgentWithTools {
     language: string,
   ) {
     super(defaultModelName, toolsCallModel, client, language);
-    this.addTool(
-      "summary",
-      "understand user's instruct and generate summary from given content for user",
-      ["userInput"],
-    );
-    this.addTool(
-      "ask_page",
+    const tool = this.addTool(
+      "page",
       "Based on current web page content, answer user's question or follow the user instruction to generate content for them.",
-      ["userInput"],
+      ["userInput", "task"],
     );
+    tool.setStringParameterEnumValues("task", [
+      "summary",
+      "question_answer",
+      "information_extraction",
+      "other",
+    ]);
   }
 
   async handleCannotGetContentError(): Promise<any> {
@@ -50,8 +51,14 @@ The links are: ${JSON.stringify(content.links)}`;
     );
   }
 
-  async ask_page(args: object, messages: ChatMessage[]) {
+  async page(args: object, messages: ChatMessage[]) {
     const userInput = args["userInput"];
+    const task = args["task"];
+
+    if (task === "summary") {
+      return await this.summary(args, messages);
+    }
+
     const content = await get_content();
     if (!content) return this.handleCannotGetContentError();
 

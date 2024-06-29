@@ -15,6 +15,10 @@ class Tool {
     this.properties[name] = { type: "string" };
   }
 
+  setStringParameterEnumValues(name: string, enumValues: string[]) {
+    this.properties[name] = { type: "string", enum: enumValues };
+  }
+
   getFunction(): OpenAI.Chat.Completions.ChatCompletionTool {
     if (Object.keys(this.properties).length > 0) {
       return {
