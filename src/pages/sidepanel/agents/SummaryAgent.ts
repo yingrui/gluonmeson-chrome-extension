@@ -55,7 +55,8 @@ The links are: ${JSON.stringify(content.links)}`;
     const userInput = args["userInput"];
     const task = args["task"];
 
-    if (task === "summary") {
+    // When user input is not given, summary the content at first
+    if (task === "summary" || (!userInput && !task)) {
       return await this.summary(args, messages);
     }
 
