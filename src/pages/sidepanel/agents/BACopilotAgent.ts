@@ -71,28 +71,6 @@ But you cannot get any card information. Reply sorry and ask user to open or nav
     ]);
   }
 
-  /**
-   * Execute command: generate_story and tasking
-   * @param {string} command - Command
-   * @param {object} args - Arguments
-   * @param {ChatMessage[]} messages - Messages
-   * @returns {Promise<any>} ChatCompletion
-   * @throws {Error} Unexpected tool call
-   */
-  async executeCommand(
-    command: string,
-    args: object,
-    messages: ChatMessage[],
-  ): Promise<any> {
-    if (command === "generate_story") {
-      return this.generateStory(args["userInput"]);
-    }
-    if (command === "tasking") {
-      return this.tasking(args["userInput"]);
-    }
-    throw new Error("Unexpected tool call in BACopilotAgent: " + command);
-  }
-
   async generateStoryWithGPTModel(board: any, userInput: string): Promise<any> {
     let prompt = "";
     if (board.type === "board") {
@@ -128,7 +106,8 @@ Use markdown format to beautify output.`;
     ]);
   }
 
-  async generateStory(userInput: string): Promise<any> {
+  async generate_story(args: object, messages: ChatMessage[]): Promise<any> {
+    const userInput = args["userInput"];
     const board = await this.get_board();
     if (!board) return this.handleCannotGetBoardError();
     if (this.baCopilotApi) {
@@ -208,7 +187,8 @@ Use markdown format to beautify output.`;
     }
   }
 
-  async tasking(userInput: string): Promise<any> {
+  async tasking(args: object, messages: ChatMessage[]): Promise<any> {
+    const userInput = args["userInput"];
     const board = await this.get_board();
     if (!board || board.type !== "card") return this.handleCannotGetCardError();
     const searchResult = await this.search(board.description);

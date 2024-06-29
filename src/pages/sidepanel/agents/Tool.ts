@@ -4,7 +4,6 @@ class Tool {
   name: string;
   description: string;
   properties: any;
-  userInputAsArgument: string;
 
   constructor(name: string, description: string) {
     this.name = name;
@@ -14,10 +13,6 @@ class Tool {
 
   addStringParameter(name: string) {
     this.properties[name] = { type: "string" };
-  }
-
-  setUserInputAsArgument(name: string) {
-    this.userInputAsArgument = name;
   }
 
   getFunction(): OpenAI.Chat.Completions.ChatCompletionTool {

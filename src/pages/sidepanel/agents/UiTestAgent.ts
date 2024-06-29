@@ -13,28 +13,8 @@ class UiTestAgent extends AgentWithTools {
     this.addTool(
       "generate_test",
       "understand user's instruct and generate an E2E test for current viewing webpage",
-      ["instruct"],
+      ["userInput"],
     );
-  }
-
-  /**
-   * Execute command: generate_test
-   * @param {string} command - Command
-   * @param {object} args - Arguments
-   * @param {ChatMessage[]} messages - Messages
-   * @returns {Promise<any>} ChatCompletion
-   * @throws {Error} Unexpected tool call
-   */
-  async executeCommand(
-    command: string,
-    args: object,
-    messages: ChatMessage[],
-  ): Promise<any> {
-    switch (command) {
-      case "generate_test":
-        return this.generate_test(args["instruct"]);
-    }
-    throw new Error("Unexpected tool call in UiTestAgent: " + command);
   }
 
   async handleCannotGetHtmlError(): Promise<any> {
@@ -47,7 +27,8 @@ Reply sorry and ask user to refresh webpage, so you can get information from web
     ]);
   }
 
-  async generate_test(instruct: string) {
+  async generate_test(args: object, messages: ChatMessage[]) {
+    const userInput = args["userInput"];
     const page = await get_html();
     if (!page) return this.handleCannotGetHtmlError();
 
@@ -58,7 +39,7 @@ Reply sorry and ask user to refresh webpage, so you can get information from web
 
     const prompt = `You're a senior QA engineer and good at cypress e2e test.
 The user is viewing webpage: ${page.url} ${page.title}.
-Please generate cypress e2e test according to user instruction: ${instruct}
+Please generate cypress e2e test according to user instruction: ${userInput}
 The webpage html is below:
 ${html}`;
 

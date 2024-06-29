@@ -92,27 +92,35 @@ class GluonMesonAgent extends AgentWithTools {
    * 2. If the command is not help, throw an error
    * @param {string} command - Command
    * @param {object} args - Arguments
+   * @param {ChatMessage[]} messages - Messages
    * @returns {Promise<any>} ChatCompletion
    * @async
    * @throws {Error} Unexpected tool call in GluonMesonAgent: {command}
    */
-  async executeCommand(command: string, args: object): Promise<any> {
-    if (command === "help") {
-      return this.help(args["question"]);
-    } else if (command === "generate_text") {
-      return this.generate_text(args["userInput"]);
+  async executeCommand(
+    action: string,
+    args: object,
+    messages: ChatMessage[] = [],
+  ): Promise<any> {
+    const agent = this.mapToolsAgents[action];
+    if (agent) {
+      return agent.execute(action, args, messages);
+    } else {
+      throw new Error("Unexpected tool call in GluonMesonAgent: " + command);
     }
-    throw new Error("Unexpected tool call in GluonMesonAgent: " + command);
   }
 
   /**
    * Answer what can GluonMeson Chrome Extension do
    * 1. List all the tools
    * 2. Ask GPT model to introduce the tools
-   * @param {string} question - User question
+   * @param {object} args - Arguments
+   * @param {ChatMessage[]} messages - Messages
    * @returns {Promise<any>} ChatCompletion
    */
-  async help(question: string): Promise<any> {
+  async help(args: object, messages: ChatMessage[]): Promise<any> {
+    const question = args["question"] ?? "";
+    console.log(question);
     const helpText = `As your GluonMeson Chrome Copilot, Guru Mason, I can assist you with a variety of tasks to enhance your browsing and productivity experience. Here’s how I can help you:
 
 * **Ask Page**: I can answer questions based on the content of the current webpage you are viewing. This is particularly useful for research and learning.
@@ -146,10 +154,12 @@ When user asked ${question}, please tell user what you can do for them.`;
 
   /**
    * Generate text content for user
-   * @param {string} userInput - User input
+   * @param {object} args - Arguments
+   * @param {ChatMessage[]} messages - Messages
    * @returns {Promise<any>} ChatCompletion
    */
-  async generate_text(userInput: string): Promise<any> {
+  async generate_text(args: object, messages: ChatMessage[]): Promise<any> {
+    const userInput = args["userInput"];
     const content = await get_content();
     const prompt = `You're a good writer provided by GluonMeson,
 when user input: ${userInput}.
@@ -163,57 +173,18 @@ Please help user to beautify or complete the text with Markdown format.`;
   }
 
   /**
-   * Choose the tool agent to execute the tool
-   * 1. Call the tool with the chat messages
-   * 2. Get the tool_calls from the chat completion
-   * 3. If the tool_calls exist, execute the tool
-   * 4. If the tool_calls do not exist, return the chat completion
-   * @param {ChatMessage[]} messages - Chat messages
-   * @returns {Promise<any>} ChatCompletion
-   * @async
+   * Describe the current environment
+   * @returns {string} Environment description
    */
-  async callTool(messages: ChatMessage[]): Promise<any> {
-    // Reset system message, so the agent can understand the context
-    const messagesWithWebpageContext =
-      await this.updateSystemMessages(messages);
-    try {
-      const choices = await this.plan(messagesWithWebpageContext);
-
-      const tool_calls = choices[0].message.tool_calls;
-      if (tool_calls) {
-        for (const tool of tool_calls) {
-          const agent = this.mapToolsAgents[tool.function.name];
-          return agent.execute(tool, messages);
-        }
-      }
-      const content = choices[0].message.content;
-      if (content) {
-        return stringToAsyncIterator(content);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-
-    return this.chatCompletion(messagesWithWebpageContext);
-  }
-
-  /**
-   * Update the system messages with current page information.
-   * If the text content length is greater than 2048, slice the content.
-   * @param {ChatMessage[]} messages - Chat messages
-   * @returns {Promise<ChatMessage[]>} Updated messages
-   */
-  private async updateSystemMessages(
-    messages: ChatMessage[],
-  ): Promise<ChatMessage[]> {
+  async environment(): Promise<string> {
     const content = await get_content();
-    return new Promise((resolve) => {
-      if (!content) resolve(messages);
-      const textContent =
-        content.text.length > 2048 ? content.text.slice(0, 2048) : content.text;
-      const systemMessage = {
-        role: "system",
-        content: `As an assistant or chrome copilot provided by GluonMeson, named Guru Mason. Here’s how you can help users:
+    const maxContentLength = 2048;
+    const textContent =
+      content.text.length > maxContentLength
+        ? content.text.slice(0, maxContentLength)
+        : content.text;
+    if (content) {
+      return `As an assistant or chrome copilot provided by GluonMeson, named Guru Mason. Here’s how you can help users:
 
 * Ask Page: you can answer questions based on the content of the current webpage you are viewing. This is particularly useful for research and learning.
 * Summary: If user is looking at a lengthy article or document, you can generate a concise summary to save you time.
@@ -224,34 +195,12 @@ Please help user to beautify or complete the text with Markdown format.`;
 * Generate Test: For developers, you can generate end-to-end test scripts based on the current webpage, aiding in webpage testing and development.
 * Generate Text: you can help generate text content based on user input, useful for drafting emails, reports, or any general writing tasks.
 
-Current user is viewing the page: ${content.title}, the url is ${content.url}.
-The page content is: ${content.text}.
-Please decide to call different tools or directly answer questions in ${this.language}, should not add assistant in answer.`,
-      } as ChatMessage;
-
-      // get all messages except the first system message
-      const conversation = messages.slice(1);
-      resolve([systemMessage, ...conversation]);
-    });
-  }
-
-  /**
-   * Find the agent to execute the tool
-   * 1. Get the agent from the mapToolsAgents
-   * 2. Execute the command with the agent
-   * @param {string} toolName - Tool name
-   * @param {any} args - Arguments
-   * @param {ChatMessage[]} messages - Chat messages
-   * @returns {Promise<any>} ChatCompletion
-   * @async
-   */
-  async findAgentToExecute(
-    toolName: string,
-    args: any,
-    messages: ChatMessage[],
-  ): Promise<any> {
-    const agent = this.mapToolsAgents[toolName];
-    return agent.executeCommand(toolName, args, messages);
+Please decide to call different tools or directly answer questions in ${this.language}, should not add assistant in answer.
+Current user is viewing the page: ${content.title}, the url is ${content.url}, the content is:
+${textContent}.`;
+    } else {
+      return this.getInitialSystemMessage();
+    }
   }
 
   /**
@@ -274,23 +223,12 @@ Please decide to call different tools or directly answer questions in ${this.lan
       const agent = this.mapToolsAgents[command];
       return agent.executeCommandWithUserInput(command, userInput, messages);
     } else {
-      if (this.toolsCallModel) {
-        return this.callTool(messages);
-      } else {
-        return this.chatCompletion(messages);
-      }
+      return super.chat(messages);
     }
   }
 
-  /**
-   * Get initial messages
-   * @returns {ChatMessage[]} Initial messages
-   */
-  getInitialMessages(): ChatMessage[] {
-    return [
-      {
-        role: "system",
-        content: `As an assistant or chrome copilot provided by GluonMeson, named Guru Mason. Here’s how you can help users:
+  getInitialSystemMessage(): string {
+    return `As an assistant or chrome copilot provided by GluonMeson, named Guru Mason. Here’s how you can help users:
 
 * Ask Page: you can answer questions based on the content of the current webpage you are viewing. This is particularly useful for research and learning.
 * Summary: If user is looking at a lengthy article or document, you can generate a concise summary to save you time.
@@ -301,7 +239,18 @@ Please decide to call different tools or directly answer questions in ${this.lan
 * Generate Test: For developers, you can generate end-to-end test scripts based on the current webpage, aiding in webpage testing and development.
 * Generate Text: you can help generate text content based on user input, useful for drafting emails, reports, or any general writing tasks.
 
-You can decide to call different tools or directly answer questions in ${this.language}, should not add assistant in answer.`,
+You can decide to call different tools or directly answer questions in ${this.language}, should not add assistant in answer.`;
+  }
+
+  /**
+   * Get initial messages
+   * @returns {ChatMessage[]} Initial messages
+   */
+  getInitialMessages(): ChatMessage[] {
+    return [
+      {
+        role: "system",
+        content: this.getInitialSystemMessage(),
       },
       { role: "assistant", content: "Hello! How can I assist you today?" },
     ];

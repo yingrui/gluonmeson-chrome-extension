@@ -16,29 +16,10 @@ class TranslateAgent extends AgentWithTools {
     );
   }
 
-  /**
-   * Execute command: translate
-   * @param {string} command - Command
-   * @param {object} args - Arguments
-   * @param {ChatMessage[]} messages - Messages
-   * @returns {Promise<any>} ChatCompletion
-   * @throws {Error} Unexpected tool call
-   */
-  async executeCommand(
-    command: string,
-    args: object,
-    messages: ChatMessage[],
-  ): Promise<any> {
-    if (command === "translate") {
-      return this.translate(args["userInput"], args["targetLanguage"]);
-    }
-    throw new Error("Unexpected tool call in TranslateAgent: " + command);
-  }
-
-  async translate(
-    userInput: string,
-    targetLanguage: string = "opposite language according to user input",
-  ) {
+  async translate(args: object, messages: ChatMessage[]) {
+    const userInput = args["userInput"];
+    const targetLanguage =
+      args["targetLanguage"] || "opposite language according to user input";
     const prompt = `You're a translator and good at Chinese & English. Please translate to ${targetLanguage}.
 Directly output the result, below is user input:
 ${userInput}`;

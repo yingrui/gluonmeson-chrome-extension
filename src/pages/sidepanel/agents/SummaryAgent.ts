@@ -13,35 +13,13 @@ class SummaryAgent extends AgentWithTools {
     this.addTool(
       "summary",
       "understand user's instruct and generate summary from given content for user",
-      ["instruct"],
+      ["userInput"],
     );
     this.addTool(
       "ask_page",
-      "Answer user's question based on current web page content",
-      ["question"],
+      "Based on current web page content, answer user's question or follow the user instruction to generate content for them.",
+      ["userInput"],
     );
-  }
-
-  /**
-   * Execute command: summary and ask_page
-   * @param {string} command - Command
-   * @param {object} args - Arguments
-   * @param {ChatMessage[]} messages - Messages
-   * @returns {Promise<any>} ChatCompletion
-   * @throws {Error} Unexpected tool call
-   */
-  async executeCommand(
-    command: string,
-    args: object,
-    messages: ChatMessage[],
-  ): Promise<any> {
-    switch (command) {
-      case "summary":
-        return this.summarize(args["instruct"]);
-      case "ask_page":
-        return this.askPage(args["question"]);
-    }
-    throw new Error("Unexpected tool call in SummaryAgent: " + command);
   }
 
   async handleCannotGetContentError(): Promise<any> {
@@ -54,12 +32,13 @@ Reply sorry and ask user to refresh webpage, so you can get information from web
     ]);
   }
 
-  async summarize(instruct: string) {
+  async summary(args: object, messages: ChatMessage[]) {
+    const userInput = args["userInput"];
     const content = await get_content();
     if (!content) return this.handleCannotGetContentError();
 
     const prompt = `You're an assistant and good at summarization, the user is reading an article: ${content.title}. 
-Please summarize the content according to user instruction: ${instruct}
+Please summarize the content according to user instruction: ${userInput}
 The content text is: ${content.text}
 The links are: ${JSON.stringify(content.links)}`;
 
@@ -69,12 +48,13 @@ The links are: ${JSON.stringify(content.links)}`;
     ]);
   }
 
-  async askPage(question: string) {
+  async ask_page(args: object, messages: ChatMessage[]) {
+    const userInput = args["userInput"];
     const content = await get_content();
     if (!content) return this.handleCannotGetContentError();
 
     const prompt = `You're an assistant, the user is reading an article: ${content.title}.
-Please answer user's question: ${question}
+Please answer user's question: ${userInput}
 The content text is: ${content.text}
 The links are: ${JSON.stringify(content.links)}`;
 

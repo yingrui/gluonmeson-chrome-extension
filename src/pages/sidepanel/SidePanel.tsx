@@ -59,7 +59,7 @@ function SidePanel() {
       return;
     }
     generateReply(userInput, () =>
-      agentRef.current.findAgentToExecute(toolName, args, messages),
+      agentRef.current.executeCommand(toolName, args, messages),
     );
   }
 

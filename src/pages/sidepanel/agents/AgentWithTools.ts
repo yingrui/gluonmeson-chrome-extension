@@ -30,51 +30,43 @@ abstract class AgentWithTools extends ThoughtAgent {
    * @param {string} name - Name of the tool
    * @param {string} description - Description of the tool
    * @param {string[]} stringParameters - String parameters
-   * @param {string} userInputAsArgument - User input as argument
    * @returns {void}
    */
   public addTool(
     name: string,
     description: string,
     stringParameters: string[],
-    userInputAsArgument: string = null,
   ): void {
     const tool = new Tool(name, description);
     for (const stringParameter of stringParameters) {
       tool.addStringParameter(stringParameter);
     }
 
-    if (stringParameters.length > 0 && userInputAsArgument === null) {
-      tool.setUserInputAsArgument(stringParameters[0]);
-    } else if (userInputAsArgument) {
-      tool.setUserInputAsArgument(userInputAsArgument);
-    }
     this.getTools().push(tool);
   }
 
   /**
    * Execute
-   * 1. Execute the tool
-   * 2. Parse the tool arguments
-   * @param {OpenAI.Chat.Completions.ChatCompletionMessageToolCall} tool - Tool
+   * @param {string} action - Action
+   * @param {object} args - Arguments
    * @param {ChatMessage[]} messages - Messages
    * @returns {Promise<any>} ChatCompletion
-   * @throws {Error} Unexpected tool call, or error parsing tool arguments
    */
   async execute(
-    tool: OpenAI.Chat.Completions.ChatCompletionMessageToolCall,
+    action: string,
+    args: object,
     messages: ChatMessage[],
   ): Promise<any> {
-    let args = {};
-    try {
-      if (tool.function.arguments) {
-        args = JSON.parse(tool.function.arguments);
+    for (const member of Object.getOwnPropertyNames(
+      Object.getPrototypeOf(this),
+    )) {
+      if (member === action && typeof this[member] === "function") {
+        // TODO: need to verify if arguments of function are correct
+        return this[member].apply(this, [args, messages]);
       }
-    } catch (e) {
-      console.error("Error parsing tool arguments", e);
-      console.error("tool.function.arguments", tool.function.arguments);
     }
-    return this.executeCommand(tool.function.name, args, messages);
+
+    return this.executeCommand(action, args, messages);
   }
 
   /**
@@ -95,12 +87,11 @@ abstract class AgentWithTools extends ThoughtAgent {
     // Find the tool with the given command
     for (const tool of this.tools) {
       if (tool.name === command) {
-        // Set the user input as an argument
-        args[tool.userInputAsArgument] = userInput;
+        args["userInput"] = userInput;
         break;
       }
     }
-    return this.executeCommand(command, args, messages);
+    return this.execute(command, args, messages);
   }
 
   /**
@@ -111,28 +102,12 @@ abstract class AgentWithTools extends ThoughtAgent {
    * @returns {Promise<any>} ChatCompletion
    * @abstract
    */
-  abstract executeCommand(
-    command: string,
+  async executeCommand(
+    action: string,
     args: object,
     messages: ChatMessage[],
-  ): Promise<any>;
-
-  /**
-   * Chat completion
-   * @param {ChatMessage[]} messages - Messages
-   * @param {bool} stream - Stream
-   * @returns {Promise<any>} ChatCompletion
-   */
-  async chatCompletion(
-    messages: ChatMessage[],
-    stream: boolean = true,
   ): Promise<any> {
-    return await this.client.chat.completions.create({
-      messages: messages as OpenAI.ChatCompletionMessageParam[],
-      model: this.modelName,
-      stream: stream,
-      max_tokens: 4096,
-    });
+    throw new Error("Unimplemented action: " + action);
   }
 }
 
