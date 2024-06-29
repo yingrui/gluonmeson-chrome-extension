@@ -51,7 +51,7 @@ function SidePanel() {
   }
 
   async function handleCommandFromContentScript(
-    toolName: string,
+    action: string,
     args: any,
     userInput: string,
   ) {
@@ -59,7 +59,7 @@ function SidePanel() {
       return;
     }
     generateReply(userInput, () =>
-      agentRef.current.executeCommand(toolName, args, messages),
+      agentRef.current.executeAction(action, args, messages),
     );
   }
 

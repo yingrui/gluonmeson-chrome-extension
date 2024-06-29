@@ -97,7 +97,7 @@ class GluonMesonAgent extends AgentWithTools {
    * @async
    * @throws {Error} Unexpected tool call in GluonMesonAgent: {command}
    */
-  async executeCommand(
+  async executeAction(
     action: string,
     args: object,
     messages: ChatMessage[] = [],

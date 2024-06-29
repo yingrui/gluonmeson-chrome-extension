@@ -5,7 +5,7 @@ import ThoughtAgent from "./ThoughtAgent";
 /**
  * Agent with tools
  */
-abstract class AgentWithTools extends ThoughtAgent {
+class AgentWithTools extends ThoughtAgent {
   language: string;
 
   constructor(
@@ -66,7 +66,7 @@ abstract class AgentWithTools extends ThoughtAgent {
       }
     }
 
-    return this.executeCommand(action, args, messages);
+    return this.executeAction(action, args, messages);
   }
 
   /**
@@ -96,13 +96,13 @@ abstract class AgentWithTools extends ThoughtAgent {
 
   /**
    * Execute command
-   * @param {string} command - Command
+   * @param {string} action - Action
    * @param {object} args - Pojo object as Arguments
    * @param {ChatMessage[]} messages - Messages
    * @returns {Promise<any>} ChatCompletion
    * @abstract
    */
-  async executeCommand(
+  async executeAction(
     action: string,
     args: object,
     messages: ChatMessage[],
