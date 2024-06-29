@@ -10,17 +10,17 @@ interface Agent {
   /**
    * Think
    * @param {ChatMessage[]} messages - Conversation messages
-   * @returns {Choice[]} Choices
+   * @returns {Promise<ToolCall[] | string>} Choices
    */
-  plan(messages: ChatMessage[]): Promise<Choice[]>;
+  plan(messages: ChatMessage[]): Promise<ToolCall[] | string>;
 
   /**
    * Tracking dialogue state
-   * @param {Choice[]} choices - Choices
+   * @param {ToolCall[]} tools - ToolCalls
    * @param {ChatMessage[]} messages - Messages
-   * @returns {Promise<ToolCall[]>} ToolCalls
+   * @returns {ToolCall[]} ToolCalls
    */
-  trackingDialogueState(choices: Choice[], messages: ChatMessage[]): ToolCall[];
+  trackingDialogueState(tools: ToolCall[], messages: ChatMessage[]): ToolCall[];
 
   /**
    * Execute

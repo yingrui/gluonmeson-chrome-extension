@@ -65,9 +65,9 @@ class ThoughtAgent implements Agent {
   /**
    * Think
    * @param {ChatMessage[]} messages - Conversation messages
-   * @returns {Choice[]} Choices
+   * @returns {Promise<ToolCall[] | string>} Choices
    */
-  async plan(messages: ChatMessage[]): Promise<Choice[]> {
+  async plan(messages: ChatMessage[]): Promise<ToolCall[] | string> {
     const env = await this.environment();
     const systemMessage = { role: "system", content: env } as ChatMessage;
     const messagesWithEnv = env
@@ -75,19 +75,7 @@ class ThoughtAgent implements Agent {
       : messages;
 
     const toolCalls = this.getToolCalls();
-    return this.toolsCall(messagesWithEnv, toolCalls);
-  }
-
-  /**
-   * Tracking dialogue state
-   * @param {Choice[]} choices - Choices
-   * @param {ChatMessage[]} messages - Messages
-   * @returns {Promise<ToolCall[]>} ToolCalls
-   */
-  trackingDialogueState(
-    choices: Choice[],
-    messages: ChatMessage[],
-  ): ToolCall[] | string {
+    const choices = await this.toolsCall(messagesWithEnv, toolCalls);
     if (choices.length > 0) {
       if (choices[0].finish_reason === "tool_calls") {
         const tool_calls = choices[0].message.tool_calls;
@@ -98,12 +86,24 @@ class ThoughtAgent implements Agent {
         choices[0].finish_reason === "stop" &&
         choices[0].message.content
       ) {
-        // TODO: should return message content as a tool call
         return choices[0].message.content;
       }
     }
-    // TODO: Implement tracking dialogue state
     return [];
+  }
+
+  /**
+   * Tracking dialogue state
+   * @param {ToolCall[]} tools - ToolCalls
+   * @param {ChatMessage[]} messages - Messages
+   * @returns {ToolCall[]} ToolCalls
+   */
+  trackingDialogueState(
+    tools: ToolCall[],
+    messages: ChatMessage[],
+  ): ToolCall[] {
+    // TODO: Implement tracking dialogue state
+    return tools;
   }
 
   /**
@@ -113,22 +113,21 @@ class ThoughtAgent implements Agent {
    * @async
    */
   async chat(messages: ChatMessage[]): Promise<any> {
-    const choices = await this.plan(messages);
-    const toolCallArray = this.trackingDialogueState(choices, messages);
+    const tools = await this.plan(messages);
+    if (typeof tools === "string")
+      return stringToAsyncIterator(tools as string);
 
-    if (typeof toolCallArray === "string") {
-      return stringToAsyncIterator(toolCallArray as string);
-    }
-
-    if (toolCallArray.length === 0) {
-      return this.chatCompletion(messages);
-    }
+    const toolCallArray = this.trackingDialogueState(
+      tools as ToolCall[],
+      messages,
+    );
+    if (toolCallArray.length === 0) return this.chatCompletion(messages);
 
     for (const tool of toolCallArray) {
       const action = tool.function.name;
       return this.execute(action, this.parseArguments(tool), messages);
     }
-    throw new Error("Unexpected choice: " + JSON.stringify(choices[0]));
+    throw new Error("Unexpected action: " + JSON.stringify(toolCallArray[0]));
   }
 
   private parseArguments(tool: ToolCall): object {
