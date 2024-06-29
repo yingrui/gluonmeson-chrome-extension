@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import Tool from "./Tool";
 import Agent from "./Agent";
+import { stringToAsyncIterator } from "../utils/streaming";
 
 class ThoughtAgent implements Agent {
   modelName: string;
@@ -86,16 +87,19 @@ class ThoughtAgent implements Agent {
   trackingDialogueState(
     choices: Choice[],
     messages: ChatMessage[],
-  ): ToolCall[] {
+  ): ToolCall[] | string {
     if (choices.length > 0) {
       if (choices[0].finish_reason === "tool_calls") {
         const tool_calls = choices[0].message.tool_calls;
         if (tool_calls) {
           return tool_calls;
         }
-      } else if (choices[0].message.content) {
+      } else if (
+        choices[0].finish_reason === "stop" &&
+        choices[0].message.content
+      ) {
         // TODO: should return message content as a tool call
-        return [];
+        return choices[0].message.content;
       }
     }
     // TODO: Implement tracking dialogue state
@@ -111,6 +115,10 @@ class ThoughtAgent implements Agent {
   async chat(messages: ChatMessage[]): Promise<any> {
     const choices = await this.plan(messages);
     const toolCallArray = this.trackingDialogueState(choices, messages);
+
+    if (typeof toolCallArray === "string") {
+      return stringToAsyncIterator(toolCallArray as string);
+    }
 
     if (toolCallArray.length === 0) {
       return this.chatCompletion(messages);
