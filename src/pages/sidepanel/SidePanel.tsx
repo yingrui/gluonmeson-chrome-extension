@@ -59,7 +59,7 @@ function SidePanel() {
       return;
     }
     generateReply(userInput, () =>
-      agentRef.current.executeAction(action, args, messages),
+      agentRef.current.execute([{ name: action, arguments: args }], messages),
     );
   }
 

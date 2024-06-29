@@ -10,26 +10,25 @@ interface Agent {
   /**
    * Think
    * @param {ChatMessage[]} messages - Conversation messages
-   * @returns {Promise<ToolCall[] | string>} Choices
+   * @returns {Promise<Action[]>} Actions
    */
-  plan(messages: ChatMessage[]): Promise<ToolCall[] | string>;
+  plan(messages: ChatMessage[]): Promise<Action[]>;
 
   /**
-   * Tracking dialogue state
-   * @param {ToolCall[]} tools - ToolCalls
+   * Tracking dialogue state, should be invoked in execute method, before actions are executed
+   * @param {Action[]} actions - Actions
    * @param {ChatMessage[]} messages - Messages
-   * @returns {ToolCall[]} ToolCalls
+   * @returns {Action[]} Actions
    */
-  trackingDialogueState(tools: ToolCall[], messages: ChatMessage[]): ToolCall[];
+  trackingDialogueState(actions: Action[], messages: ChatMessage[]): Action[];
 
   /**
    * Execute
-   * @param {string} action - Åction
-   * @param {object} args - Arguments
+   * @param {Action[]} actions - Actions
    * @param {ChatMessage[]} messages - Messages
    * @returns {Promise<any>} ChatCompletion
    */
-  execute(action: string, args: object, messages: ChatMessage[]): Promise<any>;
+  execute(actions: Action[], messages: ChatMessage[]): Promise<any>;
 
   /**
    * Chat with user

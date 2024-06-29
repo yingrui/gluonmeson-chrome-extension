@@ -9,6 +9,16 @@ declare interface ChatSession {
   messages: ChatMessage[];
 }
 
+declare interface Intent {
+  name: string;
+  arguments: object;
+}
+
+declare interface Action {
+  name: string;
+  arguments: object;
+}
+
 /**
  * https://github.com/openai/openai-node/blob/master/src/resources/chat/completions.ts
  * namespace ChatCompletion {

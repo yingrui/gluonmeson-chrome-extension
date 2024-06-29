@@ -110,10 +110,10 @@ class GluonMesonAgent extends ThoughtAgent {
     for (const tool of this.getTools()) {
       if (tool.name === command) {
         args["userInput"] = userInput;
-        break;
+        return this.execute([{ name: command, arguments: args }], messages);
       }
     }
-    return this.execute(command, args, messages);
+    throw new Error("Unexpected tool call: " + command);
   }
 
   /**
@@ -134,7 +134,7 @@ class GluonMesonAgent extends ThoughtAgent {
   ): Promise<any> {
     const agent = this.mapToolsAgents[action];
     if (agent) {
-      return agent.execute(action, args, messages);
+      return agent.execute([{ name: action, arguments: args }], messages);
     } else {
       throw new Error("Unexpected action in GluonMesonAgent: " + action);
     }

@@ -63,11 +63,32 @@ class ThoughtAgent implements Agent {
   }
 
   /**
+   * Choose the tool agent to execute the tool
+   * @param {ChatMessage[]} messages - Chat messages
+   * @returns {Promise<any>} ChatCompletion
+   * @async
+   */
+  async chat(messages: ChatMessage[]): Promise<any> {
+    const actions = await this.plan(messages);
+    return this.execute(actions, messages);
+  }
+
+  /**
+   * Describe the current environment
+   * @returns {string} Environment description
+   */
+  async environment(): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      resolve("");
+    });
+  }
+
+  /**
    * Think
    * @param {ChatMessage[]} messages - Conversation messages
-   * @returns {Promise<ToolCall[] | string>} Choices
+   * @returns {Promise<Action[]>} Actions
    */
-  async plan(messages: ChatMessage[]): Promise<ToolCall[] | string> {
+  async plan(messages: ChatMessage[]): Promise<Action[]> {
     const env = await this.environment();
     const systemMessage = { role: "system", content: env } as ChatMessage;
     const messagesWithEnv = env
@@ -77,87 +98,55 @@ class ThoughtAgent implements Agent {
     const toolCalls = this.getToolCalls();
     const choices = await this.toolsCall(messagesWithEnv, toolCalls);
     if (choices.length > 0) {
-      if (choices[0].finish_reason === "tool_calls") {
-        const tool_calls = choices[0].message.tool_calls;
-        if (tool_calls) {
-          return tool_calls;
+      const choice = choices[0];
+      if (choice.finish_reason === "tool_calls") {
+        const tools = choice.message.tool_calls;
+        if (tools) {
+          return tools.map((t) => this.toAction(t));
         }
-      } else if (
-        choices[0].finish_reason === "stop" &&
-        choices[0].message.content
-      ) {
-        return choices[0].message.content;
+      } else if (choice.finish_reason === "stop" && choice.message.content) {
+        return [this.replyAction(choice.message.content)];
       }
     }
     return [];
   }
 
   /**
-   * Tracking dialogue state
-   * @param {ToolCall[]} tools - ToolCalls
+   * Tracking dialogue state, should be invoked in execute method, before actions are executed
+   * @param {Action[]} actions - Actions
    * @param {ChatMessage[]} messages - Messages
-   * @returns {ToolCall[]} ToolCalls
+   * @returns {Action[]} Actions
    */
-  trackingDialogueState(
-    tools: ToolCall[],
-    messages: ChatMessage[],
-  ): ToolCall[] {
+  trackingDialogueState(actions: Action[], messages: ChatMessage[]): Action[] {
     // TODO: Implement tracking dialogue state
-    return tools;
-  }
-
-  /**
-   * Choose the tool agent to execute the tool
-   * @param {ChatMessage[]} messages - Chat messages
-   * @returns {Promise<any>} ChatCompletion
-   * @async
-   */
-  async chat(messages: ChatMessage[]): Promise<any> {
-    const tools = await this.plan(messages);
-    if (typeof tools === "string")
-      return stringToAsyncIterator(tools as string);
-
-    const toolCallArray = this.trackingDialogueState(
-      tools as ToolCall[],
-      messages,
-    );
-    if (toolCallArray.length === 0) return this.chatCompletion(messages);
-
-    for (const tool of toolCallArray) {
-      const action = tool.function.name;
-      return this.execute(action, this.parseArguments(tool), messages);
+    if (actions.length === 0) {
+      return [this.chatAction(messages[messages.length - 1].content)];
     }
-    throw new Error("Unexpected action: " + JSON.stringify(toolCallArray[0]));
-  }
-
-  private parseArguments(tool: ToolCall): object {
-    let args = {};
-    try {
-      if (tool.function.arguments) {
-        args = JSON.parse(tool.function.arguments);
-      }
-    } catch (e) {
-      console.error("Error parsing tool arguments", e);
-      console.error("tool.function.arguments", tool.function.arguments);
-    }
-    return args;
+    return actions;
   }
 
   /**
    * Execute
-   * @param {string} action - Action
-   * @param {object} args - Arguments
+   * @param {Action[]} actions - Actions
    * @param {ChatMessage[]} messages - Messages
    * @returns {Promise<any>} ChatCompletion
    */
-  async execute(
-    action: string,
-    args: object,
-    messages: ChatMessage[],
-  ): Promise<any> {
-    for (const member of Object.getOwnPropertyNames(
-      Object.getPrototypeOf(this),
-    )) {
+  async execute(actions: Action[], messages: ChatMessage[]): Promise<any> {
+    const refinedActions = this.trackingDialogueState(actions, messages);
+
+    // TODO: support multiple actions in future
+    const action = refinedActions[0].name;
+    const args = refinedActions[0].arguments;
+
+    if (action === "chat") {
+      return this.chatCompletion(messages, "", args["userInput"]);
+    }
+
+    if (action === "reply") {
+      return stringToAsyncIterator(args["content"]);
+    }
+
+    for (const member of this.getMemberOfSelf()) {
       if (member === action && typeof this[member] === "function") {
         // TODO: need to verify if arguments of function are correct
         return this[member].apply(this, [args, messages]);
@@ -165,6 +154,10 @@ class ThoughtAgent implements Agent {
     }
 
     return this.executeAction(action, args, messages);
+  }
+
+  private getMemberOfSelf(): string[] {
+    return Object.getOwnPropertyNames(Object.getPrototypeOf(this));
   }
 
   /**
@@ -182,14 +175,25 @@ class ThoughtAgent implements Agent {
     throw new Error("Unimplemented action: " + action);
   }
 
-  /**
-   * Describe the current environment
-   * @returns {string} Environment description
-   */
-  async environment(): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      resolve("");
-    });
+  private toAction(tool: ToolCall): Action {
+    let args = {};
+    try {
+      if (tool.function.arguments) {
+        args = JSON.parse(tool.function.arguments);
+      }
+    } catch (e) {
+      console.error("Error parsing tool arguments", e);
+      console.error("tool.function.arguments", tool.function.arguments);
+    }
+    return { name: tool.function.name, arguments: args } as Action;
+  }
+
+  private replyAction(content: string): Action {
+    return { name: "reply", arguments: { content } } as Action;
+  }
+
+  private chatAction(userInput: string): Action {
+    return { name: "chat", arguments: { userInput } } as Action;
   }
 
   /**
