@@ -87,6 +87,31 @@ class GluonMesonAgent extends AgentWithTools {
   }
 
   /**
+   * Execute command with user input.
+   * The user input should be set to object args, need to figure out which parameter is the user input.
+   * @param {string} command - Command
+   * @param {string} userInput - User input
+   * @param {ChatMessage[]} messages - Messages
+   * @returns {Promise<any>} ChatCompletion
+   * @throws {Error} Unexpected tool call
+   */
+  async executeCommandWithUserInput(
+    command: string,
+    userInput: string,
+    messages: ChatMessage[],
+  ): Promise<any> {
+    const args = {};
+    // Find the tool with the given command
+    for (const tool of this.getTools()) {
+      if (tool.name === command) {
+        args["userInput"] = userInput;
+        break;
+      }
+    }
+    return this.execute(command, args, messages);
+  }
+
+  /**
    * Execute the command
    * 1. If the command is help, call the help function
    * 2. If the command is not help, throw an error
@@ -220,8 +245,7 @@ ${textContent}.`;
     );
 
     if (this.commands.find((c) => c.value === command)) {
-      const agent = this.mapToolsAgents[command];
-      return agent.executeCommandWithUserInput(command, userInput, messages);
+      return this.executeCommandWithUserInput(command, userInput, messages);
     } else {
       return super.chat(messages);
     }

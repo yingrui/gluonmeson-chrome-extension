@@ -37,15 +37,17 @@ Reply sorry and ask user to refresh webpage, so you can get information from web
     const content = await get_content();
     if (!content) return this.handleCannotGetContentError();
 
-    const prompt = `You're an assistant and good at summarization, the user is reading an article: ${content.title}. 
-Please summarize the content according to user instruction: ${userInput}
+    const prompt = `You're an assistant and good at summarization,
+Please summarize the content in: ${this.language}.
+The user is reading an article: ${content.title}.
 The content text is: ${content.text}
 The links are: ${JSON.stringify(content.links)}`;
 
-    return await this.chatCompletion([
-      { role: "system", content: prompt },
-      { role: "user", content: `please summarize text in ${this.language}:` },
-    ]);
+    return await this.chatCompletion(
+      messages,
+      prompt,
+      userInput ?? `please summary the content in ${this.language}`,
+    );
   }
 
   async ask_page(args: object, messages: ChatMessage[]) {
@@ -53,15 +55,17 @@ The links are: ${JSON.stringify(content.links)}`;
     const content = await get_content();
     if (!content) return this.handleCannotGetContentError();
 
-    const prompt = `You're an assistant, the user is reading an article: ${content.title}.
-Please answer user's question: ${userInput}
+    const prompt = `You're an assistant and good at data analysis & collection, summarization, wikipedia, and many kinds of internet tools,
+Please answer user's question in ${this.language}.
+The user is reading an article: ${content.title}.
 The content text is: ${content.text}
 The links are: ${JSON.stringify(content.links)}`;
 
-    return await this.chatCompletion([
-      { role: "system", content: prompt },
-      { role: "user", content: `please answer in ${this.language}:` },
-    ]);
+    return await this.chatCompletion(
+      messages,
+      prompt,
+      userInput ?? `please answer in ${this.language}`,
+    );
   }
 }
 

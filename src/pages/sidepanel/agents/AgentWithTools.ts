@@ -70,31 +70,6 @@ class AgentWithTools extends ThoughtAgent {
   }
 
   /**
-   * Execute command with user input.
-   * The user input should be set to object args, need to figure out which parameter is the user input.
-   * @param {string} command - Command
-   * @param {string} userInput - User input
-   * @param {ChatMessage[]} messages - Messages
-   * @returns {Promise<any>} ChatCompletion
-   * @throws {Error} Unexpected tool call
-   */
-  async executeCommandWithUserInput(
-    command: string,
-    userInput: string,
-    messages: ChatMessage[],
-  ): Promise<any> {
-    const args = {};
-    // Find the tool with the given command
-    for (const tool of this.tools) {
-      if (tool.name === command) {
-        args["userInput"] = userInput;
-        break;
-      }
-    }
-    return this.execute(command, args, messages);
-  }
-
-  /**
    * Execute command
    * @param {string} action - Action
    * @param {object} args - Pojo object as Arguments

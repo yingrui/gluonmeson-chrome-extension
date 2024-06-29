@@ -181,8 +181,30 @@ abstract class ThoughtAgent implements Agent {
    */
   async chatCompletion(
     messages: ChatMessage[],
+    systemPrompt: string = "",
+    replaceUserInput: string = "",
     stream: boolean = true,
   ): Promise<any> {
+    if (systemPrompt && messages.length > 0 && messages[0].role === "system") {
+      const systemMessage = {
+        role: "system",
+        content: systemPrompt,
+      } as ChatMessage;
+      messages = [systemMessage, ...messages.slice(1)];
+    }
+
+    if (
+      replaceUserInput &&
+      messages.length > 1 &&
+      messages[messages.length - 1].role === "user"
+    ) {
+      const userMessage = {
+        role: "user",
+        content: replaceUserInput,
+      } as ChatMessage;
+      messages = [...messages.slice(0, messages.length - 1), userMessage];
+    }
+
     return await this.client.chat.completions.create({
       messages: messages as OpenAI.ChatCompletionMessageParam[],
       model: this.modelName,
