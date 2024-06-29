@@ -1,62 +1,24 @@
 import OpenAI from "openai";
 import Tool from "./Tool";
+import Agent from "./Agent";
 
-interface Agent {
-  /**
-   * Get tools that the agent can use
-   * @returns {Tool[]} Tools
-   */
-  getTools(): Tool[];
-
-  /**
-   * Think
-   * @param {ChatMessage[]} messages - Conversation messages
-   * @returns {Choice[]} Choices
-   */
-  plan(messages: ChatMessage[]): Promise<Choice[]>;
-
-  /**
-   * Tracking dialogue state
-   * @param {Choice[]} choices - Choices
-   * @param {ChatMessage[]} messages - Messages
-   * @returns {Promise<ToolCall[]>} ToolCalls
-   */
-  trackingDialogueState(choices: Choice[], messages: ChatMessage[]): ToolCall[];
-
-  /**
-   * Execute
-   * @param {string} action - Åction
-   * @param {object} args - Arguments
-   * @param {ChatMessage[]} messages - Messages
-   * @returns {Promise<any>} ChatCompletion
-   */
-  execute(action: string, args: object, messages: ChatMessage[]): Promise<any>;
-
-  /**
-   * Chat with user
-   * @param {ChatMessage[]} messages - Chat messages
-   * @returns {Promise<any>} ChatCompletion
-   * @async
-   */
-  chat(messages: ChatMessage[]): Promise<any>;
-
-  /**
-   * Describe the current environment
-   * @returns {string} Environment description
-   */
-  environment(): Promise<string>;
-}
-
-abstract class ThoughtAgent implements Agent {
+class ThoughtAgent implements Agent {
   modelName: string;
   toolsCallModel: string;
   client: OpenAI;
+  language: string;
   tools: Tool[] = [];
 
-  constructor(modelName: string, toolsCallModel: string, client: OpenAI) {
+  constructor(
+    modelName: string,
+    toolsCallModel: string,
+    client: OpenAI,
+    language: string,
+  ) {
     this.modelName = modelName;
     this.toolsCallModel = toolsCallModel;
     this.client = client;
+    this.language = language;
   }
 
   /**
@@ -65,6 +27,30 @@ abstract class ThoughtAgent implements Agent {
    */
   getTools(): Tool[] {
     return this.tools;
+  }
+
+  /**
+   * Add tool
+   * 1. Create a new tool with given name and description
+   * 2. Add string parameters to the tool
+   * 3. Set user input as argument, so agent can understand that user input could be which parameter
+   *    - If there are more than one string parameters, and user input as argument is not given, set the first one as user input as argument
+   *    - If user input as argument is given, set it as user input as argument
+   *    eg. when user types "/ask_page xxx", agent should understand the user input (xxx) is the parameter "question"
+   * 4. At last add tool to the tools
+   * @param {string} name - Name of the tool
+   * @param {string} description - Description of the tool
+   * @param {string[]} stringParameters - String parameters
+   * @returns {void}
+   */
+  addTool(name: string, description: string, stringParameters: string[]): Tool {
+    const tool = new Tool(name, description);
+    for (const stringParameter of stringParameters) {
+      tool.addStringParameter(stringParameter);
+    }
+
+    this.getTools().push(tool);
+    return tool;
   }
 
   /**
@@ -157,11 +143,37 @@ abstract class ThoughtAgent implements Agent {
    * @param {ChatMessage[]} messages - Messages
    * @returns {Promise<any>} ChatCompletion
    */
-  abstract execute(
+  async execute(
     action: string,
     args: object,
     messages: ChatMessage[],
-  ): Promise<any>;
+  ): Promise<any> {
+    for (const member of Object.getOwnPropertyNames(
+      Object.getPrototypeOf(this),
+    )) {
+      if (member === action && typeof this[member] === "function") {
+        // TODO: need to verify if arguments of function are correct
+        return this[member].apply(this, [args, messages]);
+      }
+    }
+
+    return this.executeAction(action, args, messages);
+  }
+
+  /**
+   * Execute command
+   * @param {string} action - Action
+   * @param {object} args - Pojo object as Arguments
+   * @param {ChatMessage[]} messages - Messages
+   * @returns {Promise<any>} ChatCompletion
+   */
+  async executeAction(
+    action: string,
+    args: object,
+    messages: ChatMessage[],
+  ): Promise<any> {
+    throw new Error("Unimplemented action: " + action);
+  }
 
   /**
    * Describe the current environment

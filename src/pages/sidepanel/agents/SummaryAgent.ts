@@ -1,8 +1,8 @@
 import OpenAI from "openai";
-import AgentWithTools from "./AgentWithTools";
+import ThoughtAgent from "./ThoughtAgent";
 import { get_content } from "@pages/sidepanel/utils";
 
-class SummaryAgent extends AgentWithTools {
+class SummaryAgent extends ThoughtAgent {
   constructor(
     defaultModelName: string,
     toolsCallModel: string,

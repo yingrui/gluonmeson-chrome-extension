@@ -1,7 +1,7 @@
 import OpenAI from "openai";
-import AgentWithTools from "./AgentWithTools";
+import ThoughtAgent from "./ThoughtAgent";
 
-class TranslateAgent extends AgentWithTools {
+class TranslateAgent extends ThoughtAgent {
   constructor(
     defaultModelName: string,
     toolsCallModel: string,
@@ -24,10 +24,7 @@ class TranslateAgent extends AgentWithTools {
 Directly output the result, below is user input:
 ${userInput}`;
 
-    return await this.chatCompletion([
-      { role: "system", content: prompt },
-      { role: "user", content: "output:" },
-    ]);
+    return await this.chatCompletion(messages, prompt, userInput);
   }
 }
 

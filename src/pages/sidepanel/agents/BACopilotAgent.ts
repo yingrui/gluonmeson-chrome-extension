@@ -1,8 +1,8 @@
 import OpenAI from "openai";
-import AgentWithTools from "./AgentWithTools";
+import ThoughtAgent from "./ThoughtAgent";
 import { fromReadableStream } from "../utils/streaming";
 
-class BACopilotAgent extends AgentWithTools {
+class BACopilotAgent extends ThoughtAgent {
   baCopilotKnowledgeApi: string;
   baCopilotApi: string;
   baCopilotTechDescription: string;

@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import AgentWithTools from "./AgentWithTools";
+import ThoughtAgent from "./ThoughtAgent";
 import _ from "lodash";
 
 import { get_content } from "@pages/sidepanel/utils";
@@ -7,9 +7,9 @@ import { stringToAsyncIterator } from "@pages/sidepanel/utils/streaming";
 
 /**
  * GluonMeson Agent
- * @extends {AgentWithTools} - Agent with tools
+ * @extends {ThoughtAgent} - Agent with tools
  */
-class GluonMesonAgent extends AgentWithTools {
+class GluonMesonAgent extends ThoughtAgent {
   toolsCallModel: string = null;
   mapToolsAgents = {};
   chatCompletionTools: OpenAI.Chat.Completions.ChatCompletionTool[] = [];
@@ -27,7 +27,7 @@ class GluonMesonAgent extends AgentWithTools {
     toolsCallModel,
     client,
     language,
-    agents: AgentWithTools[] = [],
+    agents: ThoughtAgent[] = [],
   ) {
     super(defaultModelName, toolsCallModel, client, language);
 
@@ -47,7 +47,7 @@ class GluonMesonAgent extends AgentWithTools {
    * @param {any} agent - Agent
    * @returns {void}
    */
-  private addAgent(agent: AgentWithTools): void {
+  private addAgent(agent: ThoughtAgent): void {
     for (const tool of agent.getTools()) {
       this.getTools().push(tool);
       const toolCall = tool.getFunction();
@@ -125,7 +125,7 @@ class GluonMesonAgent extends AgentWithTools {
    * @param {ChatMessage[]} messages - Messages
    * @returns {Promise<any>} ChatCompletion
    * @async
-   * @throws {Error} Unexpected tool call in GluonMesonAgent: {command}
+   * @throws {Error} Unexpected action in GluonMesonAgent: {action}
    */
   async executeAction(
     action: string,
@@ -136,7 +136,7 @@ class GluonMesonAgent extends AgentWithTools {
     if (agent) {
       return agent.execute(action, args, messages);
     } else {
-      throw new Error("Unexpected tool call in GluonMesonAgent: " + command);
+      throw new Error("Unexpected action in GluonMesonAgent: " + action);
     }
   }
 

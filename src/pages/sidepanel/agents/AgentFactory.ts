@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import configureStorage from "@root/src/shared/storages/gluonConfig";
-import AgentWithTools from "./AgentWithTools";
+import ThoughtAgent from "./ThoughtAgent";
 import GluonMesonAgent from "./GluonMesonAgent";
 import BACopilotAgent from "./BACopilotAgent";
 import SummaryAgent from "./SummaryAgent";
@@ -54,7 +54,7 @@ class AgentFactory {
     return agent;
   }
 
-  private static createAgents(): AgentWithTools[] {
+  private static createAgents(): ThoughtAgent[] {
     return [
       new SummaryAgent(defaultModel, toolsCallModel, client, language),
       new GoogleAgent(defaultModel, toolsCallModel, client, language),
