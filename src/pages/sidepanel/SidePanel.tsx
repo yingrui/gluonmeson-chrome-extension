@@ -6,14 +6,14 @@ import { Mentions, Typography } from "antd";
 import styles from "./SidePanel.module.scss";
 
 import Message from "./components/Message";
-import AgentFactory from "./agents/AgentFactory";
+import GluonMesonAgent from "./agents/GluonMesonAgent";
 import { delay, installListener } from "@pages/sidepanel/utils";
 import useStorage from "@root/src/shared/hooks/useStorage";
 import configureStorage from "@root/src/shared/storages/gluonConfig";
 import type { MentionsRef } from "antd/lib/mentions";
 
 const { Text } = Typography;
-function SidePanel() {
+function SidePanel(props: Record<string, unknown>) {
   const configStorage = useStorage(configureStorage);
   const mentionRef = useRef<MentionsRef>();
   const [text, setText] = useState<string>();
@@ -21,10 +21,10 @@ function SidePanel() {
   const [generating, setGenerating] = useState<boolean>();
   const { scrollRef, scrollToBottom, messagesRef } = useScrollAnchor();
   const commandRef = useRef<boolean>();
+  const agent = props.agent as GluonMesonAgent;
 
-  const agentRef = useRef(AgentFactory.createGluonMesonAgent());
   const [messages, setList] = useState<ChatMessage[]>(
-    agentRef.current.getInitialMessages(),
+    agent.getInitialMessages(),
   );
 
   useEffect(() => {
@@ -59,7 +59,7 @@ function SidePanel() {
       return;
     }
     generateReply(userInput, () =>
-      agentRef.current.execute([{ name: action, arguments: args }], messages),
+      agent.execute([{ name: action, arguments: args }], messages),
     );
   }
 
@@ -75,11 +75,11 @@ function SidePanel() {
     }
     // when command is clear, then clear the chat history
     if (text.startsWith("/clear")) {
-      setList(agentRef.current.getInitialMessages());
+      setList(agent.getInitialMessages());
       setText("");
       return;
     }
-    generateReply(text, () => agentRef.current.chat(messages));
+    generateReply(text, () => agent.chat(messages));
   }
 
   async function generateReply(
@@ -142,7 +142,7 @@ function SidePanel() {
   }
 
   function getCommandOptions() {
-    const options = agentRef.current.getCommandOptions();
+    const options = agent.getCommandOptions();
     options.push({ value: "clear", label: "/clear" }); // add clear command
     return options;
   }
