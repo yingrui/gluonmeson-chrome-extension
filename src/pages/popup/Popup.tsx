@@ -40,6 +40,10 @@ const Popup = () => {
     });
   }
 
+  async function open_options_page() {
+    chrome.runtime.openOptionsPage();
+  }
+
   const tabItems = [
     {
       label: `Basic`,
@@ -154,7 +158,10 @@ const Popup = () => {
             data-placement="top"
             title="Type Alt + Enter can also open side panel"
           >
-            Open Side Panel
+            Side Panel
+          </Button>
+          <Button key="options" htmlType="button" onClick={open_options_page}>
+            Options Page
           </Button>
         </div>
         <p style={{ textAlign: "center" }}>

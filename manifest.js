@@ -30,6 +30,7 @@ const manifest = {
   side_panel: {
     default_path: "src/pages/sidepanel/index.html",
   },
+  options_page: "src/pages/options/index.html",
   action: {
     default_popup: "src/pages/popup/index.html",
     default_icon: "icons/gm_logo.png",
