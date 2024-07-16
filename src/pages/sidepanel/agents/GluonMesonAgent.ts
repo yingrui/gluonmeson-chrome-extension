@@ -208,11 +208,11 @@ Please help user to beautify or complete the text with Markdown format.`;
   async environment(): Promise<string> {
     const content = await get_content();
     const maxContentLength = 2048;
-    const textContent =
-      content.text.length > maxContentLength
-        ? content.text.slice(0, maxContentLength)
-        : content.text;
     if (content) {
+      const textContent =
+        content.text.length > maxContentLength
+          ? content.text.slice(0, maxContentLength)
+          : content.text;
       return `As an assistant or chrome copilot provided by GluonMeson, named Guru Mason. Here’s how you can help users:
 
 * Ask Page: you can answer questions based on the content of the current webpage you are viewing. This is particularly useful for research and learning.
