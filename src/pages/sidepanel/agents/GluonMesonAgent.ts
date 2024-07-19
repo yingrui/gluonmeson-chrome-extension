@@ -14,12 +14,11 @@ class GluonMesonAgent extends ThoughtAgent {
   mapToolsAgents = {};
   chatCompletionTools: OpenAI.Chat.Completions.ChatCompletionTool[] = [];
   commands = [
-    { value: "page", label: "/page" },
-    { value: "generate_story", label: "/generate_story" },
-    { value: "generate_test", label: "/generate_test" },
+    { value: "ask_page", label: "/ask_page" },
     { value: "google", label: "/google" },
-    { value: "translate", label: "/translate" },
+    { value: "user_story", label: "/user_story" },
     { value: "tasking", label: "/tasking" },
+    { value: "ui_test", label: "/ui_test" },
   ];
 
   constructor(

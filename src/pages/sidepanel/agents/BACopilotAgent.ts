@@ -21,7 +21,7 @@ class BACopilotAgent extends ThoughtAgent {
   ) {
     super(defaultModelName, toolsCallModel, client, language);
     this.addTool(
-      "generate_story",
+      "user_story",
       "generate story content for user before they want to create a new card in story board. userInput is interactive message between agent & human.",
       ["userInput"],
     );
@@ -106,7 +106,7 @@ Use markdown format to beautify output.`;
     ]);
   }
 
-  async generate_story(args: object, messages: ChatMessage[]): Promise<any> {
+  async user_story(args: object, messages: ChatMessage[]): Promise<any> {
     const userInput = args["userInput"];
     const board = await this.get_board();
     if (!board) return this.handleCannotGetBoardError();

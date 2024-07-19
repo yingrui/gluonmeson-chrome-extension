@@ -11,8 +11,8 @@ class UiTestAgent extends ThoughtAgent {
   ) {
     super(defaultModelName, toolsCallModel, client, language);
     this.addTool(
-      "generate_test",
-      "understand user's instruct and generate an E2E test for current viewing webpage",
+      "ui_test",
+      "understand user's instruct and generate an UI E2E test for current viewing webpage",
       ["userInput"],
     );
   }
@@ -27,7 +27,7 @@ Reply sorry and ask user to refresh webpage, so you can get information from web
     ]);
   }
 
-  async generate_test(args: object, messages: ChatMessage[]) {
+  async ui_test(args: object, messages: ChatMessage[]) {
     const userInput = args["userInput"];
     const page = await get_html();
     if (!page) return this.handleCannotGetHtmlError();

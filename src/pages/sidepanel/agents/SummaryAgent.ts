@@ -11,7 +11,7 @@ class SummaryAgent extends ThoughtAgent {
   ) {
     super(defaultModelName, toolsCallModel, client, language);
     const tool = this.addTool(
-      "page",
+      "ask_page",
       "Based on current web page content, answer user's question or follow the user instruction to generate content for them.",
       ["userInput", "task"],
     );
@@ -51,7 +51,7 @@ The links are: ${JSON.stringify(content.links)}`;
     );
   }
 
-  async page(args: object, messages: ChatMessage[]) {
+  async ask_page(args: object, messages: ChatMessage[]) {
     const userInput = args["userInput"];
     const task = args["task"];
 
