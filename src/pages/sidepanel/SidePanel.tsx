@@ -74,7 +74,11 @@ function SidePanel(props: Record<string, unknown>) {
       return;
     }
     // when command is clear, then clear the chat history
-    if (text.startsWith("/clear")) {
+    if (
+      text.startsWith("/clear") ||
+      text.startsWith("/c") ||
+      text.startsWith("/cl")
+    ) {
       setList(agent.getInitialMessages());
       setText("");
       return;
