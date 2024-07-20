@@ -1,7 +1,7 @@
 function getSearchContentLink(search_html: string) {
   const search_doc = new DOMParser().parseFromString(search_html, "text/html");
   if (search_doc && search_doc.getElementById("deep_preload_link")) {
-    return search_doc.getElementById("deep_preload_link").href;
+    return search_doc.getElementById("deep_preload_link").getAttribute("href");
   }
   return null;
 }
