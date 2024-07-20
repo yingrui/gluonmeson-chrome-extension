@@ -15,10 +15,10 @@ class GluonMesonAgent extends ThoughtAgent {
   chatCompletionTools: OpenAI.Chat.Completions.ChatCompletionTool[] = [];
   commands = [
     { value: "ask_page", label: "/ask_page" },
-    { value: "google", label: "/google" },
-    { value: "user_story", label: "/user_story" },
+    { value: "search", label: "/search" },
     { value: "tasking", label: "/tasking" },
     { value: "ui_test", label: "/ui_test" },
+    { value: "user_story", label: "/user_story" },
   ];
 
   constructor(
