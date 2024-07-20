@@ -174,6 +174,8 @@ function SidePanel(props: Record<string, unknown>) {
           onKeyUp={keypress}
           prefix={"/"}
           value={text}
+          disabled={generating}
+          readOnly={generating}
           options={getCommandOptions()}
           placeholder="Hit Enter to send the message..."
           onChange={(value) => {
