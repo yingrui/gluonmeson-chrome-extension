@@ -81,7 +81,7 @@ class ThoughtAgent implements Agent {
   async chat(message: ChatMessage): Promise<any> {
     this.conversation.appendMessage(message);
     const messages = this.conversation.getMessages();
-    const actions = await this.plan(messages);
+    const actions = await this.plan();
     return this.execute(actions, messages);
   }
 
@@ -97,10 +97,10 @@ class ThoughtAgent implements Agent {
 
   /**
    * Think
-   * @param {ChatMessage[]} messages - Conversation messages
    * @returns {Promise<Action[]>} Actions
    */
-  async plan(messages: ChatMessage[]): Promise<Action[]> {
+  async plan(): Promise<Action[]> {
+    const messages = this.conversation.getMessages();
     const env = await this.environment();
     const systemMessage = { role: "system", content: env } as ChatMessage;
     const messagesWithEnv = env

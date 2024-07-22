@@ -16,10 +16,9 @@ interface Agent {
 
   /**
    * Think
-   * @param {ChatMessage[]} messages - Conversation messages
    * @returns {Promise<Action[]>} Actions
    */
-  plan(messages: ChatMessage[]): Promise<Action[]>;
+  plan(): Promise<Action[]>;
 
   /**
    * Tracking dialogue state, should be invoked in execute method, before actions are executed
