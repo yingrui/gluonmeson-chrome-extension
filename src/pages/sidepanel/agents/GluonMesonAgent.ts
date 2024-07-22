@@ -109,7 +109,7 @@ class GluonMesonAgent extends ThoughtAgent {
         args["userInput"] = userInput;
         return this.execute(
           [{ name: command, arguments: args }],
-          this.getConversation().getMessages(),
+          this.getConversation(),
         );
       }
     }
@@ -122,7 +122,7 @@ class GluonMesonAgent extends ThoughtAgent {
    * 2. If the command is not help, throw an error
    * @param {string} command - Command
    * @param {object} args - Arguments
-   * @param {ChatMessage[]} messages - Messages
+   * @param {Conversation} conversation - Conversation
    * @returns {Promise<any>} ChatCompletion
    * @async
    * @throws {Error} Unexpected action in GluonMesonAgent: {action}
@@ -130,11 +130,11 @@ class GluonMesonAgent extends ThoughtAgent {
   async executeAction(
     action: string,
     args: object,
-    messages: ChatMessage[] = [],
+    conversation: Conversation,
   ): Promise<any> {
     const agent = this.mapToolsAgents[action];
     if (agent) {
-      return agent.execute([{ name: action, arguments: args }], messages);
+      return agent.execute([{ name: action, arguments: args }], conversation);
     } else {
       throw new Error("Unexpected action in GluonMesonAgent: " + action);
     }

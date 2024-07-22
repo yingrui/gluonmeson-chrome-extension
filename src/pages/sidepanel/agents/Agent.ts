@@ -23,18 +23,17 @@ interface Agent {
   /**
    * Tracking dialogue state, should be invoked in execute method, before actions are executed
    * @param {Action[]} actions - Actions
-   * @param {ChatMessage[]} messages - Messages
    * @returns {Action[]} Actions
    */
-  trackingDialogueState(actions: Action[], messages: ChatMessage[]): Action[];
+  trackingDialogueState(actions: Action[]): Action[];
 
   /**
    * Execute
    * @param {Action[]} actions - Actions
-   * @param {ChatMessage[]} messages - Messages
+   * @param {Conversation} conversation - Conversation
    * @returns {Promise<any>} ChatCompletion
    */
-  execute(actions: Action[], messages: ChatMessage[]): Promise<any>;
+  execute(actions: Action[], conversation: Conversation): Promise<any>;
 
   /**
    * Chat with user

@@ -80,9 +80,8 @@ class ThoughtAgent implements Agent {
    */
   async chat(message: ChatMessage): Promise<any> {
     this.conversation.appendMessage(message);
-    const messages = this.conversation.getMessages();
     const actions = await this.plan();
-    return this.execute(actions, messages);
+    return this.execute(actions, this.conversation);
   }
 
   /**
@@ -126,10 +125,10 @@ class ThoughtAgent implements Agent {
   /**
    * Tracking dialogue state, should be invoked in execute method, before actions are executed
    * @param {Action[]} actions - Actions
-   * @param {ChatMessage[]} messages - Messages
    * @returns {Action[]} Actions
    */
-  trackingDialogueState(actions: Action[], messages: ChatMessage[]): Action[] {
+  trackingDialogueState(actions: Action[]): Action[] {
+    const messages = this.conversation.getMessages();
     // TODO: Implement tracking dialogue state
     if (actions.length === 0) {
       return [this.chatAction(messages[messages.length - 1].content)];
@@ -140,18 +139,22 @@ class ThoughtAgent implements Agent {
   /**
    * Execute
    * @param {Action[]} actions - Actions
-   * @param {ChatMessage[]} messages - Messages
+   * @param {Conversation} conversation - Conversation
    * @returns {Promise<any>} ChatCompletion
    */
-  async execute(actions: Action[], messages: ChatMessage[]): Promise<any> {
-    const refinedActions = this.trackingDialogueState(actions, messages);
+  async execute(actions: Action[], conversation: Conversation): Promise<any> {
+    const refinedActions = this.trackingDialogueState(actions);
 
     // TODO: support multiple actions in future
     const action = refinedActions[0].name;
     const args = refinedActions[0].arguments;
 
     if (action === "chat") {
-      return this.chatCompletion(messages, "", args["userInput"]);
+      return this.chatCompletion(
+        conversation.getMessages(),
+        "",
+        args["userInput"],
+      );
     }
 
     if (action === "reply") {
@@ -161,11 +164,11 @@ class ThoughtAgent implements Agent {
     for (const member of this.getMemberOfSelf()) {
       if (member === action && typeof this[member] === "function") {
         // TODO: need to verify if arguments of function are correct
-        return this[member].apply(this, [args, messages]);
+        return this[member].apply(this, [args, conversation.getMessages()]);
       }
     }
 
-    return this.executeAction(action, args, messages);
+    return this.executeAction(action, args, conversation);
   }
 
   private getMemberOfSelf(): string[] {
@@ -176,13 +179,13 @@ class ThoughtAgent implements Agent {
    * Execute command
    * @param {string} action - Action
    * @param {object} args - Pojo object as Arguments
-   * @param {ChatMessage[]} messages - Messages
+   * @param {Conversation} conversation - Conversation
    * @returns {Promise<any>} ChatCompletion
    */
   async executeAction(
     action: string,
     args: object,
-    messages: ChatMessage[],
+    conversation: Conversation,
   ): Promise<any> {
     throw new Error("Unimplemented action: " + action);
   }
