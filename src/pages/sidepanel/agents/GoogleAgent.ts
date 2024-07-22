@@ -62,10 +62,25 @@ ${userInput}
     ]);
   }
 
+  async handleCannotGetGoogleResultError(userInput): Promise<any> {
+    const prompt = `You're Chrome extension, you can help users to browse google.
+You can understand user's questions, open the google to search content, and most important, you can answer user's question based on search results
+There is a problem that you cannot get any information from current tab, it's possible because the you're detached from the webpage.
+`;
+    return await this.chatCompletion([
+      { role: "system", content: prompt },
+      {
+        role: "user",
+        content: `Directly answer question in ${this.language}: "${userInput}"`,
+      },
+    ]);
+  }
+
   async google(args: object, messages: ChatMessage[]): Promise<any> {
     const userInput = args["userInput"];
     const url = await this.openGoogle(userInput);
     const content = await this.get_google_result(url, userInput);
+    if (!content) return this.handleCannotGetGoogleResultError(userInput);
 
     const prompt = `You're Chrome extension, you can help users to browse google.
 You can understand user's questions, open the google to search content, and most important, you can answer user's question based on search results

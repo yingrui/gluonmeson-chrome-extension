@@ -149,7 +149,6 @@ class GluonMesonAgent extends ThoughtAgent {
    */
   async help(args: object, messages: ChatMessage[]): Promise<any> {
     const question = args["question"] ?? "";
-    console.log(question);
     const helpText = `As your GluonMeson Chrome Copilot, Guru Mason, I can assist you with a variety of tasks to enhance your browsing and productivity experience. Here’s how I can help you:
 
 * **Ask Page**: I can answer questions based on the content of the current webpage you are viewing. This is particularly useful for research and learning.
@@ -247,8 +246,10 @@ ${textContent}.`;
     );
 
     if (this.commands.find((c) => c.value === command)) {
+      this.getConversation().appendMessages(messages);
       return this.executeCommandWithUserInput(command, userInput, messages);
     } else {
+      this.getConversation().appendMessages(messages);
       return super.chat(messages);
     }
   }
@@ -272,13 +273,15 @@ You can decide to call different tools or directly answer questions in ${this.la
    * @returns {ChatMessage[]} Initial messages
    */
   getInitialMessages(): ChatMessage[] {
-    return [
+    const messages = [
       {
         role: "system",
         content: this.getInitialSystemMessage(),
       },
       { role: "assistant", content: "Hello! How can I assist you today?" },
-    ];
+    ] as ChatMessage[];
+    this.getConversation().set(messages);
+    return messages;
   }
 
   /**

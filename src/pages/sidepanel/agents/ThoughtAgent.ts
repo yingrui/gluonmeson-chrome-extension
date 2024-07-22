@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import Tool from "./Tool";
 import Agent from "./Agent";
+import Conversation from "./Conversation";
 import { stringToAsyncIterator } from "../utils/streaming";
 
 class ThoughtAgent implements Agent {
@@ -9,6 +10,7 @@ class ThoughtAgent implements Agent {
   client: OpenAI;
   language: string;
   tools: Tool[] = [];
+  conversation: Conversation = new Conversation();
 
   constructor(
     modelName: string,
@@ -28,6 +30,14 @@ class ThoughtAgent implements Agent {
    */
   getTools(): Tool[] {
     return this.tools;
+  }
+
+  /**
+   * Get conversation
+   * @returns {Conversation} Conversation
+   */
+  getConversation(): Conversation {
+    return this.conversation;
   }
 
   /**

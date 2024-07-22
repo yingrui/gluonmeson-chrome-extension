@@ -14,7 +14,8 @@ function init() {
   }
   const root = createRoot(appContainer);
   AgentFactory.createGluonMesonAgent().then((agent) => {
-    root.render(<SidePanel agent={agent} />);
+    const initMessages = agent.getInitialMessages();
+    root.render(<SidePanel agent={agent} initMessages={initMessages} />);
   });
 }
 

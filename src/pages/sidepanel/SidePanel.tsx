@@ -24,7 +24,7 @@ function SidePanel(props: Record<string, unknown>) {
   const agent = props.agent as GluonMesonAgent;
 
   const [messages, setList] = useState<ChatMessage[]>(
-    agent.getInitialMessages(),
+    props.initMessages as ChatMessage[],
   );
 
   useEffect(() => {
@@ -126,13 +126,17 @@ function SidePanel(props: Record<string, unknown>) {
   }
 
   function appendMessage(role: ChatMessage["role"], content: string) {
-    messages.push({ role: role, content: content });
+    const message = { role: role, content: content };
+    if (role === "assistant") {
+      agent.getConversation().appendMessage(message);
+    }
+    messages.push(message);
     setList([...messages]);
   }
 
   const handleSearchChange = async () => {
     commandRef.current = true;
-    await delay(500);
+    await delay(100);
     commandRef.current = false;
   };
 

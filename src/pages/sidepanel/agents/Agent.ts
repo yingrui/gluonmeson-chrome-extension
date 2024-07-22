@@ -1,4 +1,5 @@
 import Tool from "./Tool";
+import Conversation from "./Conversation";
 
 interface Agent {
   /**
@@ -6,6 +7,12 @@ interface Agent {
    * @returns {Tool[]} Tools
    */
   getTools(): Tool[];
+
+  /**
+   * Get conversation
+   * @returns {Conversation} Conversation
+   */
+  getConversation(): Conversation;
 
   /**
    * Think
