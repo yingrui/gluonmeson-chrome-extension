@@ -39,11 +39,11 @@ interface Agent {
 
   /**
    * Chat with user
-   * @param {ChatMessage[]} messages - Chat messages
+   * @param {ChatMessage} message - Chat message
    * @returns {Promise<any>} ChatCompletion
    * @async
    */
-  chat(messages: ChatMessage[]): Promise<any>;
+  chat(message: ChatMessage): Promise<any>;
 
   /**
    * Describe the current environment

@@ -95,21 +95,22 @@ class GluonMesonAgent extends ThoughtAgent {
    * The user input should be set to object args, need to figure out which parameter is the user input.
    * @param {string} command - Command
    * @param {string} userInput - User input
-   * @param {ChatMessage[]} messages - Messages
    * @returns {Promise<any>} ChatCompletion
    * @throws {Error} Unexpected tool call
    */
   async executeCommandWithUserInput(
     command: string,
     userInput: string,
-    messages: ChatMessage[],
   ): Promise<any> {
     const args = {};
     // Find the tool with the given command
     for (const tool of this.getTools()) {
       if (tool.name === command) {
         args["userInput"] = userInput;
-        return this.execute([{ name: command, arguments: args }], messages);
+        return this.execute(
+          [{ name: command, arguments: args }],
+          this.getConversation().getMessages(),
+        );
       }
     }
     throw new Error("Unexpected tool call: " + command);
@@ -236,21 +237,18 @@ ${textContent}.`;
    * 3. If the command is found, execute the command
    * 4. If the command is not found and tools call model is specified, call the tool
    * 5. If the tool call model is not specified, return the chat completion
-   * @param {ChatMessage[]} messages - Chat messages
+   * @param {ChatMessage} message - Chat message
    * @returns {Promise<any>} ChatCompletion
    * @async
    */
-  async chat(messages: ChatMessage[]): Promise<any> {
-    const [command, userInput] = this.parseCommand(
-      messages.slice(-1)[0].content, // Get the last user input from the chat messages
-    );
+  async chat(message: ChatMessage): Promise<any> {
+    const [command, userInput] = this.parseCommand(message.content);
 
     if (this.commands.find((c) => c.value === command)) {
-      this.getConversation().appendMessages(messages);
-      return this.executeCommandWithUserInput(command, userInput, messages);
+      this.getConversation().appendMessage(message);
+      return this.executeCommandWithUserInput(command, userInput);
     } else {
-      this.getConversation().appendMessages(messages);
-      return super.chat(messages);
+      return super.chat(message);
     }
   }
 

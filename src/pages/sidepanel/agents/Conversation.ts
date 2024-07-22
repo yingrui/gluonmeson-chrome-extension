@@ -8,13 +8,11 @@ class Conversation {
   }
 
   appendMessages(messages: ChatMessage[]): Conversation {
-    //     console.log("appendMessages", messages);
     const message = messages.slice(-1)[0];
     return this.appendMessage(message);
   }
 
   appendMessage(message: ChatMessage): Conversation {
-    //     console.log("appendMessage", message);
     if (message.role === "user") {
       return this.appendUserMessage(message);
     } else if (message.role === "assistant") {
@@ -29,7 +27,6 @@ class Conversation {
     } else {
       console.error("Only user messages can be appended to the conversation");
     }
-    //     console.log("conversation.appendUserMessage", this.messages);
     return this;
   }
 
@@ -41,13 +38,11 @@ class Conversation {
         "Only assistant messages can be appended to the conversation",
       );
     }
-    //     console.log("conversation.appendAssistantMessage", this.messages);
     return this;
   }
 
   set(messages: ChatMessage[]): Conversation {
     this.messages = [...messages];
-    //     console.log("conversation.set", this.messages);
     return this;
   }
 

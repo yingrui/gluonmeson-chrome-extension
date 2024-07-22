@@ -83,7 +83,7 @@ function SidePanel(props: Record<string, unknown>) {
       setText("");
       return;
     }
-    generateReply(text, () => agent.chat(messages));
+    generateReply(text, () => agent.chat(messages[messages.length - 1]));
   }
 
   async function generateReply(
@@ -115,6 +115,7 @@ function SidePanel(props: Record<string, unknown>) {
       }
 
       appendMessage("assistant", message);
+      agent.getConversation().appendMessage(messages[messages.length - 1]);
       setCurrentText("");
     } finally {
       setGenerating(false);
@@ -127,9 +128,6 @@ function SidePanel(props: Record<string, unknown>) {
 
   function appendMessage(role: ChatMessage["role"], content: string) {
     const message = { role: role, content: content };
-    if (role === "assistant") {
-      agent.getConversation().appendMessage(message);
-    }
     messages.push(message);
     setList([...messages]);
   }

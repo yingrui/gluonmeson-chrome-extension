@@ -74,11 +74,13 @@ class ThoughtAgent implements Agent {
 
   /**
    * Choose the tool agent to execute the tool
-   * @param {ChatMessage[]} messages - Chat messages
+   * @param {ChatMessage} message - Chat message
    * @returns {Promise<any>} ChatCompletion
    * @async
    */
-  async chat(messages: ChatMessage[]): Promise<any> {
+  async chat(message: ChatMessage): Promise<any> {
+    this.conversation.appendMessage(message);
+    const messages = this.conversation.getMessages();
     const actions = await this.plan(messages);
     return this.execute(actions, messages);
   }
