@@ -22,6 +22,7 @@ function SidePanel(props: Record<string, unknown>) {
   const { scrollRef, scrollToBottom, messagesRef } = useScrollAnchor();
   const commandRef = useRef<boolean>();
   const agent = props.agent as GluonMesonAgent;
+  const enableReflection = props.enableReflection as boolean;
 
   const [messages, setList] = useState<ChatMessage[]>(
     props.initMessages as ChatMessage[],
@@ -58,8 +59,14 @@ function SidePanel(props: Record<string, unknown>) {
     if (generating) {
       return;
     }
-    generateReply(userInput, () =>
-      agent.execute([{ name: action, arguments: args }], messages),
+    generateReply(
+      userInput,
+      () =>
+        agent.execute(
+          [{ name: action, arguments: args }],
+          agent.getConversation(),
+        ),
+      enableReflection,
     );
   }
 
@@ -83,36 +90,26 @@ function SidePanel(props: Record<string, unknown>) {
       setText("");
       return;
     }
-    generateReply(text, () => agent.chat(messages[messages.length - 1]));
+    generateReply(
+      text,
+      () => agent.chat(messages[messages.length - 1]),
+      enableReflection,
+    );
   }
 
   async function generateReply(
     userInput: string,
     generate_func: () => Promise<any>,
+    shouldReflection = true,
   ) {
     setGenerating(true);
     try {
       setText("");
-      appendMessage("user", userInput);
-
-      const stream = await generate_func();
-
-      let message = "";
-
-      for await (const chunk of stream) {
-        if (chunk.choices) {
-          const finishReason = chunk.choices[0]?.finish_reason;
-          const content = chunk.choices[0]?.delta?.content ?? "";
-          message = message + content;
-        } else {
-          message = message + chunk.data;
-        }
-
-        setCurrentText(message);
-        setTimeout(() => {
-          scrollToBottom();
-        });
+      if (userInput) {
+        appendMessage("user", userInput);
       }
+
+      const message = await generate_answer(generate_func);
 
       appendMessage("assistant", message);
       agent.getConversation().appendMessage(messages[messages.length - 1]);
@@ -121,9 +118,45 @@ function SidePanel(props: Record<string, unknown>) {
       setGenerating(false);
     }
 
+    if (shouldReflection) {
+      reflection();
+    }
+
     setTimeout(() => {
       scrollToBottom();
     });
+  }
+
+  async function generate_answer(generate_func: () => Promise<any>) {
+    const stream = await generate_func();
+    let message = "";
+
+    for await (const chunk of stream) {
+      if (chunk.choices) {
+        const finishReason = chunk.choices[0]?.finish_reason;
+        const content = chunk.choices[0]?.delta?.content ?? "";
+        message = message + content;
+      } else {
+        message = message + chunk.data;
+      }
+
+      setCurrentText(message);
+      setTimeout(() => {
+        scrollToBottom();
+      });
+    }
+    return message;
+  }
+
+  async function reflection() {
+    const actions = await agent.reflection();
+    if (actions && actions.length > 0) {
+      generateReply(
+        "",
+        () => agent.execute(actions, agent.getConversation()),
+        false,
+      );
+    }
   }
 
   function appendMessage(role: ChatMessage["role"], content: string) {

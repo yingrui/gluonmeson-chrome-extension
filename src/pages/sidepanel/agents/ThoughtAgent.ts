@@ -123,6 +123,68 @@ class ThoughtAgent implements Agent {
   }
 
   /**
+   * Reflection
+   * @returns {Promise<Action[]>} Actions
+   */
+  async reflection(): Promise<Action[]> {
+    const systemMessage = {
+      role: "system",
+      content: this.getReflectionPrompt(),
+    } as ChatMessage;
+    const userMessage = {
+      role: "user",
+      content: "Based on reflection gives action, answer or suggestions",
+    } as ChatMessage;
+    const messagesWithEnv = [systemMessage, userMessage];
+
+    const toolCalls = this.getToolCalls();
+    const choices = await this.toolsCall(messagesWithEnv, toolCalls);
+    if (choices.length > 0) {
+      const choice = choices[0];
+      if (choice.finish_reason === "tool_calls") {
+        const tools = choice.message.tool_calls;
+        if (tools) {
+          return tools.map((t) => this.toAction(t));
+        }
+      } else if (choice.finish_reason === "stop" && choice.message.content) {
+        return [this.replyAction(choice.message.content)];
+      }
+    }
+    return [];
+  }
+
+  private getReflectionPrompt(): string {
+    const messages = this.conversation.getMessages();
+    const conversationContent = messages
+      .map((m) => `- ${m.role}: ${m.content}`)
+      .join("\n");
+    return `## Role: Assistant
+## Task
+Analysis the conversation messages, and reflect on the assistant answers, think about:
+- What is user intention?
+- Whether the answer is correct and satisfied?
+- What should user do next?
+- When opened a webpage, usually could generate summary of this page
+- When asked a question, could generate more questions for current topic
+- When search a topic, could open the most related webpage for user to read
+
+## Examples
+### Example 1
+#### Conversation Messages
+user: ask_page
+assistant: summary current page
+#### Output
+suggest some related interesting topics to user
+
+## Conversation Messages
+${conversationContent}
+
+## Output
+Choose the best action to execute, or generate new answer, or suggest more question to deep dive current topic.
+`;
+  }
+
+  /**
    * Tracking dialogue state, should be invoked in execute method, before actions are executed
    * @param {Action[]} actions - Actions
    * @returns {Action[]} Actions

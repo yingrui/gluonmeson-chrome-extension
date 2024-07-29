@@ -86,13 +86,6 @@ const Popup = () => {
           <Form.Item name="language" label="Language">
             <Input placeholder="please specify prefer language, eg. Chinese or 中文" />
           </Form.Item>
-          <Form.Item
-            label="Floating Ball"
-            name="enableFloatingBall"
-            valuePropName="checked"
-          >
-            <Switch />
-          </Form.Item>
         </>
       ),
     },
@@ -121,6 +114,29 @@ const Popup = () => {
             label="Technical Description"
           >
             <Input.TextArea style={{ height: 120 }} />
+          </Form.Item>
+        </>
+      ),
+    },
+    {
+      label: `Features`,
+      key: `feature_toggles`,
+      forceRender: true,
+      children: (
+        <>
+          <Form.Item
+            label="Floating Ball"
+            name="enableFloatingBall"
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
+          <Form.Item
+            label="Reflection"
+            name="enableReflection"
+            valuePropName="checked"
+          >
+            <Switch />
           </Form.Item>
         </>
       ),

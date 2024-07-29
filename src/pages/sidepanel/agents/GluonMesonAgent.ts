@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import ThoughtAgent from "./ThoughtAgent";
+import Conversation from "./Conversation";
 import _ from "lodash";
 
 import { get_content } from "@pages/sidepanel/utils";

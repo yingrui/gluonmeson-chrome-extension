@@ -15,6 +15,7 @@ type GluonConfigure = {
   baCopilotTechDescription: string;
   language: string;
   enableFloatingBall: boolean;
+  enableReflection: boolean;
 };
 
 type ConfigureStorage = BaseStorage<GluonConfigure>;
@@ -30,6 +31,7 @@ export const DEFAULT_GM_CONFIG_VALUE = {
   baCopilotTechDescription: "",
   language: "English",
   enableFloatingBall: true,
+  enableReflection: false,
 };
 
 const storage = createStorage<GluonConfigure>(

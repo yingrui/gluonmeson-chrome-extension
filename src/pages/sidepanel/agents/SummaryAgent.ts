@@ -34,9 +34,14 @@ Reply sorry and ask user to refresh webpage, so you can get information from web
   }
 
   async summary(args: object, messages: ChatMessage[]) {
-    const userInput = args["userInput"];
     const content = await get_content();
     if (!content) return this.handleCannotGetContentError();
+
+    const maxContentLength = 100 * 1024;
+    const textContent =
+      content.text.length > maxContentLength
+        ? content.text.slice(0, maxContentLength)
+        : content.text;
 
     const prompt = `You're an assistant and good at summarization,
 Please summarize the content in: ${this.language}.
@@ -47,7 +52,7 @@ The links are: ${JSON.stringify(content.links)}`;
     return await this.chatCompletion(
       messages,
       prompt,
-      userInput ?? `please summary the content in ${this.language}`,
+      this.getUserInput(args, `please summary the content in ${this.language}`),
     );
   }
 
@@ -72,8 +77,16 @@ The links are: ${JSON.stringify(content.links)}`;
     return await this.chatCompletion(
       messages,
       prompt,
-      userInput ?? `please answer in ${this.language}`,
+      this.getUserInput(args, `please answer in ${this.language}`),
     );
+  }
+
+  private getUserInput(args: object, defaultUserInput: string): string {
+    const userInput = args["userInput"];
+    if (!userInput) return defaultUserInput;
+    if (userInput.startsWith("/ask_page"))
+      return userInput.replace("/ask_page", "").trim();
+    return userInput;
   }
 }
 
