@@ -7,7 +7,10 @@ import styles from "./SidePanel.module.scss";
 
 import Message from "./components/Message";
 import GluonMesonAgent from "./agents/GluonMesonAgent";
-import { delay, installListener } from "@pages/sidepanel/utils";
+import {
+  delay,
+  installContentScriptCommandListener,
+} from "@pages/sidepanel/utils";
 import useStorage from "@root/src/shared/hooks/useStorage";
 import configureStorage from "@root/src/shared/storages/gluonConfig";
 import type { MentionsRef } from "antd/lib/mentions";
@@ -59,18 +62,15 @@ function SidePanel(props: Record<string, unknown>) {
     if (generating) {
       return;
     }
-    generateReply(
-      userInput,
-      () =>
-        agent.execute(
-          [{ name: action, arguments: args }],
-          agent.getConversation(),
-        ),
-      enableReflection,
+    generateReply(userInput, () =>
+      agent.execute(
+        [{ name: action, arguments: args }],
+        agent.getConversation(),
+      ),
     );
   }
 
-  installListener(handleCommandFromContentScript);
+  installContentScriptCommandListener(handleCommandFromContentScript);
 
   async function handleSubmit() {
     if (generating) {
@@ -90,18 +90,20 @@ function SidePanel(props: Record<string, unknown>) {
       setText("");
       return;
     }
-    generateReply(
+    const message = await generateReply(
       text,
       () => agent.chat(messages[messages.length - 1]),
       enableReflection,
     );
+    if (enableReflection) {
+      await reflection();
+    }
   }
 
   async function generateReply(
     userInput: string,
     generate_func: () => Promise<any>,
-    shouldReflection = true,
-  ) {
+  ): Promise<string> {
     setGenerating(true);
     try {
       setText("");
@@ -109,7 +111,8 @@ function SidePanel(props: Record<string, unknown>) {
         appendMessage("user", userInput);
       }
 
-      const message = await generate_answer(generate_func);
+      const stream = await generate_func();
+      const message = await showStreamingMessage(stream);
 
       appendMessage("assistant", message);
       agent.getConversation().appendMessage(messages[messages.length - 1]);
@@ -118,17 +121,13 @@ function SidePanel(props: Record<string, unknown>) {
       setGenerating(false);
     }
 
-    if (shouldReflection) {
-      reflection();
-    }
-
     setTimeout(() => {
       scrollToBottom();
     });
+    return message;
   }
 
-  async function generate_answer(generate_func: () => Promise<any>) {
-    const stream = await generate_func();
+  async function showStreamingMessage(stream): Promise<string> {
     let message = "";
 
     for await (const chunk of stream) {
@@ -151,11 +150,7 @@ function SidePanel(props: Record<string, unknown>) {
   async function reflection() {
     const actions = await agent.reflection();
     if (actions && actions.length > 0) {
-      generateReply(
-        "",
-        () => agent.execute(actions, agent.getConversation()),
-        false,
-      );
+      generateReply("", () => agent.execute(actions, agent.getConversation()));
     }
   }
 

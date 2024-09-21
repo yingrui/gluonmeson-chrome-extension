@@ -20,7 +20,7 @@ export const get_html = async () => {
 };
 
 let listenerInstalled = false;
-export const installListener = (handler) => {
+export const installContentScriptCommandListener = (handler) => {
   if (listenerInstalled) return;
 
   listenerInstalled = true;
