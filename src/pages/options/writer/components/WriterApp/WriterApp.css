@@ -1,0 +1,35 @@
+.outline-and-reference {
+  height: 64px;
+}
+
+#writer-left-sider {
+  background-color: #fff;
+  border-right-width: 1px;
+  border-right-style: solid;
+  border-right-color: #ccc;
+}
+
+#writer-title-input {
+  padding: 0 24px;
+  font-size: 22px;
+  vertical-align: middle;
+}
+
+div.w-md-editor {
+  border-radius: 0px;
+  box-shadow: none;
+  border-top-width: 1px;
+  border-top-color: #ccc;
+  border-top-style: solid;
+}
+
+div.w-md-editor-text {
+  padding: 10px 24px;
+}
+
+#writer-right-sider {
+  background-color: #fff;
+  border-left-style: solid;
+  border-left-color: #ccc;
+  border-left-width: 1px;
+}
