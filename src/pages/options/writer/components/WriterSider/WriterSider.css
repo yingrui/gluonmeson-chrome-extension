@@ -1,0 +1,10 @@
+.outline-and-reference {
+  height: 64px;
+}
+
+#writer-left-sider {
+  background-color: #fff;
+  border-right-width: 1px;
+  border-right-style: solid;
+  border-right-color: #ccc;
+}
