@@ -19,31 +19,9 @@ import MDEditor from "@uiw/react-md-editor";
 import { getCodeString } from "rehype-rewrite";
 import mermaid from "mermaid";
 import "./WriterEditor.css";
+import WriterContext from "@pages/options/writer/context/WriterContext";
 
 const { Header, Content, Sider } = Layout;
-
-const mdMermaid = `The following are some examples of the diagrams, charts and graphs that can be made using Mermaid and the Markdown-inspired text specific to it.
-
-\`\`\`mermaid
-graph TD
-A[Hard] -->|Text| B(Round)
-B --> C{Decision}
-C -->|One| D[Result 1]
-C -->|Two| E[Result 2]
-\`\`\`
-
-\`\`\`mermaid
-sequenceDiagram
-Alice->>John: Hello John, how are you?
-loop Healthcheck
-    John->>John: Fight against hypochondria
-end
-Note right of John: Rational thoughts!
-John-->>Alice: Great!
-John->>Bob: How about you?
-Bob-->>John: Jolly good!
-\`\`\`
-`;
 
 const randomid = () => parseInt(String(Math.random() * 1e15), 10).toString(36);
 const Code: React.FC = (props: Record<string, unknown>) => {
@@ -90,20 +68,27 @@ const Code: React.FC = (props: Record<string, unknown>) => {
   return <code className={className}>{children}</code>;
 };
 
-const WriterEditor: React.FC = () => {
+const WriterEditor: React.FC = (props: Record<string, unknown>) => {
+  const context = props.context as WriterContext;
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-  const [value, setValue] = useState(mdMermaid);
+  const [value, setValue] = useState(context.getContent());
+  const [title, setTitle] = useState(context.getTitle());
 
   return (
-    <Layout>
+    <Layout style={{ paddingRight: 64 }}>
       <Header style={{ padding: 0, background: colorBgContainer }}>
         <Input
           id="writer-title-input"
           placeholder="Untitled"
           variant="borderless"
+          value={title}
+          onChange={(e) => {
+            context.setTitle(e.target.value);
+            setTitle(e.target.value);
+          }}
         />
       </Header>
       <Content
@@ -116,7 +101,10 @@ const WriterEditor: React.FC = () => {
         }}
       >
         <MDEditor
-          onChange={(newValue = "") => setValue(newValue)}
+          onChange={(newValue = "") => {
+            context.setContent(newValue);
+            setValue(newValue);
+          }}
           textareaProps={{
             placeholder: "Please enter Markdown text",
           }}

@@ -177,7 +177,7 @@ const Popup = () => {
             Side Panel
           </Button>
           <Button key="options" htmlType="button" onClick={open_options_page}>
-            Options Page
+            Other Tools
           </Button>
         </div>
         <p style={{ textAlign: "center" }}>

@@ -3,4 +3,49 @@
   border-left-style: solid;
   border-left-color: #ccc;
   border-left-width: 1px;
+  height: 100%;
+  position: fixed;
+  right: 0;
+  top: 0;
+  padding-top: 64px;
+}
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.chat-sider-header {
+  flex: 0 1 auto;
+  line-height: 64px;
+  vertical-align: middle;
+  padding-left: 16px;
+}
+
+.chat-sider-header img {
+  width: 16px;
+}
+
+.chat-sider-header h6 {
+  font-size: 14px;
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+.chat-sider-body {
+  flex: 1 1 auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin: 0px 8px 8px 8px;
+
+}
+
+.chat-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.chat-form {
+  margin: 16px 20px;
 }

@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 
 import "./WriterSider.css";
+import WriterContext from "@pages/options/writer/context/WriterContext";
 
 const items2: MenuProps["items"] = [
   UserOutlined,
@@ -35,7 +36,9 @@ const items2: MenuProps["items"] = [
 
 const { Sider } = Layout;
 
-const WriterSider: React.FC = () => {
+const WriterSider: React.FC = (props: Record<string, unknown>) => {
+  const context = props.context as WriterContext;
+
   const [collapsed, setCollapsed] = useState(false);
 
   return (

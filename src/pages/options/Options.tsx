@@ -7,6 +7,8 @@ import withErrorBoundary from "@src/shared/hoc/withErrorBoundary";
 import WriterApp from "@pages/options/writer/components/WriterApp/WriterApp";
 import "@pages/options/Options.css";
 
+import GluonConfigure from "@src/shared/storages/gluonConfig";
+
 const { Header, Content, Sider } = Layout;
 
 const header_items: MenuProps["items"] = [
@@ -14,7 +16,9 @@ const header_items: MenuProps["items"] = [
   { key: 2, label: "MORE COMING SOON" },
 ];
 
-const Options: React.FC = () => {
+const Options: React.FC = (props: Record<string, unknown>) => {
+  const config = props.config as GluonConfigure;
+
   return (
     <Layout>
       <Header id="app-header">
@@ -32,7 +36,7 @@ const Options: React.FC = () => {
           />
         </div>
       </Header>
-      <WriterApp />
+      <WriterApp config={config} />
     </Layout>
   );
 };
