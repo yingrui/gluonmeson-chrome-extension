@@ -47,6 +47,21 @@ class WriterContext {
   public setContent(content: string): void {
     this.content = content;
   }
+
+  public getInitialMessages(): ChatMessage[] {
+    const messages = [
+      {
+        role: "system",
+        content: this.getInitialSystemMessage(),
+      },
+      { role: "assistant", content: "Ask me anything about writing!" },
+    ] as ChatMessage[];
+    return messages;
+  }
+
+  private getInitialSystemMessage(): string {
+    return `As an assistant named Guru Mason. You can help users writing with given information.`;
+  }
 }
 
 export default WriterContext;

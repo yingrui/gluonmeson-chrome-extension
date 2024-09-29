@@ -38,7 +38,9 @@
   border: 1px solid #ccc;
   border-radius: 8px;
   margin: 0px 8px 8px 8px;
-
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
 }
 
 .chat-list {

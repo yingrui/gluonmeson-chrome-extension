@@ -1,11 +1,11 @@
 import { useRef, useState, useEffect } from "react";
 import withSuspense from "@src/shared/hoc/withSuspense";
 import withErrorBoundary from "@src/shared/hoc/withErrorBoundary";
-import { useScrollAnchor } from "./hooks/use-scroll-anchor";
+import { useScrollAnchor } from "@src/shared/hooks/use-scroll-anchor";
 import { Mentions, Typography } from "antd";
 import styles from "./SidePanel.module.scss";
 
-import Message from "./components/Message";
+import Message from "@src/shared/components/Message";
 import GluonMesonAgent from "./agents/GluonMesonAgent";
 import {
   delay,

@@ -1,6 +1,6 @@
 import { Spin } from "antd";
 import "./index.css";
-import CodeBlock from "@pages/sidepanel/components/Message/MarkDownBlock/CodeBlock";
+import CodeBlock from "@src/shared/components/Message/MarkDownBlock/CodeBlock";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
