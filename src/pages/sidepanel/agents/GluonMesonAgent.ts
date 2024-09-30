@@ -1,10 +1,10 @@
 import OpenAI from "openai";
-import ThoughtAgent from "./ThoughtAgent";
-import Conversation from "./Conversation";
+import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
+import Conversation from "@src/shared/agents/Conversation";
 import _ from "lodash";
 
-import { get_content } from "@pages/sidepanel/utils";
-import { stringToAsyncIterator } from "@pages/sidepanel/utils/streaming";
+import { get_content } from "@src/shared/utils";
+import { stringToAsyncIterator } from "@src/shared/utils/streaming";
 
 /**
  * GluonMeson Agent

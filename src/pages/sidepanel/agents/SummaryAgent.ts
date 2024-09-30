@@ -1,6 +1,6 @@
 import OpenAI from "openai";
-import ThoughtAgent from "./ThoughtAgent";
-import { get_content } from "@pages/sidepanel/utils";
+import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
+import { get_content } from "@src/shared/utils";
 
 class SummaryAgent extends ThoughtAgent {
   constructor(

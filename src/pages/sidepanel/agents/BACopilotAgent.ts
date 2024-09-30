@@ -1,6 +1,6 @@
 import OpenAI from "openai";
-import ThoughtAgent from "./ThoughtAgent";
-import { fromReadableStream } from "../utils/streaming";
+import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
+import { fromReadableStream } from "@src/shared/utils/streaming";
 
 class BACopilotAgent extends ThoughtAgent {
   baCopilotKnowledgeApi: string;

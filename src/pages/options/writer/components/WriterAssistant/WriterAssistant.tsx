@@ -7,6 +7,7 @@ import { useScrollAnchor } from "@src/shared/hooks/use-scroll-anchor";
 import "./WriterAssistant.css";
 import WriterContext from "@pages/options/writer/context/WriterContext";
 import Message from "@src/shared/components/Message";
+import { delay } from "@src/shared/utils";
 
 const { Header, Content, Sider } = Layout;
 
@@ -30,7 +31,7 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
 
   const handleSearchChange = async () => {
     commandRef.current = true;
-    await delay(100);
+    await delay(200);
     commandRef.current = false;
   };
 

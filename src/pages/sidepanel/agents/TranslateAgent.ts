@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import ThoughtAgent from "./ThoughtAgent";
+import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
 
 class TranslateAgent extends ThoughtAgent {
   constructor(

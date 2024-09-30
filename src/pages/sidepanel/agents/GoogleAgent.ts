@@ -1,8 +1,8 @@
 import OpenAI from "openai";
-import ThoughtAgent from "./ThoughtAgent";
-import { get_content } from "@pages/sidepanel/utils";
-import { ddg_search } from "@pages/sidepanel/utils/duckduckgo";
-import { stringToAsyncIterator } from "../utils/streaming";
+import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
+import { get_content } from "@src/shared/utils";
+import { ddg_search } from "@src/shared/utils/duckduckgo";
+import { stringToAsyncIterator } from "@src/shared/utils/streaming";
 
 class GoogleAgent extends ThoughtAgent {
   constructor(

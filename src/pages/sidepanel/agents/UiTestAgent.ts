@@ -1,6 +1,6 @@
 import OpenAI from "openai";
-import ThoughtAgent from "./ThoughtAgent";
-import { get_html } from "@pages/sidepanel/utils";
+import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
+import { get_html } from "@src/shared/utils";
 
 class UiTestAgent extends ThoughtAgent {
   constructor(

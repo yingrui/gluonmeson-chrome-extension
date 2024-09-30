@@ -7,10 +7,7 @@ import styles from "./SidePanel.module.scss";
 
 import Message from "@src/shared/components/Message";
 import GluonMesonAgent from "./agents/GluonMesonAgent";
-import {
-  delay,
-  installContentScriptCommandListener,
-} from "@pages/sidepanel/utils";
+import { delay, installContentScriptCommandListener } from "@src/shared/utils";
 import useStorage from "@root/src/shared/hooks/useStorage";
 import configureStorage from "@root/src/shared/storages/gluonConfig";
 import type { MentionsRef } from "antd/lib/mentions";
@@ -162,7 +159,7 @@ function SidePanel(props: Record<string, unknown>) {
 
   const handleSearchChange = async () => {
     commandRef.current = true;
-    await delay(100);
+    await delay(200);
     commandRef.current = false;
   };
 

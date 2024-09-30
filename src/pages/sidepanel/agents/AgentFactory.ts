@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import ThoughtAgent from "./ThoughtAgent";
+import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
 import GluonMesonAgent from "./GluonMesonAgent";
 import BACopilotAgent from "./BACopilotAgent";
 import SummaryAgent from "./SummaryAgent";
