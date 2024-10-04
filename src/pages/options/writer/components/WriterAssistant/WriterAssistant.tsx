@@ -1,11 +1,12 @@
 import React, { useState, useRef } from "react";
-import { Button, Layout, theme, Mentions, Typography } from "antd";
+import { Button, Layout, Mentions, Typography } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import type { MentionsRef } from "antd/lib/mentions";
 import { useScrollAnchor } from "@src/shared/hooks/use-scroll-anchor";
 
 import "./WriterAssistant.css";
 import WriterContext from "@pages/options/writer/context/WriterContext";
+import WriterAgent from "@pages/options/writer/agents/WriterAgent";
 import Message from "@src/shared/components/Message";
 import { delay } from "@src/shared/utils";
 
@@ -13,11 +14,9 @@ const { Header, Content, Sider } = Layout;
 
 const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
   const context = props.context as WriterContext;
+  const agent = props.agent as WriterAgent;
 
   const [chatCollapsed, setChatCollapsed] = useState(false);
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
 
   const mentionRef = useRef<MentionsRef>();
   const commandRef = useRef<boolean>();
@@ -25,11 +24,11 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
   const [generating, setGenerating] = useState<boolean>();
   const [currentText, setCurrentText] = useState<string>();
   const [messages, setList] = useState<ChatMessage[]>(
-    context.getInitialMessages(),
+    agent.getInitialMessages(),
   );
   const { scrollRef, scrollToBottom, messagesRef } = useScrollAnchor();
 
-  const handleSearchChange = async () => {
+  const handleOnSelect = async () => {
     commandRef.current = true;
     await delay(200);
     commandRef.current = false;
@@ -48,6 +47,10 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
     if (generating) {
       return;
     }
+    if (!text || text.trim() === "") {
+      setText("");
+      return;
+    }
 
     setGenerating(true);
     const userInput = text;
@@ -55,8 +58,9 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
       appendMessage("user", userInput);
       setText("");
     }
+    const stream = await agent.chat(messages[messages.length - 1]);
+    const message = await showStreamingMessage(stream);
 
-    const message = "stub reply message...";
     appendMessage("assistant", message);
     setCurrentText(message);
     setGenerating(false);
@@ -64,6 +68,26 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
     setTimeout(() => {
       scrollToBottom();
     });
+  }
+
+  async function showStreamingMessage(stream): Promise<string> {
+    let message = "";
+
+    for await (const chunk of stream) {
+      if (chunk.choices) {
+        const finishReason = chunk.choices[0]?.finish_reason;
+        const content = chunk.choices[0]?.delta?.content ?? "";
+        message = message + content;
+      } else {
+        message = message + chunk.data;
+      }
+
+      setCurrentText(message);
+      setTimeout(() => {
+        scrollToBottom();
+      });
+    }
+    return message;
   }
 
   function appendMessage(role: ChatMessage["role"], content: string) {
@@ -143,7 +167,7 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
           <div className="chat-form">
             <Mentions
               ref={mentionRef}
-              onSelect={handleSearchChange}
+              onSelect={handleOnSelect}
               onKeyUp={keypress}
               prefix={"/"}
               value={text}

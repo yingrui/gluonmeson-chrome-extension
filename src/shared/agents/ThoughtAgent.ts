@@ -107,6 +107,9 @@ class ThoughtAgent implements Agent {
       : messages;
 
     const toolCalls = this.getToolCalls();
+    if (toolCalls.length === 0) {
+      return [];
+    }
     const choices = await this.toolsCall(messagesWithEnv, toolCalls);
     if (choices.length > 0) {
       const choice = choices[0];
@@ -212,9 +215,10 @@ Choose the best action to execute, or generate new answer, or suggest more quest
     const args = refinedActions[0].arguments;
 
     if (action === "chat") {
+      const env = await this.environment();
       return this.chatCompletion(
         conversation.getMessages(),
-        "",
+        env,
         args["userInput"],
       );
     }

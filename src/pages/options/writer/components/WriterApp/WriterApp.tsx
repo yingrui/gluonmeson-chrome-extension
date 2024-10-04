@@ -4,16 +4,18 @@ import { Layout } from "antd";
 import WriterWorkspace from "@pages/options/writer/components/WriterWorkspace/WriterWorkspace";
 import WriterAssistant from "@pages/options/writer/components/WriterAssistant/WriterAssistant";
 import WriterContext from "@pages/options/writer/context/WriterContext";
+import WriterAgent from "@pages/options/writer/agents/WriterAgent";
 import GluonConfigure from "@src/shared/storages/gluonConfig";
 
 const WriterApp: React.FC = (props: Record<string, unknown>) => {
   const config = props.config as GluonConfigure;
   const context = new WriterContext(config);
+  const agent = WriterAgent.create(config, context);
 
   return (
     <Layout>
       <WriterWorkspace context={context}></WriterWorkspace>
-      <WriterAssistant context={context}></WriterAssistant>
+      <WriterAssistant context={context} agent={agent}></WriterAssistant>
     </Layout>
   );
 };
