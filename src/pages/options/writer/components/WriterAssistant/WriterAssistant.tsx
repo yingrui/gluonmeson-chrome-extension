@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Button, Layout, Mentions, Typography } from "antd";
-import { CloseOutlined } from "@ant-design/icons";
+import { RedoOutlined, CloseOutlined } from "@ant-design/icons";
 import type { MentionsRef } from "antd/lib/mentions";
 import { useScrollAnchor } from "@src/shared/hooks/use-scroll-anchor";
 
@@ -54,15 +54,15 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
 
     setGenerating(true);
     const userInput = text;
+    setText("");
     if (userInput) {
       appendMessage("user", userInput);
-      setText("");
     }
     const stream = await agent.chat(messages[messages.length - 1]);
     const message = await showStreamingMessage(stream);
 
     appendMessage("assistant", message);
-    setCurrentText(message);
+    setCurrentText("");
     setGenerating(false);
 
     setTimeout(() => {
@@ -102,6 +102,13 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
     return options;
   }
 
+  function clearMessages() {
+    const messages = agent.getInitialMessages();
+    setList(messages);
+    setText("");
+    agent.getConversation().set(messages);
+  }
+
   return (
     <Sider
       id="writer-right-sider"
@@ -134,6 +141,18 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
               width: 64,
               height: 64,
               float: "right",
+            }}
+          />
+          <Button
+            type="text"
+            icon={<RedoOutlined />}
+            onClick={() => clearMessages()}
+            style={{
+              fontSize: "16px",
+              width: 64,
+              height: 64,
+              float: "right",
+              display: chatCollapsed ? "none" : "flex",
             }}
           />
         </div>
