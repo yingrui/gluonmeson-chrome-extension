@@ -113,7 +113,7 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
     <Sider
       id="writer-right-sider"
       width={400}
-      collapsedWidth={64}
+      collapsedWidth={36}
       trigger={null}
       collapsible
       collapsed={chatCollapsed}
@@ -138,7 +138,7 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
             onClick={() => setChatCollapsed(!chatCollapsed)}
             style={{
               fontSize: "16px",
-              width: 64,
+              width: 36,
               height: 64,
               float: "right",
             }}
@@ -149,7 +149,7 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
             onClick={() => clearMessages()}
             style={{
               fontSize: "16px",
-              width: 64,
+              width: 36,
               height: 64,
               float: "right",
               display: chatCollapsed ? "none" : "flex",

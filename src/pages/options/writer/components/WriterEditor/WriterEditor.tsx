@@ -78,7 +78,7 @@ const WriterEditor: React.FC = (props: Record<string, unknown>) => {
   const [title, setTitle] = useState(context.getTitle());
 
   return (
-    <Layout style={{ paddingRight: 64 }}>
+    <Layout style={{ paddingRight: 36 }}>
       <Header style={{ padding: 0, background: colorBgContainer }}>
         <Input
           id="writer-title-input"
