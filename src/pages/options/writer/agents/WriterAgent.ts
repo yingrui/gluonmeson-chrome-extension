@@ -1,6 +1,8 @@
 import OpenAI from "openai";
 import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
 import Conversation from "@src/shared/agents/Conversation";
+import WriterContext from "@src/pages/options/writer/context/WriterContext";
+import { parseCommand } from "@src/shared/agents/AgentUtils";
 
 class WriterAgent extends ThoughtAgent {
   commands = [
@@ -9,29 +11,6 @@ class WriterAgent extends ThoughtAgent {
     { value: "search", label: "/search" },
   ];
   context: WriterContext;
-
-  static create(config: any, context: WriterContext): WriterAgent {
-    const defaultModel = config.defaultModel ?? "gpt-3.5-turbo";
-    const toolsCallModel = config.toolsCallModel ?? null;
-    const apiKey = config.apiKey ?? "";
-    const language = config.language ?? "English";
-    const enableReflection = config.enableReflection ?? false;
-
-    const client = new OpenAI({
-      apiKey: apiKey,
-      baseURL: config.baseURL,
-      organization: config.organization,
-      dangerouslyAllowBrowser: true,
-    });
-
-    return new WriterAgent(
-      defaultModel,
-      toolsCallModel,
-      client,
-      language,
-      context,
-    );
-  }
 
   constructor(
     defaultModelName: string,
@@ -45,7 +24,42 @@ class WriterAgent extends ThoughtAgent {
     this.context = context;
   }
 
-  public getCommandOptions(): object[] {
+  /**
+   * Choose the tool agent to execute the tool
+   * @param {ChatMessage} message - Chat message
+   * @returns {Promise<any>} ChatCompletion
+   * @async
+   */
+  async chat(message: ChatMessage): Promise<any> {
+    const [command, userInput] = parseCommand(message.content, this.commands);
+
+    if (this.commands.find((c) => c.value === command)) {
+      this.getConversation().appendMessage(message);
+      return this.executeCommandWithUserInput(command, userInput);
+    } else {
+      return super.chat(message);
+    }
+  }
+
+  async executeCommandWithUserInput(
+    command: string,
+    userInput: string,
+  ): Promise<any> {
+    const args = {};
+    // Find the tool with the given command
+    for (const tool of this.getTools()) {
+      if (tool.name === command) {
+        args["userInput"] = userInput;
+        return this.execute(
+          [{ name: command, arguments: args }],
+          this.getConversation(),
+        );
+      }
+    }
+    return this.execute([], this.conversation);
+  }
+
+  public getCommandOptions(): CommandOption[] {
     return this.commands;
   }
 
@@ -53,7 +67,7 @@ class WriterAgent extends ThoughtAgent {
     return new Promise<any>((resolve, reject) => {
       const title = this.context.getTitle();
       const content = this.context.getContent();
-      console.log(title, content);
+
       if (content) {
         resolve(`As an article writer assistant by GluonMeson, named Guru Mason. Here’s how you can help users:
 

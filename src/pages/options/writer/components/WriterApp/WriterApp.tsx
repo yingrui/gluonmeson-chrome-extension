@@ -5,12 +5,13 @@ import WriterWorkspace from "@pages/options/writer/components/WriterWorkspace/Wr
 import WriterAssistant from "@pages/options/writer/components/WriterAssistant/WriterAssistant";
 import WriterContext from "@pages/options/writer/context/WriterContext";
 import WriterAgent from "@pages/options/writer/agents/WriterAgent";
+import WriterAgentFactory from "@pages/options/writer/agents/WriterAgentFactory";
 import GluonConfigure from "@src/shared/storages/gluonConfig";
 
 const WriterApp: React.FC = (props: Record<string, unknown>) => {
   const config = props.config as GluonConfigure;
   const context = new WriterContext(config);
-  const agent = WriterAgent.create(config, context);
+  const agent: WriterAgent = WriterAgentFactory.create(config, context);
 
   return (
     <Layout>

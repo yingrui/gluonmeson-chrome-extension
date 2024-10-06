@@ -96,12 +96,6 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
     setList([...messages]);
   }
 
-  function getCommandOptions() {
-    const options = [];
-    options.push({ value: "clear", label: "/clear" }); // add clear command
-    return options;
-  }
-
   function clearMessages() {
     const messages = agent.getInitialMessages();
     setList(messages);
@@ -192,7 +186,7 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
               value={text}
               disabled={generating}
               readOnly={generating}
-              options={getCommandOptions()}
+              options={agent.getCommandOptions()}
               placeholder="Hit Enter to send the message..."
               onChange={(value) => {
                 setText(value);

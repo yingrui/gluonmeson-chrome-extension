@@ -20,6 +20,16 @@ declare interface Action {
 }
 
 /**
+ * Uses:
+ *  - Used in antd Mentions component to render the suggestions
+ *  - Used in agent to parse user input command
+ */
+declare interface CommandOption {
+  value: string;
+  label: string;
+}
+
+/**
  * https://github.com/openai/openai-node/blob/master/src/resources/chat/completions.ts
  * namespace ChatCompletion {
  *   interface Choice

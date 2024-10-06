@@ -234,6 +234,8 @@ Choose the best action to execute, or generate new answer, or suggest more quest
       }
     }
 
+    // If could not find the action by function name,
+    // then agent should implement executeAction method.
     return this.executeAction(action, args, conversation);
   }
 
