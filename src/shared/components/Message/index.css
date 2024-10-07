@@ -10,11 +10,20 @@
   justify-content: start;
 }
 
+.avatar {
+  margin-right: 12px;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 200;
+  width: 32px;
+}
 
 .bot-avatar {
+  display: block;
   border: 1px solid #e5e7eb;
   border-radius: calc(.5rem - 2px);
-  margin-right: 12px;
+  box-sizing: border-box;
+  margin-bottom: 2px;
   padding: 5px;
   width: 32px;
   height: 32px;
@@ -47,12 +56,16 @@
 .user-avatar {
   border: 1px solid #e5e7eb;
   border-radius: calc(.5rem - 2px);
+  box-sizing: border-box;
   margin-left: 12px;
   padding: 5px;
   width: 32px;
   height: 32px;
 }
 
+.copy-icon {
+  width: 10px;
+}
 
 .markdown blockquote {
   --tw-border-opacity: 1;

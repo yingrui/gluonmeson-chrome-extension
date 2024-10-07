@@ -90,7 +90,11 @@ ${content}.`);
         role: "system",
         content: this.getInitialSystemMessage(),
       },
-      { role: "assistant", content: "Ask me anything about writing!" },
+      {
+        role: "assistant",
+        content: "Ask me anything about writing!",
+        name: "Guru",
+      },
     ] as ChatMessage[];
     return messages;
   }

@@ -102,6 +102,7 @@ function SidePanel(props: Record<string, unknown>) {
     generate_func: () => Promise<any>,
   ): Promise<string> {
     setGenerating(true);
+    let message = "";
     try {
       setText("");
       if (userInput) {
@@ -109,7 +110,7 @@ function SidePanel(props: Record<string, unknown>) {
       }
 
       const stream = await generate_func();
-      const message = await showStreamingMessage(stream);
+      message = await showStreamingMessage(stream);
 
       appendMessage("assistant", message);
       agent.getConversation().appendMessage(messages[messages.length - 1]);
@@ -185,7 +186,12 @@ function SidePanel(props: Record<string, unknown>) {
           {messages
             .filter((msg) => msg.role != "system")
             .map((msg, i) => (
-              <Message key={i} role={msg.role} content={msg.content}></Message>
+              <Message
+                key={i}
+                index={i}
+                role={msg.role}
+                content={msg.content}
+              ></Message>
             ))}
           {generating && (
             <Message role="assistant" content={currentText} loading></Message>

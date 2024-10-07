@@ -1,6 +1,7 @@
 declare interface ChatMessage {
   role: "assistant" | "user" | "system";
   content: string;
+  name?: string;
 }
 
 declare interface ChatSession {

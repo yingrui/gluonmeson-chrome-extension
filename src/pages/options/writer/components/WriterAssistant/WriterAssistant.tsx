@@ -16,7 +16,7 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
   const context = props.context as WriterContext;
   const agent = props.agent as WriterAgent;
 
-  const [chatCollapsed, setChatCollapsed] = useState(false);
+  const [chatCollapsed, setChatCollapsed] = useState(true);
 
   const mentionRef = useRef<MentionsRef>();
   const commandRef = useRef<boolean>();
@@ -91,7 +91,14 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
   }
 
   function appendMessage(role: ChatMessage["role"], content: string) {
-    const message = { role: role, content: content };
+    let name = "";
+    if (role === "user") {
+      name = "You";
+    } else if (role === "assistant") {
+      name = "Guru";
+    }
+
+    const message = { role: role, content: content, name: name };
     messages.push(message);
     setList([...messages]);
   }
@@ -117,7 +124,7 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
           {chatCollapsed ? null : (
             <>
               <img src="/icons/gm_logo.png" />
-              <h6>Chat with Guru</h6>
+              <h6>Chat</h6>
             </>
           )}
           <Button
@@ -163,13 +170,16 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
                 .map((msg, i) => (
                   <Message
                     key={i}
+                    index={i}
                     role={msg.role}
+                    name={msg.name}
                     content={msg.content}
                   ></Message>
                 ))}
               {generating && (
                 <Message
                   role="assistant"
+                  name="..."
                   content={currentText}
                   loading
                 ></Message>
