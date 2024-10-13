@@ -228,7 +228,7 @@ function SidePanel(props: Record<string, unknown>) {
           ref={mentionRef}
           onSelect={handleSearchChange}
           onSearch={onSearch}
-          onKeyDown={keypress}
+          onKeyUp={keypress}
           prefix={"/"}
           value={text}
           disabled={generating}

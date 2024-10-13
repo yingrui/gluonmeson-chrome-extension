@@ -192,7 +192,7 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
             <Mentions
               ref={mentionRef}
               onSelect={handleOnSelect}
-              onKeyDown={keypress}
+              onKeyUp={keypress}
               prefix={"/"}
               value={text}
               disabled={generating}

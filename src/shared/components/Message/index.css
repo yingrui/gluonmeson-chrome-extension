@@ -18,6 +18,10 @@
   min-width: 64px;
 }
 
+.avatar span {
+  display: block;
+}
+
 .bot-avatar {
   border: 1px solid #e5e7eb;
   border-radius: calc(.5rem - 2px);
