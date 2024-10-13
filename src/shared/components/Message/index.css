@@ -3,7 +3,7 @@
   align-items: start;
   justify-content: end;
   margin-bottom: .5rem;
-  padding: 16px 20px;
+  padding: 16px 20px 16px 10px;
 }
 
 .message-item.message-assistant {
@@ -11,15 +11,14 @@
 }
 
 .avatar {
-  margin-right: 12px;
   text-align: center;
   font-size: 9px;
   font-weight: 200;
-  width: 32px;
+  width: 64px;
+  min-width: 64px;
 }
 
 .bot-avatar {
-  display: block;
   border: 1px solid #e5e7eb;
   border-radius: calc(.5rem - 2px);
   box-sizing: border-box;
