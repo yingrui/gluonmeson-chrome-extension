@@ -58,8 +58,8 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
     if (userInput) {
       appendMessage("user", userInput);
     }
-    const stream = await agent.chat(messages[messages.length - 1]);
-    const message = await showStreamingMessage(stream);
+    const result = await agent.chat(messages[messages.length - 1]);
+    const message = await showStreamingMessage(result);
 
     appendMessage("assistant", message);
     setCurrentText("");
@@ -70,9 +70,10 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
     });
   }
 
-  async function showStreamingMessage(stream): Promise<string> {
+  async function showStreamingMessage(result): Promise<string> {
     let message = "";
 
+    const stream = result.stream;
     for await (const chunk of stream) {
       if (chunk.choices) {
         const finishReason = chunk.choices[0]?.finish_reason;

@@ -2,7 +2,6 @@ import OpenAI from "openai";
 import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
 import GluonMesonAgent from "./GluonMesonAgent";
 import BACopilotAgent from "./BACopilotAgent";
-import SummaryAgent from "./SummaryAgent";
 import TranslateAgent from "./TranslateAgent";
 import UiTestAgent from "./UiTestAgent";
 import GoogleAgent from "./GoogleAgent";
@@ -26,7 +25,6 @@ class AgentFactory {
     });
 
     const agents: ThoughtAgent[] = [
-      new SummaryAgent(defaultModel, toolsCallModel, client, language),
       new GoogleAgent(defaultModel, toolsCallModel, client, language),
       new TranslateAgent(defaultModel, toolsCallModel, client, language),
       new UiTestAgent(defaultModel, toolsCallModel, client, language),

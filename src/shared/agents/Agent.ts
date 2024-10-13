@@ -1,7 +1,21 @@
 import Tool from "./Tool";
 import Conversation from "./Conversation";
 
+declare interface ThinkResult {
+  type: "actions" | "message" | "stream";
+  actions?: Action[];
+  stream?: any;
+  firstChunk?: any;
+  message?: string;
+}
+
 interface Agent {
+  /**
+   * Get name of agent
+   * @returns {string} name
+   */
+  getName(): string;
+
   /**
    * Get tools that the agent can use
    * @returns {Tool[]} Tools
@@ -16,9 +30,9 @@ interface Agent {
 
   /**
    * Think
-   * @returns {Promise<Action[]>} Actions
+   * @returns {Promise<PlanResult>} PlanResult
    */
-  plan(): Promise<Action[]>;
+  plan(): Promise<ThinkResult>;
 
   /**
    * Reflection

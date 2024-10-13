@@ -11,17 +11,24 @@ class ThoughtAgent implements Agent {
   language: string;
   tools: Tool[] = [];
   conversation: Conversation = new Conversation();
+  name: string;
 
   constructor(
     modelName: string,
     toolsCallModel: string,
     client: OpenAI,
     language: string,
+    name: string = "Guru",
   ) {
     this.modelName = modelName;
     this.toolsCallModel = toolsCallModel;
     this.client = client;
     this.language = language;
+    this.name = name;
+  }
+
+  getName(): string {
+    return this.name;
   }
 
   /**
@@ -78,10 +85,20 @@ class ThoughtAgent implements Agent {
    * @returns {Promise<any>} ChatCompletion
    * @async
    */
-  async chat(message: ChatMessage): Promise<any> {
+  async chat(message: ChatMessage): Promise<ThinkResult | any> {
     this.conversation.appendMessage(message);
-    const actions = await this.plan();
-    return this.execute(actions, this.conversation);
+    const plan = await this.plan();
+    if (plan.type === "actions") {
+      return this.execute(plan.actions, this.conversation);
+    } else if (plan.type === "message") {
+      return this.execute(
+        [this.replyAction(choice.message.content)],
+        this.conversation,
+      );
+    } else if (plan.type === "stream") {
+      return plan;
+    }
+    throw new Error("Unknown plan type");
   }
 
   /**
@@ -96,9 +113,9 @@ class ThoughtAgent implements Agent {
 
   /**
    * Think
-   * @returns {Promise<Action[]>} Actions
+   * @returns {Promise<PlanResult>} PlanResult
    */
-  async plan(): Promise<Action[]> {
+  async plan(): Promise<PlanResult> {
     const messages = this.conversation.getMessages();
     const env = await this.environment();
     const systemMessage = { role: "system", content: env } as ChatMessage;
@@ -108,21 +125,29 @@ class ThoughtAgent implements Agent {
 
     const toolCalls = this.getToolCalls();
     if (toolCalls.length === 0) {
-      return [];
+      return { type: "actions", actions: [] };
     }
-    const choices = await this.toolsCall(messagesWithEnv, toolCalls);
-    if (choices.length > 0) {
-      const choice = choices[0];
-      if (choice.finish_reason === "tool_calls") {
-        const tools = choice.message.tool_calls;
-        if (tools) {
-          return tools.map((t) => this.toAction(t));
+    const stream = await this.toolsCall(messagesWithEnv, toolCalls, true);
+    const [first, second] = stream.tee();
+    let actions = [];
+    for await (const chunk of first) {
+      if (chunk.choices) {
+        if (chunk.choices.length == 0) {
+          throw new Error("Empty choices in chunk");
         }
-      } else if (choice.finish_reason === "stop" && choice.message.content) {
-        return [this.replyAction(choice.message.content)];
+        const choice = chunk.choices[0];
+        if (choice.finish_reason === "tool_calls") {
+          const tools = choice.delta.tool_calls;
+          if (tools) {
+            actions = tools.map((t) => this.toAction(t));
+          }
+        } else {
+          return { type: "stream", stream: second, firstChunk: chunk };
+        }
       }
     }
-    return [];
+
+    return { type: "actions", actions };
   }
 
   /**
@@ -141,7 +166,8 @@ class ThoughtAgent implements Agent {
     const messagesWithEnv = [systemMessage, userMessage];
 
     const toolCalls = this.getToolCalls();
-    const choices = await this.toolsCall(messagesWithEnv, toolCalls);
+    const result = await this.toolsCall(messagesWithEnv, toolCalls);
+    const choices = result.choices;
     if (choices.length > 0) {
       const choice = choices[0];
       if (choice.finish_reason === "tool_calls") {
@@ -283,14 +309,14 @@ Choose the best action to execute, or generate new answer, or suggest more quest
    * Chat completion
    * @param {ChatMessage[]} messages - Messages
    * @param {bool} stream - Stream
-   * @returns {Promise<any>} ChatCompletion
+   * @returns {Promise<ThinkResult>} ChatCompletion
    */
   async chatCompletion(
     messages: ChatMessage[],
     systemPrompt: string = "",
     replaceUserInput: string = "",
     stream: boolean = true,
-  ): Promise<any> {
+  ): Promise<ThinkResult> {
     if (systemPrompt && messages.length > 0 && messages[0].role === "system") {
       const systemMessage = {
         role: "system",
@@ -311,12 +337,13 @@ Choose the best action to execute, or generate new answer, or suggest more quest
       messages = [...messages.slice(0, messages.length - 1), userMessage];
     }
 
-    return await this.client.chat.completions.create({
+    const streamResult = await this.client.chat.completions.create({
       messages: messages as OpenAI.ChatCompletionMessageParam[],
       model: this.modelName,
       stream: stream,
       max_tokens: 4096,
     });
+    return { type: "stream", stream: streamResult };
   }
 
   /**
@@ -328,16 +355,16 @@ Choose the best action to execute, or generate new answer, or suggest more quest
   private async toolsCall(
     messages: ChatMessage[],
     tools: OpenAI.Chat.Completions.ChatCompletionTool[],
-  ): Promise<Choice[]> {
-    const chatCompletion = await this.client.chat.completions.create({
+    stream: boolean = false,
+  ): Promise<any> {
+    return await this.client.chat.completions.create({
       model: this.toolsCallModel,
       messages: messages as OpenAI.ChatCompletionMessageParam[],
-      stream: false,
+      stream: stream,
       tools: tools,
       max_tokens: 4096,
       logprobs: false, // Log probability information for the choice.
     });
-    return chatCompletion.choices as Choice[];
   }
 }
 

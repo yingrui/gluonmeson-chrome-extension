@@ -13,10 +13,14 @@ import configureStorage from "@root/src/shared/storages/gluonConfig";
 import type { MentionsRef } from "antd/lib/mentions";
 
 const { Text } = Typography;
+
+type PrefixType = "@" | "/";
+
 function SidePanel(props: Record<string, unknown>) {
   const configStorage = useStorage(configureStorage);
   const mentionRef = useRef<MentionsRef>();
   const [text, setText] = useState<string>();
+  const [prefix, setPrefix] = useState<PrefixType>("@");
   const [currentText, setCurrentText] = useState<string>();
   const [generating, setGenerating] = useState<boolean>();
   const { scrollRef, scrollToBottom, messagesRef } = useScrollAnchor();
@@ -109,8 +113,8 @@ function SidePanel(props: Record<string, unknown>) {
         appendMessage("user", userInput);
       }
 
-      const stream = await generate_func();
-      message = await showStreamingMessage(stream);
+      const result = await generate_func();
+      message = await showStreamingMessage(result);
 
       appendMessage("assistant", message);
       agent.getConversation().appendMessage(messages[messages.length - 1]);
@@ -125,9 +129,10 @@ function SidePanel(props: Record<string, unknown>) {
     return message;
   }
 
-  async function showStreamingMessage(stream): Promise<string> {
+  async function showStreamingMessage(result): Promise<string> {
     let message = "";
 
+    const stream = result.stream;
     for await (const chunk of stream) {
       if (chunk.choices) {
         const finishReason = chunk.choices[0]?.finish_reason;
@@ -153,7 +158,14 @@ function SidePanel(props: Record<string, unknown>) {
   }
 
   function appendMessage(role: ChatMessage["role"], content: string) {
-    const message = { role: role, content: content };
+    let name = "";
+    if (role === "user") {
+      name = "You";
+    } else if (role === "assistant") {
+      name = agent.getName();
+    }
+
+    const message = { role, content, name };
     messages.push(message);
     setList([...messages]);
   }
@@ -173,10 +185,20 @@ function SidePanel(props: Record<string, unknown>) {
     }
   }
 
+  const onSearch: MentionsProps["onSearch"] = (_, newPrefix) => {
+    setPrefix(newPrefix as PrefixType);
+  };
+
   function getCommandOptions() {
-    const options = agent.getCommandOptions();
-    options.push({ value: "clear", label: "/clear" }); // add clear command
-    return options;
+    if (prefix === "@") {
+      return agent.getAgentOptions();
+    }
+
+    if (prefix === "/") {
+      const options = agent.getCommandOptions();
+      options.push({ value: "clear", label: "/clear" }); // add clear command
+      return options;
+    }
   }
 
   return (
@@ -191,6 +213,7 @@ function SidePanel(props: Record<string, unknown>) {
                 index={i}
                 role={msg.role}
                 content={msg.content}
+                name={msg.name}
               ></Message>
             ))}
           {generating && (
@@ -204,6 +227,7 @@ function SidePanel(props: Record<string, unknown>) {
         <Mentions
           ref={mentionRef}
           onSelect={handleSearchChange}
+          onSearch={onSearch}
           onKeyUp={keypress}
           prefix={"/"}
           value={text}
