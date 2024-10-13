@@ -177,7 +177,7 @@ function SidePanel(props: Record<string, unknown>) {
   };
 
   async function keypress(e: any) {
-    if (e.key == "Enter" && !e.shiftKey) {
+    if (e.key == "Enter" && e.keyCode == 13 && !e.shiftKey) {
       e.preventDefault();
       if (!commandRef.current) {
         handleSubmit();
@@ -228,7 +228,7 @@ function SidePanel(props: Record<string, unknown>) {
           ref={mentionRef}
           onSelect={handleSearchChange}
           onSearch={onSearch}
-          onKeyUp={keypress}
+          onKeyDown={keypress}
           prefix={"/"}
           value={text}
           disabled={generating}

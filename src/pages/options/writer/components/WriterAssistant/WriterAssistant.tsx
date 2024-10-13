@@ -35,7 +35,7 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
   };
 
   async function keypress(e: any) {
-    if (e.key == "Enter" && !e.shiftKey) {
+    if (e.key == "Enter" && e.keyCode == 13 && !e.shiftKey) {
       e.preventDefault();
       if (!commandRef.current) {
         handleSubmit();
@@ -192,7 +192,7 @@ const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
             <Mentions
               ref={mentionRef}
               onSelect={handleOnSelect}
-              onKeyUp={keypress}
+              onKeyDown={keypress}
               prefix={"/"}
               value={text}
               disabled={generating}
