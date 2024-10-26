@@ -25,6 +25,7 @@ function SidePanel(props: Record<string, unknown>) {
   const [generating, setGenerating] = useState<boolean>();
   const { scrollRef, scrollToBottom, messagesRef } = useScrollAnchor();
   const commandRef = useRef<boolean>();
+  const inputMethodRef = useRef<boolean>(false);
   const agent = props.agent as GluonMesonAgent;
   const enableReflection = props.enableReflection as boolean;
 
@@ -176,10 +177,17 @@ function SidePanel(props: Record<string, unknown>) {
     commandRef.current = false;
   };
 
+  async function onKeyDown(e: any) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      inputMethodRef.current = e.keyCode !== 13;
+    }
+  }
+
   async function keypress(e: any) {
     if (e.key == "Enter" && e.keyCode == 13 && !e.shiftKey) {
       e.preventDefault();
-      if (!commandRef.current) {
+      if (!commandRef.current && !inputMethodRef.current) {
         handleSubmit();
       }
     }
@@ -228,6 +236,7 @@ function SidePanel(props: Record<string, unknown>) {
           ref={mentionRef}
           onSelect={handleSearchChange}
           onSearch={onSearch}
+          onKeyDown={onKeyDown}
           onKeyUp={keypress}
           prefix={"/"}
           value={text}

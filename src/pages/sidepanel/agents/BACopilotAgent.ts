@@ -188,7 +188,10 @@ Use markdown format to beautify output.`;
   }
 
   async tasking(args: object, messages: ChatMessage[]): Promise<any> {
-    const userInput = args["userInput"];
+    let userInput = args["userInput"];
+    if (!userInput || userInput === "") {
+      userInput = `breakdown tasks in ${this.language}:`;
+    }
     const board = await this.get_board();
     if (!board || board.type !== "card") return this.handleCannotGetCardError();
     const searchResult = await this.search(board.description);
@@ -227,7 +230,7 @@ Output language: ${this.language}`;
       { role: "system", content: prompt },
       {
         role: "user",
-        content: `${userInput}`,
+        content: userInput,
       },
     ]);
   }
