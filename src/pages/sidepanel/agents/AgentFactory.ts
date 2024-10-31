@@ -74,7 +74,13 @@ class AgentFactory {
       agents,
       conversation,
     );
-    const commands = agent.getCommandOptions();
+    const commands = [
+      { value: "summary", label: "/summary" },
+      { value: "search", label: "/search" },
+      { value: "tasking", label: "/tasking" },
+      { value: "ui_test", label: "/ui_test" },
+      { value: "user_story", label: "/user_story" },
+    ];
     const delegateAgent = new DelegateAgent(
       agent,
       agents,

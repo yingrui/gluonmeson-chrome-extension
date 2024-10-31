@@ -10,7 +10,8 @@ refreshOnUpdate("pages/sidepanel");
 
 function getInitialSystemMessage(language: string): string {
   return `As an assistant or chrome copilot provided by GluonMeson, named Guru Mason.
-You can decide to call different tools or directly answer questions in ${language}, should not add assistant in answer.`;
+You can decide to call different tools or directly answer questions in ${language}, should not add assistant in answer.
+Output format should be in markdown format, and use mermaid format for diagram generation.`;
 }
 
 function getInitialMessages(language: string): ChatMessage[] {

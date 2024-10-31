@@ -29,7 +29,7 @@ function SidePanel(props: Record<string, unknown>) {
   const agent = props.agent as DelegateAgent;
   const enableReflection = props.enableReflection as boolean;
   const initMessages = props.initMessages as ChatMessage[];
-  const [messages, setList] = useState<ChatMessage[]>(initMessages);
+  const [messages, setList] = useState<ChatMessage[]>([...initMessages]);
 
   useEffect(() => {
     const focus = () => {
@@ -86,8 +86,9 @@ function SidePanel(props: Record<string, unknown>) {
       text.startsWith("/c") ||
       text.startsWith("/cl")
     ) {
-      agent.getConversation().set(initMessages);
-      setList(initMessages);
+      const cloneInitMessages = [...initMessages];
+      agent.getConversation().set(cloneInitMessages);
+      setList(cloneInitMessages);
       setText("");
       return;
     }
