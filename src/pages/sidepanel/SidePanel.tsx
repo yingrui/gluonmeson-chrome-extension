@@ -6,7 +6,7 @@ import { Mentions, Typography } from "antd";
 import styles from "./SidePanel.module.scss";
 
 import Message from "@src/shared/components/Message";
-import GluonMesonAgent from "./agents/GluonMesonAgent";
+import DelegateAgent from "@src/shared/agents/DelegateAgent";
 import { delay, installContentScriptCommandListener } from "@src/shared/utils";
 import useStorage from "@root/src/shared/hooks/useStorage";
 import configureStorage from "@root/src/shared/storages/gluonConfig";
@@ -26,12 +26,10 @@ function SidePanel(props: Record<string, unknown>) {
   const { scrollRef, scrollToBottom, messagesRef } = useScrollAnchor();
   const commandRef = useRef<boolean>();
   const inputMethodRef = useRef<boolean>(false);
-  const agent = props.agent as GluonMesonAgent;
+  const agent = props.agent as DelegateAgent;
   const enableReflection = props.enableReflection as boolean;
-
-  const [messages, setList] = useState<ChatMessage[]>(
-    props.initMessages as ChatMessage[],
-  );
+  const initMessages = props.initMessages as ChatMessage[];
+  const [messages, setList] = useState<ChatMessage[]>(initMessages);
 
   useEffect(() => {
     const focus = () => {
@@ -88,7 +86,8 @@ function SidePanel(props: Record<string, unknown>) {
       text.startsWith("/c") ||
       text.startsWith("/cl")
     ) {
-      setList(agent.getInitialMessages());
+      agent.getConversation().set(initMessages);
+      setList(initMessages);
       setText("");
       return;
     }
@@ -225,7 +224,12 @@ function SidePanel(props: Record<string, unknown>) {
               ></Message>
             ))}
           {generating && (
-            <Message role="assistant" content={currentText} loading></Message>
+            <Message
+              role="assistant"
+              name={agent.getName()}
+              content={currentText}
+              loading
+            ></Message>
           )}
           <div className="helper" ref={messagesRef}></div>
         </div>
@@ -238,7 +242,7 @@ function SidePanel(props: Record<string, unknown>) {
           onSearch={onSearch}
           onKeyDown={onKeyDown}
           onKeyUp={keypress}
-          prefix={"/"}
+          prefix={["/", "@"]}
           value={text}
           disabled={generating}
           readOnly={generating}

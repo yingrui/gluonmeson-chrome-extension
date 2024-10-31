@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
+import Conversation from "@src/shared/agents/Conversation";
 import { get_content } from "@src/shared/utils";
 import { ddg_search } from "@src/shared/utils/duckduckgo";
 import { stringToAsyncIterator } from "@src/shared/utils/streaming";
@@ -10,8 +11,17 @@ class GoogleAgent extends ThoughtAgent {
     toolsCallModel: string,
     client: OpenAI,
     language: string,
+    conversation: Conversation = new Conversation(),
   ) {
-    super(defaultModelName, toolsCallModel, client, language);
+    super(
+      defaultModelName,
+      toolsCallModel,
+      client,
+      language,
+      "Seeker",
+      "Seeker, your search assistant",
+      conversation,
+    );
     this.addTool("google", "only when user want to visit google.", [
       "userInput",
     ]);

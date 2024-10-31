@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
+import Conversation from "@src/shared/agents/Conversation";
 
 class TranslateAgent extends ThoughtAgent {
   constructor(
@@ -7,8 +8,17 @@ class TranslateAgent extends ThoughtAgent {
     toolsCallModel: string,
     client: OpenAI,
     language: string,
+    conversation: Conversation = new Conversation(),
   ) {
-    super(defaultModelName, toolsCallModel, client, language);
+    super(
+      defaultModelName,
+      toolsCallModel,
+      client,
+      language,
+      "Translator",
+      "Translator, your translation assistant",
+      conversation,
+    );
     this.addTool(
       "translate",
       "translate given content to target language for user, default languages are Chinese & English",

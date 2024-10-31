@@ -17,6 +17,12 @@ interface Agent {
   getName(): string;
 
   /**
+   * Get name of agent
+   * @returns {string} name
+   */
+  getDescription(): string;
+
+  /**
    * Get tools that the agent can use
    * @returns {Tool[]} Tools
    */

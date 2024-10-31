@@ -1,13 +1,18 @@
 import OpenAI from "openai";
 import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
+import DelegateAgent from "@src/shared/agents/DelegateAgent";
 import GluonMesonAgent from "./GluonMesonAgent";
 import BACopilotAgent from "./BACopilotAgent";
 import TranslateAgent from "./TranslateAgent";
 import UiTestAgent from "./UiTestAgent";
 import GoogleAgent from "./GoogleAgent";
+import Conversation from "@src/shared/agents/Conversation";
 
 class AgentFactory {
-  static createGluonMesonAgent(config: any): GluonMesonAgent {
+  static createGluonMesonAgent(
+    config: any,
+    initMessages: ChatMessage[],
+  ): GluonMesonAgent {
     const defaultModel = config.defaultModel ?? "gpt-3.5-turbo";
     const toolsCallModel = config.toolsCallModel ?? null;
     const baCopilotKnowledgeApi = config.baCopilotKnowledgeApi ?? "";
@@ -24,10 +29,30 @@ class AgentFactory {
       dangerouslyAllowBrowser: true,
     });
 
+    const conversation = new Conversation();
+
     const agents: ThoughtAgent[] = [
-      new GoogleAgent(defaultModel, toolsCallModel, client, language),
-      new TranslateAgent(defaultModel, toolsCallModel, client, language),
-      new UiTestAgent(defaultModel, toolsCallModel, client, language),
+      new GoogleAgent(
+        defaultModel,
+        toolsCallModel,
+        client,
+        language,
+        conversation,
+      ),
+      new TranslateAgent(
+        defaultModel,
+        toolsCallModel,
+        client,
+        language,
+        conversation,
+      ),
+      new UiTestAgent(
+        defaultModel,
+        toolsCallModel,
+        client,
+        language,
+        conversation,
+      ),
       new BACopilotAgent(
         defaultModel,
         toolsCallModel,
@@ -37,16 +62,27 @@ class AgentFactory {
         baCopilotApi,
         baCopilotTechDescription,
         apiKey,
+        conversation,
       ),
     ];
 
-    return new GluonMesonAgent(
+    const agent = new GluonMesonAgent(
       defaultModel,
       toolsCallModel,
       client,
       language,
       agents,
+      conversation,
     );
+    const commands = agent.getCommandOptions();
+    const delegateAgent = new DelegateAgent(
+      agent,
+      agents,
+      commands,
+      conversation,
+    );
+    delegateAgent.getConversation().set(initMessages);
+    return delegateAgent;
   }
 }
 

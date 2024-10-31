@@ -30,8 +30,17 @@ class GluonMesonAgent extends ThoughtAgent {
     client,
     language,
     agents: ThoughtAgent[] = [],
+    conversation: Conversation = new Conversation(),
   ) {
-    super(defaultModelName, toolsCallModel, client, language);
+    super(
+      defaultModelName,
+      toolsCallModel,
+      client,
+      language,
+      "Guru",
+      "Guru, your browser assistant",
+      conversation,
+    );
 
     this.addSelfAgentTools();
     for (const agent of agents) {
@@ -218,6 +227,11 @@ The links are: ${JSON.stringify(content.links)}`;
     }
   }
 
+  getInitialSystemMessage(): string {
+    return `As an assistant or chrome copilot provided by GluonMeson, named Guru Mason.
+You can decide to call different tools or directly answer questions in ${this.language}, should not add assistant in answer.`;
+  }
+
   /**
    * Handle the chat messages
    * 1. Get the last user input from the chat messages
@@ -238,27 +252,6 @@ The links are: ${JSON.stringify(content.links)}`;
     } else {
       return super.chat(message);
     }
-  }
-
-  getInitialSystemMessage(): string {
-    return `As an assistant or chrome copilot provided by GluonMeson, named Guru Mason.
-You can decide to call different tools or directly answer questions in ${this.language}, should not add assistant in answer.`;
-  }
-
-  /**
-   * Get initial messages
-   * @returns {ChatMessage[]} Initial messages
-   */
-  getInitialMessages(): ChatMessage[] {
-    const messages = [
-      {
-        role: "system",
-        content: this.getInitialSystemMessage(),
-      },
-      { role: "assistant", content: "Hello! How can I assist you today?" },
-    ] as ChatMessage[];
-    this.getConversation().set(messages);
-    return messages;
   }
 
   /**

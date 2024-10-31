@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
+import Conversation from "@src/shared/agents/Conversation";
 import { get_html } from "@src/shared/utils";
 
 class UiTestAgent extends ThoughtAgent {
@@ -8,8 +9,17 @@ class UiTestAgent extends ThoughtAgent {
     toolsCallModel: string,
     client: OpenAI,
     language: string,
+    conversation: Conversation = new Conversation(),
   ) {
-    super(defaultModelName, toolsCallModel, client, language);
+    super(
+      defaultModelName,
+      toolsCallModel,
+      client,
+      language,
+      "QACopilot",
+      "QACopilot, your QA assistant",
+      conversation,
+    );
     this.addTool(
       "ui_test",
       "understand user's instruct and generate an UI E2E test for current viewing webpage",

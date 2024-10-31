@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
+import Conversation from "@src/shared/agents/Conversation";
 import { fromReadableStream } from "@src/shared/utils/streaming";
 
 class BACopilotAgent extends ThoughtAgent {
@@ -18,8 +19,17 @@ class BACopilotAgent extends ThoughtAgent {
     baCopilotApi: string,
     baCopilotTechDescription: string,
     apiKey: string,
+    conversation: Conversation = new Conversation(),
   ) {
-    super(defaultModelName, toolsCallModel, client, language);
+    super(
+      defaultModelName,
+      toolsCallModel,
+      client,
+      language,
+      "BACopilot",
+      "BACopilot, your BA assistant",
+      conversation,
+    );
     this.addTool(
       "user_story",
       "generate story content for user before they want to create a new card in story board. userInput is interactive message between agent & human.",

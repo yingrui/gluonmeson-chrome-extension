@@ -10,8 +10,9 @@ class ThoughtAgent implements Agent {
   client: OpenAI;
   language: string;
   tools: Tool[] = [];
-  conversation: Conversation = new Conversation();
+  conversation: Conversation;
   name: string;
+  description: string;
 
   constructor(
     modelName: string,
@@ -19,16 +20,24 @@ class ThoughtAgent implements Agent {
     client: OpenAI,
     language: string,
     name: string = "Guru",
+    description: string = "Guru",
+    conversation: Conversation = new Conversation(),
   ) {
     this.modelName = modelName;
     this.toolsCallModel = toolsCallModel;
     this.client = client;
     this.language = language;
     this.name = name;
+    this.description = description;
+    this.conversation = conversation;
   }
 
   getName(): string {
     return this.name;
+  }
+
+  getDescription(): string {
+    return this.description;
   }
 
   /**

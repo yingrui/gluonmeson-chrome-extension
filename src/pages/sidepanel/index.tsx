@@ -8,6 +8,22 @@ import AgentFactory from "./agents/AgentFactory";
 
 refreshOnUpdate("pages/sidepanel");
 
+function getInitialSystemMessage(language: string): string {
+  return `As an assistant or chrome copilot provided by GluonMeson, named Guru Mason.
+You can decide to call different tools or directly answer questions in ${language}, should not add assistant in answer.`;
+}
+
+function getInitialMessages(language: string): ChatMessage[] {
+  const messages = [
+    {
+      role: "system",
+      content: getInitialSystemMessage(language),
+    },
+    { role: "assistant", content: "Hello! How can I assist you today?" },
+  ] as ChatMessage[];
+  return messages;
+}
+
 function init() {
   const appContainer = document.querySelector("#app-container");
   if (!appContainer) {
@@ -15,8 +31,9 @@ function init() {
   }
   const root = createRoot(appContainer);
   configureStorage.get().then((config) => {
-    const agent = AgentFactory.createGluonMesonAgent(config);
-    const initMessages = agent.getInitialMessages();
+    const language = config.language ?? "English";
+    const initMessages = getInitialMessages(language);
+    const agent = AgentFactory.createGluonMesonAgent(config, initMessages);
     const enableReflection = config.enableReflection ?? false;
     root.render(
       <SidePanel
