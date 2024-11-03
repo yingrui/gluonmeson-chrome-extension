@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import Tool from "./Tool";
 import Agent from "./Agent";
 import Conversation from "./Conversation";
+import ThinkResult from "./ThinkResult";
 import { stringToAsyncIterator } from "../utils/streaming";
 
 class ThoughtAgent implements Agent {
@@ -100,10 +101,7 @@ class ThoughtAgent implements Agent {
     if (plan.type === "actions") {
       return this.execute(plan.actions, this.conversation);
     } else if (plan.type === "message") {
-      return this.execute(
-        [this.replyAction(choice.message.content)],
-        this.conversation,
-      );
+      return this.execute([this.replyAction(plan.message)], this.conversation);
     } else if (plan.type === "stream") {
       return plan;
     }
@@ -122,9 +120,9 @@ class ThoughtAgent implements Agent {
 
   /**
    * Think
-   * @returns {Promise<PlanResult>} PlanResult
+   * @returns {Promise<ThinkResult>} ThinkResult
    */
-  async plan(): Promise<PlanResult> {
+  async plan(): Promise<ThinkResult> {
     const messages = this.conversation.getMessages();
     const env = await this.environment();
     const systemMessage = { role: "system", content: env } as ChatMessage;
@@ -317,8 +315,10 @@ Choose the best action to execute, or generate new answer, or suggest more quest
   /**
    * Chat completion
    * @param {ChatMessage[]} messages - Messages
+   * @param {string} systemPrompt - System prompt
+   * @param {string} replaceUserInput - Replace user input
    * @param {bool} stream - Stream
-   * @returns {Promise<ThinkResult>} ChatCompletion
+   * @returns {Promise<ThinkResult>} ThinkResult
    */
   async chatCompletion(
     messages: ChatMessage[],
@@ -359,6 +359,7 @@ Choose the best action to execute, or generate new answer, or suggest more quest
    * Tools call
    * @param {ChatMessage[]} messages - Messages
    * @param {OpenAI.Chat.Completions.ChatCompletionTool[]} tools - Tools
+   * @param {bool} stream - Stream
    * @returns {Promise<Choice[]>}
    */
   private async toolsCall(

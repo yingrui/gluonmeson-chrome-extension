@@ -7,12 +7,13 @@ import TranslateAgent from "./TranslateAgent";
 import UiTestAgent from "./UiTestAgent";
 import GoogleAgent from "./GoogleAgent";
 import Conversation from "@src/shared/agents/Conversation";
+import Agent from "@src/shared/agents/Agent";
 
 class AgentFactory {
   static createGluonMesonAgent(
     config: any,
     initMessages: ChatMessage[],
-  ): GluonMesonAgent {
+  ): Agent {
     const defaultModel = config.defaultModel ?? "gpt-3.5-turbo";
     const toolsCallModel = config.toolsCallModel ?? null;
     const baCopilotKnowledgeApi = config.baCopilotKnowledgeApi ?? "";
@@ -71,8 +72,10 @@ class AgentFactory {
       toolsCallModel,
       client,
       language,
-      agents,
+      "Guru",
+      "Guru, your browser assistant",
       conversation,
+      agents,
     );
     const commands = [
       { value: "summary", label: "/summary" },

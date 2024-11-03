@@ -1,101 +1,62 @@
-import OpenAI from "openai";
 import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
 import Conversation from "@src/shared/agents/Conversation";
-import _ from "lodash";
+import CompositeAgent from "@src/shared/agents/CompositeAgent";
 
 import { get_content } from "@src/shared/utils";
-import { stringToAsyncIterator } from "@src/shared/utils/streaming";
+import OpenAI from "openai";
 
 /**
  * GluonMeson Agent
- * @extends {ThoughtAgent} - Agent with tools
+ * @extends {CompositeAgent} - Agent with tools
  */
-class GluonMesonAgent extends ThoughtAgent {
+class GluonMesonAgent extends CompositeAgent {
   toolsCallModel: string = null;
-  mapToolsAgents = {};
-  chatCompletionTools: OpenAI.Chat.Completions.ChatCompletionTool[] = [];
 
   constructor(
-    defaultModelName,
-    toolsCallModel,
-    client,
-    language,
-    agents: ThoughtAgent[] = [],
+    defaultModelName: string,
+    toolsCallModel: string,
+    client: OpenAI,
+    language: string,
+    name: string = "Guru",
+    description: string = "Guru",
     conversation: Conversation = new Conversation(),
+    agents: ThoughtAgent[] = [],
   ) {
     super(
       defaultModelName,
       toolsCallModel,
       client,
       language,
-      "Guru",
-      "Guru, your browser assistant",
+      name,
+      description,
       conversation,
+      agents,
     );
 
-    this.addSelfAgentTools();
-    for (const agent of agents) {
-      this.addAgent(agent);
-    }
+    this.addTools();
 
     this.toolsCallModel = toolsCallModel;
   }
 
   /**
-   * Add the agent
-   * 1. Add agent tools to the chat completion tools
-   * 2. Map the tools agents
-   * @constructor
-   * @param {any} agent - Agent
-   * @returns {void}
-   */
-  private addAgent(agent: ThoughtAgent): void {
-    for (const tool of agent.getTools()) {
-      this.getTools().push(tool);
-      const toolCall = tool.getFunction();
-      this.chatCompletionTools.push(toolCall);
-      this.mapToolsAgents[toolCall.function.name] = agent;
-    }
-  }
-
-  /**
    * Add the self agent tools to chatCompletionTools and mapToolsAgents.
    */
-  private addSelfAgentTools(): void {
+  private addTools(): void {
     this.addTool(
       "summary",
       "Based on current web page content, answer user's question or follow the user instruction to generate content for them.",
       ["userInput", "task"],
     );
-    for (const tool of this.getTools()) {
-      const toolCall = tool.getFunction();
-      this.chatCompletionTools.push(toolCall);
-      this.mapToolsAgents[toolCall.function.name] = this;
-    }
   }
 
-  /**
-   * Execute the command
-   * 1. If the command is help, call the help function
-   * 2. If the command is not help, throw an error
-   * @param {string} command - Command
-   * @param {object} args - Arguments
-   * @param {Conversation} conversation - Conversation
-   * @returns {Promise<any>} ChatCompletion
-   * @async
-   * @throws {Error} Unexpected action in GluonMesonAgent: {action}
-   */
-  async executeAction(
-    action: string,
-    args: object,
-    conversation: Conversation,
-  ): Promise<any> {
-    const agent = this.mapToolsAgents[action];
-    if (agent) {
-      return agent.execute([{ name: action, arguments: args }], conversation);
-    } else {
-      throw new Error("Unexpected action in GluonMesonAgent: " + action);
-    }
+  private async handleCannotGetContentError(): Promise<any> {
+    const prompt = `You're an assistant or chrome copilot provided by GluonMeson, Guru Mason is your name.
+The user is viewing the page, but you cannot get any information, it's possible because the you're detached from the webpage.
+Reply sorry and ask user to refresh webpage, so you can get information from webpage.`;
+    return await this.chatCompletion([
+      { role: "system", content: prompt },
+      { role: "user", content: `explain in ${this.language}:` },
+    ]);
   }
 
   async summary(args: object, messages: ChatMessage[]) {
@@ -112,7 +73,7 @@ class GluonMesonAgent extends ThoughtAgent {
 Please summarize the content in: ${this.language}, and consider the language of user input.
 The output should be short & clear, and in markdown format, if it need be diagram, please use mermaid format.
 The user is reading an article: ${content.title}.
-The content text is: ${content.text}
+The content text is: ${textContent}
 The links are: ${JSON.stringify(content.links)}`;
 
     return await this.chatCompletion(
