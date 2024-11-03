@@ -19,7 +19,7 @@ Before we dive in, let's introduce some concepts in this Chrome extension:
 
 ```mermaid
 graph TD;
-    B[Popup Window] -->|saves config for| C[AI Agents & Commands are in Side Panel]
+    B[Popup Window] -->|saves config for| C[AI Agents & Commands in Side Panel]
     C -->|sends message & instruction to| D[Content Script]
     D -->|gets info from| E[Web Page]
     D -->|sends info to| F[Background Service Worker]

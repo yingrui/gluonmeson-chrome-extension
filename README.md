@@ -6,10 +6,9 @@ GluonMeson Chrome Extension is a Chrome Web Browser Copilot, his name is Guru Ma
 
 * **Summary**: Quickly grasp the main points of any extensive text with our efficient summarization tool.
 * **Ask Page**: Receive answers based on the content of the web page you are currently viewing.
-* **Google**: Conduct Google searches right from your browser, ensuring you get the most relevant information swiftly.
-* **Translate**: Effortlessly translate content between Chinese and English or into other specified languages.
+* **Search Information**: Conduct search from your browser side panel.
+* **Translate**: translate content between Chinese and English or into other specified languages.
 * **Generate Story**: Automatically create engaging narrative content for new Trello board cards.
-* **Generate Text**: Craft specific texts for various purposes, boosting your creativity and efficiency.
 * **Generate Tasking**: Generate tasking results based on the description of the trello card you are currently viewing.
 * ... and more you can define by yourself!
 
