@@ -41,55 +41,53 @@ Next, we will introduce the agents and the tools provided by them.
 
 ### 1.1. GluonMesonAgent
 
-The central agent in this extension, GluonMesonAgent is designed to understand your intent and call the tools provided by other agents to help you.
+**Agent Name**: Guru, your browser assistant.
 
-**Supported Command**: Help
+This is a composite agent in this extension. GluonMesonAgent is designed to understand your intent and call the tools provided by other agents to help you.
+And it also can provide a summary of the text or answer questions related to the current web page.
 
-Agent has tools as below:
+**Supported Command**:
+* **Implemented Command**: summary
+* **Delegate Command**: search, tasking, ui_test, user_story
 
-* **Help**: Get help with the available capabilities in the extension.
-* **Generate Text**: Craft specific texts for various purposes, boosting your creativity and efficiency. *Note: This command can be triggered by right-clicking in a text area.*
-
-### 1.2. SummaryAgent
-
-Based on current web page content, SummaryAgent can provide a summary of the text or answer questions related to the content.
-
-**Supported Command**: summary, ask_page
-
-Agent has tools as below:
+This agent implements tools as below:
 
 * **Summary**: Quickly grasp the main points of any extensive text with our efficient summarization tool.
-* **Ask Page**: Receive answers based on the content of the web page you are currently viewing.
+* **Generate Text**: Craft specific texts for various purposes, boosting your creativity and efficiency. *Note: This command can be triggered by right-clicking in a text area.*
 
 The sequence diagram for the `/summary` command:
 ```mermaid
 sequenceDiagram
     participant User
     participant GluonMesonAgent
-    participant SummaryAgent
+        
     participant Content Script
-    participant GluonMeson Model Service
+    participant Remote Model Service
 
     User->>GluonMesonAgent: Enters command (e.g., /summary)
-    GluonMesonAgent->>SummaryAgent: parse command and forward to summary agent
-    SummaryAgent->>Content Script: send get_content message to content script
-    Content Script->>SummaryAgent: send content to agent
-    SummaryAgent->>GluonMeson Model Service: generate summary, return streaming message
-    SummaryAgent->>GluonMesonAgent: display on side panel
-    GluonMesonAgent->>User: View summary of current webpage
+    GluonMesonAgent->>Content Script: send get_content message to content script
+    Content Script->>GluonMesonAgent: send content to agent
+    GluonMesonAgent->>Remote Model Service: generate summary, return streaming message
+    GluonMesonAgent->>User: display on side panel
 ```
 
-### 1.3. GoogleAgent
+### 1.2. SearchAgent
 
-GoogleAgent allows you to conduct Google searches right from chat box, ensuring you get the most relevant information swiftly.
+**Agent Name**: Seeker, your search assistant.
 
-**Supported Command**: google
+SearchAgent allows you to search content from `DuckDuckGo` or use Google to search information from side panel.
+
+**Supported Command**: search
 
 Agent has tools as below:
 
-* **Google**: Conduct Google searches right from your browser, ensuring you get the most relevant information swiftly.
+* **Google**: Open Google search page from your browser.
+* **Search**: Search information from `DuckDuckGo`.
+* **Open Url**: Based on your command, open url showing in conversation.
 
-### 1.4. TranslateAgent
+### 1.3. TranslateAgent
+
+**Agent Name**: Translator, your translation assistant.
 
 TranslateAgent allows you to effortlessly translate conversation information between Chinese and English or into other specified languages.
 
@@ -99,15 +97,17 @@ Agent has tools as below:
 
 * **Translate**: Effortlessly translate content between Chinese and English or into other specified languages.
 
-### 1.5. BACopilotAgent
+### 1.4. BACopilotAgent
+
+**Agent Name**: BACopilot, your BA assistant.
 
 BACopilotAgent provides tools to help you to generate stories and breakdown these stories with story board.
 
-**Supported Command**: generate_story, tasking
+**Supported Command**: user_story, tasking
 
 Agent has tools as below:
 
-* **Generate Story**: Automatically create engaging narrative content for new Trello board cards.
+* **User Story**: Automatically create engaging narrative content for new Trello board cards.
 * **Tasking**: Generate tasking results based on the description of the trello card you are currently viewing.
 
 The sequence diagram for the `/tasking` command:
@@ -118,7 +118,7 @@ sequenceDiagram
     participant BACopilotAgent
     participant Content Script
     participant GluonMeson KnowledgeService
-    participant GluonMeson Model Service
+    participant Remote Model Service
 
     User->>GluonMesonAgent: Enters command (e.g., /tasking)
     GluonMesonAgent->>BACopilotAgent: parse command and forward to BA Copilot agent
@@ -126,7 +126,7 @@ sequenceDiagram
     Content Script->>BACopilotAgent: send details of board or card to agent
     BACopilotAgent->>GluonMeson KnowledgeService: retrieve tasking example or implementation reference via knowledge api
     GluonMeson KnowledgeService->>BACopilotAgent: return search results
-    BACopilotAgent->>GluonMeson Model Service: generate tasking results, return streaming message
+    BACopilotAgent->>Remote Model Service: generate tasking results, return streaming message
     BACopilotAgent->>GluonMesonAgent: display on side panel
     GluonMesonAgent->>User: View tasking results
 ```

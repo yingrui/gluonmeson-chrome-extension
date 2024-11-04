@@ -4,8 +4,8 @@ GluonMeson Chrome Extension is a Chrome Web Browser Copilot, his name is Guru Ma
 
 ## Features
 
-* **Summary**: Quickly grasp the main points of any extensive text with our efficient summarization tool.
-* **Ask Page**: Receive answers based on the content of the web page you are currently viewing.
+* **Summary**: Quickly list the main points with our summarization tool.
+* **Ask Page**: Answer questions based on the content of current web page.
 * **Search Information**: Conduct search from your browser side panel.
 * **Translate**: translate content between Chinese and English or into other specified languages.
 * **Generate Story**: Automatically create engaging narrative content for new Trello board cards.
@@ -46,6 +46,8 @@ Please set up below configurations in the extension popup page:
 <img src="docs/images/configure_in_popup_window.png"/>
 
 Please refer to [How to setup configurations](docs/tutorial/how_to_setup_configurations.md) for more details.
+
+***NOTE:*** *GluonMeson Platform is a GenAI Service PaaS product, which provide OpenAI compactible GPT model services.*
 
 ## For Users
 For who want to use this extension, please refer to below documents:
