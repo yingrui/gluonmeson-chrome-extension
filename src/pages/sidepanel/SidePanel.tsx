@@ -5,7 +5,12 @@ import { useScrollAnchor } from "@src/shared/hooks/use-scroll-anchor";
 import { Mentions, Typography } from "antd";
 import styles from "./SidePanel.module.scss";
 
+// TODO: Choose one of the following import statements
+// When your developing feature is not using Mermaid, use the following import statement:
+// When ready for release, use the following import statement:
+// import Message from "@src/shared/components/MessageWithoutMermaid";
 import Message from "@src/shared/components/Message";
+
 import DelegateAgent from "@src/shared/agents/DelegateAgent";
 import { delay, installContentScriptCommandListener } from "@src/shared/utils";
 import useStorage from "@root/src/shared/hooks/useStorage";
@@ -92,10 +97,8 @@ function SidePanel(props: Record<string, unknown>) {
       setText("");
       return;
     }
-    const message = await generateReply(
-      text,
-      () => agent.chat(messages[messages.length - 1]),
-      enableReflection,
+    const message = await generateReply(text, () =>
+      agent.chat(messages[messages.length - 1]),
     );
     if (enableReflection) {
       await reflection();

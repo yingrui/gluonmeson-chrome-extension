@@ -5,15 +5,7 @@ import React, {
   Fragment,
   useCallback,
 } from "react";
-import { Button, Input, Layout, Menu, Radio, theme } from "antd";
-import type { MenuProps } from "antd";
-import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  UserOutlined,
-  LaptopOutlined,
-  NotificationOutlined,
-} from "@ant-design/icons";
+import { Input, Layout, theme } from "antd";
 
 import MDEditor from "@uiw/react-md-editor";
 import { getCodeString } from "rehype-rewrite";
@@ -21,12 +13,12 @@ import mermaid from "mermaid";
 import "./WriterEditor.css";
 import WriterContext from "@pages/options/writer/context/WriterContext";
 
-const { Header, Content, Sider } = Layout;
+const { Header, Content } = Layout;
 
 const randomid = () => parseInt(String(Math.random() * 1e15), 10).toString(36);
 const Code: React.FC = (props: Record<string, unknown>) => {
   const children = props.children ?? [];
-  const className = props.className;
+  const className: string = props.className as string;
   const demoid = useRef(`dome${randomid()}`);
   const [container, setContainer] = useState(null);
   const isMermaid =
