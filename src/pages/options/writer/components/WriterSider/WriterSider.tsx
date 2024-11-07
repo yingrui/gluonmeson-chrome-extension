@@ -12,7 +12,7 @@ import {
 import "./WriterSider.css";
 import WriterContext from "@pages/options/writer/context/WriterContext";
 
-const items2: MenuProps["items"] = [
+const chapters: MenuProps["items"] = [
   UserOutlined,
   LaptopOutlined,
   NotificationOutlined,
@@ -36,9 +36,11 @@ const items2: MenuProps["items"] = [
 
 const { Sider } = Layout;
 
-const WriterSider: React.FC = (props: Record<string, unknown>) => {
-  const context = props.context as WriterContext;
+interface WriterSiderProps {
+  context: WriterContext;
+}
 
+const WriterSider: React.FC<WriterSiderProps> = ({ context }) => {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -73,7 +75,7 @@ const WriterSider: React.FC = (props: Record<string, unknown>) => {
         theme="light"
         mode="inline"
         defaultSelectedKeys={["1"]}
-        items={items2}
+        items={chapters}
         style={{ height: "89vh", borderRight: 0 }}
       />
     </Sider>

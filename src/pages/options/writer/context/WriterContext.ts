@@ -1,4 +1,4 @@
-import GluonConfigure from "@src/shared/storages/gluonConfig";
+import type { GluonConfigure } from "@src/shared/storages/gluonConfig";
 
 class WriterContext {
   title: string = "";

@@ -16,6 +16,7 @@ import { delay, installContentScriptCommandListener } from "@src/shared/utils";
 import useStorage from "@root/src/shared/hooks/useStorage";
 import configureStorage from "@root/src/shared/storages/gluonConfig";
 import type { MentionsRef } from "antd/lib/mentions";
+import type { MentionProps } from "antd";
 
 const { Text } = Typography;
 
@@ -196,7 +197,7 @@ function SidePanel(props: Record<string, unknown>) {
     }
   }
 
-  const onSearch: MentionsProps["onSearch"] = (_, newPrefix) => {
+  const onSearch: MentionProps["onSearch"] = (_, newPrefix) => {
     setPrefix(newPrefix as PrefixType);
   };
 

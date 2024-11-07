@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Button, Layout, Mentions, Typography } from "antd";
+import { Button, Layout, Mentions } from "antd";
 import { RedoOutlined, CloseOutlined } from "@ant-design/icons";
 import type { MentionsRef } from "antd/lib/mentions";
 import { useScrollAnchor } from "@src/shared/hooks/use-scroll-anchor";
@@ -7,15 +7,25 @@ import { useScrollAnchor } from "@src/shared/hooks/use-scroll-anchor";
 import "./WriterAssistant.css";
 import WriterContext from "@pages/options/writer/context/WriterContext";
 import WriterAgent from "@pages/options/writer/agents/WriterAgent";
+
+// TODO: Choose one of the following import statements
+// When your developing feature is not using Mermaid, use the following import statement:
+// When ready for release, use the following import statement:
+// import Message from "@src/shared/components/MessageWithoutMermaid";
 import Message from "@src/shared/components/Message";
 import { delay } from "@src/shared/utils";
 
-const { Header, Content, Sider } = Layout;
+const { Sider } = Layout;
 
-const WriterAssistant: React.FC = (props: Record<string, unknown>) => {
-  const context = props.context as WriterContext;
-  const agent = props.agent as WriterAgent;
+interface WriterAssistantProps {
+  context: WriterContext;
+  agent: WriterAgent;
+}
 
+const WriterAssistant: React.FC<WriterAssistantProps> = ({
+  context,
+  agent,
+}) => {
   const [chatCollapsed, setChatCollapsed] = useState(true);
 
   const mentionRef = useRef<MentionsRef>();

@@ -4,7 +4,7 @@ import {
   StorageType,
 } from "@src/shared/storages/base";
 
-type GluonConfigure = {
+export type GluonConfigure = {
   apiKey: string;
   baseURL: string;
   organization: string;

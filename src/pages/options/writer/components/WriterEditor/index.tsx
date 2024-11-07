@@ -6,31 +6,29 @@ import React, {
   useCallback,
 } from "react";
 import { Input, Layout, theme } from "antd";
-
+import PropTypes from "prop-types";
 import MDEditor from "@uiw/react-md-editor";
 import { getCodeString } from "rehype-rewrite";
 import mermaid from "mermaid";
-import "./WriterEditor.css";
+import "./index.css";
 import WriterContext from "@pages/options/writer/context/WriterContext";
 
 const { Header, Content } = Layout;
 
-const randomid = () => parseInt(String(Math.random() * 1e15), 10).toString(36);
-const Code: React.FC = (props: Record<string, unknown>) => {
-  const children = props.children ?? [];
-  const className: string = props.className as string;
-  const demoid = useRef(`dome${randomid()}`);
+const randomId = () => parseInt(String(Math.random() * 1e15), 10).toString(36);
+const Code = ({ children, className, node }) => {
+  children = children ?? [];
+  const demoId = useRef(`dome${randomId()}`);
   const [container, setContainer] = useState(null);
   const isMermaid =
     className && /^language-mermaid/.test(className.toLocaleLowerCase());
-  const code = children
-    ? getCodeString(props.node.children)
-    : children[0] || "";
+
+  const code = children ? getCodeString(node.children) : children[0] || "";
 
   useEffect(() => {
-    if (container && isMermaid && demoid.current && code) {
+    if (container && isMermaid && demoId.current && code) {
       mermaid
-        .render(demoid.current, code)
+        .render(demoId.current, code)
         .then(({ svg, bindFunctions }) => {
           container.innerHTML = svg;
           if (bindFunctions) {
@@ -41,18 +39,18 @@ const Code: React.FC = (props: Record<string, unknown>) => {
           console.log("error:", error);
         });
     }
-  }, [container, isMermaid, code, demoid]);
+  }, [container, isMermaid, code, demoId]);
 
-  const refElement = useCallback((node) => {
-    if (node !== null) {
-      setContainer(node);
+  const refElement = useCallback((element: any) => {
+    if (element !== null) {
+      setContainer(element);
     }
   }, []);
 
   if (isMermaid) {
     return (
       <Fragment>
-        <code id={demoid.current} style={{ display: "none" }} />
+        <code id={demoId.current} style={{ display: "none" }} />
         <code className={className} ref={refElement} data-name="mermaid" />
       </Fragment>
     );
@@ -60,9 +58,17 @@ const Code: React.FC = (props: Record<string, unknown>) => {
   return <code className={className}>{children}</code>;
 };
 
-const WriterEditor: React.FC = (props: Record<string, unknown>) => {
-  const context = props.context as WriterContext;
-  const [collapsed, setCollapsed] = useState(false);
+Code.propTypes = {
+  children: PropTypes.arrayOf(PropTypes.any),
+  className: PropTypes.string,
+  node: PropTypes.any,
+};
+
+interface WriterEditorProps {
+  context: WriterContext;
+}
+
+const WriterEditor: React.FC<WriterEditorProps> = ({ context }) => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -75,7 +81,7 @@ const WriterEditor: React.FC = (props: Record<string, unknown>) => {
         <Input
           id="writer-title-input"
           placeholder="Untitled"
-          autocomplete="off"
+          autoComplete="off"
           variant="borderless"
           value={title}
           onChange={(e) => {

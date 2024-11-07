@@ -1,5 +1,3 @@
-import Tool from "./Tool";
-
 class Conversation {
   messages: ChatMessage[];
 

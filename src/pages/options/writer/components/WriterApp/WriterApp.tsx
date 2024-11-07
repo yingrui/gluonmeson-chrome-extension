@@ -6,7 +6,7 @@ import WriterAssistant from "@pages/options/writer/components/WriterAssistant/Wr
 import WriterContext from "@pages/options/writer/context/WriterContext";
 import WriterAgent from "@pages/options/writer/agents/WriterAgent";
 import WriterAgentFactory from "@pages/options/writer/agents/WriterAgentFactory";
-import GluonConfigure from "@src/shared/storages/gluonConfig";
+import type { GluonConfigure } from "@src/shared/storages/gluonConfig";
 
 const WriterApp: React.FC = (props: Record<string, unknown>) => {
   const config = props.config as GluonConfigure;

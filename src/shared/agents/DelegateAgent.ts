@@ -1,10 +1,7 @@
 import Tool from "./Tool";
 import Agent from "./Agent";
 import Conversation from "./Conversation";
-import _ from "lodash";
-
-import { get_content } from "@src/shared/utils";
-import { stringToAsyncIterator } from "@src/shared/utils/streaming";
+import ThinkResult from "./ThinkResult";
 
 /**
  * Delegation Agent
