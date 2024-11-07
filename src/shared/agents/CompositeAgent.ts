@@ -18,7 +18,7 @@ class CompositeAgent extends ThoughtAgent {
     client,
     language,
     name: string = "Guru",
-    description: string = "Guru",
+    description: string = "Guru, your browser assistant",
     conversation: Conversation = new Conversation(),
     agents: ThoughtAgent[] = [],
   ) {
@@ -27,8 +27,8 @@ class CompositeAgent extends ThoughtAgent {
       toolsCallModel,
       client,
       language,
-      "Guru",
-      "Guru, your browser assistant",
+      name,
+      description,
       conversation,
     );
 
@@ -67,15 +67,15 @@ class CompositeAgent extends ThoughtAgent {
   }
 
   /**
-   * Execute the command
-   * 1. If the command is help, call the help function
-   * 2. If the command is not help, throw an error
+   * Implement the executeAction function of ThoughtAgent
+   * 1. Find the agent from the mapToolsAgents, and throw an error if not found
+   * 2. Hand off the action to the agent
    * @param {string} command - Command
    * @param {object} args - Arguments
    * @param {Conversation} conversation - Conversation
    * @returns {Promise<any>} ChatCompletion
    * @async
-   * @throws {Error} Unexpected action in GluonMesonAgent: {action}
+   * @throws {Error} Unexpected action in CompositeAgent({agent}): {action}
    */
   async executeAction(
     action: string,

@@ -10,8 +10,6 @@ import OpenAI from "openai";
  * @extends {CompositeAgent} - Agent with tools
  */
 class GluonMesonAgent extends CompositeAgent {
-  toolsCallModel: string = null;
-
   constructor(
     defaultModelName: string,
     toolsCallModel: string,
@@ -34,8 +32,6 @@ class GluonMesonAgent extends CompositeAgent {
     );
 
     this.addTools();
-
-    this.toolsCallModel = toolsCallModel;
   }
 
   /**
