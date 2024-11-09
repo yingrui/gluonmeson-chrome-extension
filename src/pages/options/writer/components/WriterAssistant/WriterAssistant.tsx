@@ -11,8 +11,9 @@ import WriterAgent from "@pages/options/writer/agents/WriterAgent";
 // TODO: Choose one of the following import statements
 // When your developing feature is not using Mermaid, use the following import statement:
 // When ready for release, use the following import statement:
-// import Message from "@src/shared/components/MessageWithoutMermaid";
-import Message from "@src/shared/components/Message";
+import Message from "@src/shared/components/MessageWithoutMermaid";
+// import Message from "@src/shared/components/Message";
+
 import { delay } from "@src/shared/utils";
 
 const { Sider } = Layout;
