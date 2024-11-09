@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Layout, Menu, theme } from "antd";
+import React from "react";
+import { Layout, Menu } from "antd";
 import type { MenuProps } from "antd";
 
 import withSuspense from "@src/shared/hoc/withSuspense";
@@ -7,18 +7,20 @@ import withErrorBoundary from "@src/shared/hoc/withErrorBoundary";
 import WriterApp from "@pages/options/writer/components/WriterApp/WriterApp";
 import "@pages/options/Options.css";
 
-import GluonConfigure from "@src/shared/storages/gluonConfig";
+import type { GluonConfigure } from "@src/shared/storages/gluonConfig";
 
-const { Header, Content, Sider } = Layout;
+const { Header } = Layout;
 
 const header_items: MenuProps["items"] = [
   { key: 1, label: "Writing" },
   { key: 2, label: "MORE COMING SOON" },
 ];
 
-const Options: React.FC = (props: Record<string, unknown>) => {
-  const config = props.config as GluonConfigure;
+interface OptionsProps extends Record<string, unknown> {
+  config: GluonConfigure;
+}
 
+const Options: React.FC<OptionsProps> = ({ config }) => {
   return (
     <Layout>
       <Header id="app-header">
