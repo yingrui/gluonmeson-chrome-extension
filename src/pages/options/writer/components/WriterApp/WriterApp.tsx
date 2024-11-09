@@ -8,8 +8,11 @@ import WriterAgent from "@pages/options/writer/agents/WriterAgent";
 import WriterAgentFactory from "@pages/options/writer/agents/WriterAgentFactory";
 import type { GluonConfigure } from "@src/shared/storages/gluonConfig";
 
-const WriterApp: React.FC = (props: Record<string, unknown>) => {
-  const config = props.config as GluonConfigure;
+interface WriterAppProps {
+  config: GluonConfigure;
+}
+
+const WriterApp: React.FC<WriterAppProps> = ({ config }) => {
   const context = new WriterContext(config);
   const agent: WriterAgent = WriterAgentFactory.create(config, context);
 
