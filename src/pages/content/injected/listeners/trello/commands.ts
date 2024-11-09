@@ -36,12 +36,12 @@ class TrelloHelper {
   }
 
   private getCardTitle(): string {
-    const title = jQuery("#js-dialog-title");
+    const title = jQuery("#card-back-name");
     return title ? title.text() : document.title;
   }
 
   private getCardDescription(): string {
-    const description = jQuery("div.js-fill-card-detail-desc div.js-desc");
+    const description = jQuery("div[data-testid='description-content-area']");
     return description ? description.text() : "";
   }
 

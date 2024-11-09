@@ -203,7 +203,8 @@ Use markdown format to beautify output.`;
       userInput = `breakdown tasks in ${this.language}:`;
     }
     const board = await this.get_board();
-    if (!board || board.type !== "card") return this.handleCannotGetCardError();
+    if (!board || board.type !== "card" || !board.title)
+      return this.handleCannotGetCardError();
     const searchResult = await this.search(board.description);
 
     const prompt = `## Role: Software Engineer
