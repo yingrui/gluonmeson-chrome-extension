@@ -8,8 +8,8 @@ import styles from "./SidePanel.module.scss";
 // TODO: Choose one of the following import statements
 // When your developing feature is not using Mermaid, use the following import statement:
 // When ready for release, use the following import statement:
-import Message from "@src/shared/components/MessageWithoutMermaid";
-// import Message from "@src/shared/components/Message";
+// import Message from "@src/shared/components/MessageWithoutMermaid";
+import Message from "@src/shared/components/Message";
 
 import DelegateAgent from "@src/shared/agents/DelegateAgent";
 import { delay, installContentScriptCommandListener } from "@src/shared/utils";
