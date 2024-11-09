@@ -178,6 +178,54 @@ The links are: ${JSON.stringify(content.links)}`;
       get_search_result(resolve);
     });
   }
+
+  /**
+   * Describe the current environment
+   * @returns {string} Environment description
+   */
+  async environment(): Promise<string> {
+    const content = await get_content();
+    const maxContentLength = 100 * 1024;
+    if (content) {
+      const textContent =
+        content.text.length > maxContentLength
+          ? content.text.slice(0, maxContentLength)
+          : content.text;
+      return `${this.getInitialSystemMessage()}
+
+## Situation
+Current user is viewing the page: ${content.title}, the url is ${content.url}, the content is:
+${textContent}.
+The links are: ${JSON.stringify(content.links)}`;
+    } else {
+      return this.getInitialSystemMessage();
+    }
+  }
+
+  getInitialSystemMessage(): string {
+    return `## Role
+As an assistant or chrome copilot provided by GluonMeson, named ${this.getName()}.
+You're good at search and extract information, and also summarize insights from search results.
+
+## Instructions
+Please decide to call different tools or directly answer questions in ${this.language}.
+
+### Output
+Use markdown format, and use mermaid format for diagram generation.
+Consider the language of user input, should not add assistant in answer.
+
+## Action Examples
+Situation: User types some keywords.
+User input: CNN GNN
+Intent: Open the google to search content.
+Action: google 
+
+Situation: User asks a question.
+User input: What is the history of France?
+Intent: Search the content from duckduckgo api, and summarize the history of France.
+Action: search
+`;
+  }
 }
 
 export default GoogleAgent;
