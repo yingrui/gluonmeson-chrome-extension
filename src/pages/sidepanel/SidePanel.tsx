@@ -182,7 +182,7 @@ function SidePanel(props: Record<string, unknown>) {
   };
 
   async function onKeyDown(e: any) {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       inputMethodRef.current = e.keyCode !== 13;
     }
