@@ -130,7 +130,7 @@ function SidePanel(props: Record<string, unknown>) {
 
     setTimeout(() => {
       scrollToBottom();
-    });
+    }, 100);
     return message;
   }
 
@@ -226,6 +226,7 @@ function SidePanel(props: Record<string, unknown>) {
                 role={msg.role}
                 content={msg.content}
                 name={msg.name}
+                loading={generating}
               ></Message>
             ))}
           {generating && (
