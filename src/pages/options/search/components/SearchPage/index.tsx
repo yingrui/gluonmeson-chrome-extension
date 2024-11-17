@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Input } from "antd";
+import { Layout, theme } from "antd";
 import "./index.css";
 import { ddg_search } from "@src/shared/utils/duckduckgo";
 import SearchResultItem from "@pages/options/search/components/SearchResultItem";
@@ -9,9 +9,12 @@ interface SearchPageProps {
   onQueryChange: (query: string) => void;
 }
 
-const { Search } = Input;
+const { Sider } = Layout;
 
 const SearchPage: React.FC<SearchPageProps> = ({ query, onQueryChange }) => {
+  const {
+    token: { colorBgContainer },
+  } = theme.useToken();
   const [searchResult, setSearchResult] = useState<any>({
     search_results: [],
     query: "",
@@ -26,15 +29,20 @@ const SearchPage: React.FC<SearchPageProps> = ({ query, onQueryChange }) => {
   search(query);
 
   return (
-    <>
-      <div className={"search-input-first-page"}>
+    <Layout className={"search-page"}>
+      <Sider
+        className={"search-page-sider"}
+        width={245}
+        style={{ background: colorBgContainer }}
+      ></Sider>
+      <div className={"search-page-results"}>
         <div className={"search-results"}>
           {searchResult.search_results.map((result, index) => (
             <SearchResultItem result={result} key={index} />
           ))}
         </div>
       </div>
-    </>
+    </Layout>
   );
 };
 

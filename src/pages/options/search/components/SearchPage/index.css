@@ -1,10 +1,18 @@
-.search-input-first-page {
+.search-page {
+  background-color: #fff;
+}
+
+aside.search-page-sider {
+  background-color: #fff;
+}
+
+.search-page-results {
   display: flex;
   justify-content: center;
   align-items: flex-start;
   margin-top: 20px;
 }
 
-.search-input-area {
-  width: 480px;
+.search-results {
+  width: 60vh;
 }
