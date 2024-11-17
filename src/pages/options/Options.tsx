@@ -27,14 +27,16 @@ interface OptionsProps extends Record<string, unknown> {
 }
 
 const Options: React.FC<OptionsProps> = ({ config }) => {
+  const [query, setQuery] = useState<string>("");
   const defaultSelectedItem = header_items[0].key as string;
   const [selectedItem, setSelectedItem] = useState<string>(defaultSelectedItem);
 
   const handleMenuClick: MenuProps["onClick"] = (e) => {
     setSelectedItem(e.key);
+    if (e.key === SearchItemKey) {
+      setQuery("");
+    }
   };
-
-  const [query, setQuery] = useState<string>("");
 
   return (
     <Layout>

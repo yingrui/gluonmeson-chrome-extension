@@ -3,14 +3,14 @@ import type { AutoCompleteProps } from "antd";
 import { AutoComplete, Input } from "antd";
 import "./index.css";
 
-interface SearchInputProps {
+interface SearchHomeProps {
   query: string;
   onQueryChange: (query: string) => void;
 }
 
 const { TextArea } = Input;
 
-const SearchInput: React.FC<SearchInputProps> = ({ query, onQueryChange }) => {
+const SearchHome: React.FC<SearchHomeProps> = ({ query, onQueryChange }) => {
   const [text, setText] = useState<string>(query);
 
   const onChange = (value: string) => {
@@ -69,4 +69,4 @@ const SearchInput: React.FC<SearchInputProps> = ({ query, onQueryChange }) => {
   );
 };
 
-export default SearchInput;
+export default SearchHome;

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Layout } from "antd";
 import type { GluonConfigure } from "@src/shared/storages/gluonConfig";
-import SearchInput from "@pages/options/search/components/SearchInput";
 import "./index.css";
+import SearchHome from "@pages/options/search/components/SearchHome";
+import SearchPage from "@pages/options/search/components/SearchPage";
 
 interface SearchAppProps {
   config: GluonConfigure;
@@ -15,22 +16,10 @@ const SearchApp: React.FC<SearchAppProps> = ({
   query,
   onQueryChange,
 }) => {
-  const [input, setInput] = useState<string>(query);
-
-  const onChange = (value: string) => {
-    console.log("search app, search input value change:", value, !input);
-    setInput(value);
-    onQueryChange(value);
-  };
-
   return (
     <Layout className={"search-app"}>
-      {!input && <SearchInput query={input} onQueryChange={onChange} />}
-      {input && (
-        <>
-          <div>{input}</div>
-        </>
-      )}
+      {!query && <SearchHome query={query} onQueryChange={onQueryChange} />}
+      {query && <SearchPage query={query} onQueryChange={onQueryChange} />}
     </Layout>
   );
 };
