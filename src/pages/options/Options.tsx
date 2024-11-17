@@ -9,6 +9,7 @@ import SearchApp from "@pages/options/search/components/SearchApp";
 import "@pages/options/Options.css";
 
 import type { GluonConfigure } from "@src/shared/storages/gluonConfig";
+import NavSearch from "@pages/options/components/NavSearch";
 
 const { Header } = Layout;
 
@@ -44,6 +45,7 @@ const Options: React.FC<OptionsProps> = ({ config }) => {
         <div className="demo-logo">
           <img src="/icons/gm_logo.png" />
           <h6>Guru Mason</h6>
+          {!!query && <NavSearch query={query} onQueryChange={setQuery} />}
         </div>
         <div className="nav-menus">
           <Menu

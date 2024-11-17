@@ -6,6 +6,12 @@
   flex-direction: column;
 }
 
+.search-logo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .search-logo img {
   width: 72px;
   height: 72px;

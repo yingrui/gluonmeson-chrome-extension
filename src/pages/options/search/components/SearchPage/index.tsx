@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Input } from "antd";
 import "./index.css";
+import { ddg_search } from "@src/shared/utils/duckduckgo";
+import SearchResultItem from "@pages/options/search/components/SearchResultItem";
 
 interface SearchPageProps {
   query: string;
@@ -10,22 +12,26 @@ interface SearchPageProps {
 const { Search } = Input;
 
 const SearchPage: React.FC<SearchPageProps> = ({ query, onQueryChange }) => {
-  const [queryString, setQueryString] = useState<string>(query);
+  const [searchResult, setSearchResult] = useState<any>({
+    search_results: [],
+    query: "",
+  });
 
-  const handleSubmit = (queryString: string) => {
-    onQueryChange(queryString);
+  const search = async (queryString: string) => {
+    if (searchResult.query !== queryString) {
+      const result = await ddg_search(queryString);
+      setSearchResult(result);
+    }
   };
+  search(query);
 
   return (
     <>
       <div className={"search-input-first-page"}>
-        <div className={"search-input-area"}>
-          <Search
-            className={"search-input"}
-            onChange={(e) => setQueryString(e.target.value)}
-            onSearch={handleSubmit}
-            value={queryString}
-          />
+        <div className={"search-results"}>
+          {searchResult.search_results.map((result, index) => (
+            <SearchResultItem result={result} key={index} />
+          ))}
         </div>
       </div>
     </>

@@ -1,0 +1,9 @@
+.inline-nav-search {
+  display: inline-block;
+  margin-left: 50px;
+}
+
+.nav-search {
+  width: 60vh;
+  display: flex;
+}

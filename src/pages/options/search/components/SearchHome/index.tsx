@@ -17,11 +17,6 @@ const SearchHome: React.FC<SearchHomeProps> = ({ query, onQueryChange }) => {
     setText(value);
   };
 
-  const handleSubmit = (queryString: string) => {
-    console.log("submit", queryString);
-    setText("");
-  };
-
   const [options, setOptions] = useState<AutoCompleteProps["options"]>([]);
 
   const handleCompletion = (value: string) => {
@@ -33,7 +28,6 @@ const SearchHome: React.FC<SearchHomeProps> = ({ query, onQueryChange }) => {
     if (e.key == "Enter" && e.keyCode == 13 && !e.shiftKey) {
       e.preventDefault();
       const queryString = text.trim();
-      handleSubmit(queryString);
       onQueryChange(queryString);
     }
   };
