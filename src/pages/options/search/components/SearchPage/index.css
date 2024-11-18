@@ -8,11 +8,11 @@ aside.search-page-sider {
 
 .search-page-results {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  justify-content: start;
   margin-top: 20px;
 }
 
 .search-results {
-  width: 60vh;
+  width: 40vw;
 }

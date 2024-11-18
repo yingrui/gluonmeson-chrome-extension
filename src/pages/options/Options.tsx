@@ -20,7 +20,7 @@ const OtherItemKey = "more";
 const header_items: MenuProps["items"] = [
   { key: SearchItemKey, label: "Search" },
   { key: WriterItemKey, label: "Writing" },
-  { key: OtherItemKey, label: "MORE COMING SOON" },
+  { key: OtherItemKey, label: "Coming Soon" },
 ];
 
 interface OptionsProps extends Record<string, unknown> {
@@ -32,9 +32,9 @@ const Options: React.FC<OptionsProps> = ({ config }) => {
   const defaultSelectedItem = header_items[0].key as string;
   const [selectedItem, setSelectedItem] = useState<string>(defaultSelectedItem);
 
-  const handleMenuClick: MenuProps["onClick"] = (e) => {
-    setSelectedItem(e.key);
-    if (e.key === SearchItemKey) {
+  const handleMenuClick = (item: string) => {
+    setSelectedItem(item);
+    if (item === SearchItemKey) {
       setQuery("");
     }
   };
@@ -42,9 +42,14 @@ const Options: React.FC<OptionsProps> = ({ config }) => {
   return (
     <Layout>
       <Header id="app-header">
-        <div className="demo-logo">
-          <img src="/icons/gm_logo.png" />
-          <h6>Guru Mason</h6>
+        <div className="logo">
+          <div
+            className="logo-and-name"
+            onClick={() => handleMenuClick(SearchItemKey)}
+          >
+            <img src="/icons/gm_logo.png" />
+            <h6>Guru Mason</h6>
+          </div>
           {!!query && <NavSearch query={query} onQueryChange={setQuery} />}
         </div>
         <div className="nav-menus">
@@ -55,7 +60,7 @@ const Options: React.FC<OptionsProps> = ({ config }) => {
             selectedKeys={[selectedItem]}
             items={header_items}
             style={{ flex: 1, minWidth: 0 }}
-            onClick={handleMenuClick}
+            onClick={(e) => handleMenuClick(e.key)}
           />
         </div>
       </Header>
