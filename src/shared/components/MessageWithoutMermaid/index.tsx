@@ -1,7 +1,7 @@
 import { Spin, message } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
 import "./index.css";
-import CodeBlock from "./MarkDownBlock/CodeBlock";
+import CodeBlock from "@src/shared/components/MessageWithoutMermaid/MarkDownBlockWithoutMermaid/CodeBlock";
 import ReactMarkdown from "react-markdown";
 import copy from "copy-to-clipboard";
 

@@ -13,6 +13,6 @@ aside.search-page-sider {
   margin-top: 20px;
 }
 
-.search-results {
+.search-results, .search-summary {
   width: 40vw;
 }

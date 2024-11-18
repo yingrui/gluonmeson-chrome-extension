@@ -1,12 +1,34 @@
 import React from "react";
+import ReactMarkdown from "react-markdown";
+// import CodeBlock from "@src/shared/components/MessageWithoutMermaid/MarkDownBlockWithoutMermaid/CodeBlock";
+import CodeBlock from "@src/shared/components/Message/MarkDownBlock/CodeBlock";
+import rehypeKatex from "rehype-katex";
+import remarkGfm from "remark-gfm";
 
 interface SearchSummaryProps {
-  query: string;
-  result: any;
+  content: string;
+  loading?: boolean;
 }
 
-const SearchSummary: React.FC<SearchSummaryProps> = ({ query, result }) => {
-  return <div>{query}</div>;
+const rehypePlugins = [rehypeKatex];
+const remarkPlugins = [remarkGfm];
+
+const SearchSummary: React.FC<SearchSummaryProps> = ({ content, loading }) => {
+  return (
+    <div>
+      <ReactMarkdown
+        components={{
+          code: (props) => {
+            return <CodeBlock {...props} loading={loading} />;
+          },
+        }}
+        rehypePlugins={rehypePlugins as any}
+        remarkPlugins={remarkPlugins as any}
+      >
+        {content}
+      </ReactMarkdown>
+    </div>
+  );
 };
 
 export default SearchSummary;

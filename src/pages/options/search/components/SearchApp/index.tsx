@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { Layout } from "antd";
 import type { GluonConfigure } from "@src/shared/storages/gluonConfig";
 import "./index.css";
 import SearchHome from "@pages/options/search/components/SearchHome";
 import SearchPage from "@pages/options/search/components/SearchPage";
+import SearchAgentFactory from "@pages/options/search/agents/SearchAgentFactory";
 
 interface SearchAppProps {
   config: GluonConfigure;
@@ -16,10 +17,11 @@ const SearchApp: React.FC<SearchAppProps> = ({
   query,
   onQueryChange,
 }) => {
+  const agent = SearchAgentFactory.create(config);
   return (
     <Layout className={"search-app"}>
       {!query && <SearchHome query={query} onQueryChange={onQueryChange} />}
-      {query && <SearchPage query={query} onQueryChange={onQueryChange} />}
+      {query && <SearchPage query={query} agent={agent} />}
     </Layout>
   );
 };

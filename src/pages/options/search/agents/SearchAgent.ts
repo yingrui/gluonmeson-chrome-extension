@@ -3,6 +3,8 @@ import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
 import { ddg_search } from "@src/shared/utils/duckduckgo";
 
 class SearchAgent extends ThoughtAgent {
+  searchResults: any;
+
   constructor(
     defaultModelName: string,
     toolsCallModel: string,
@@ -12,9 +14,13 @@ class SearchAgent extends ThoughtAgent {
     super(defaultModelName, toolsCallModel, client, language);
   }
 
+  setSearchResults(results: any) {
+    this.searchResults = results;
+  }
+
   async summary(args: object, messages: ChatMessage[]): Promise<any> {
     const userInput = args["userInput"];
-    const results = await ddg_search(userInput);
+    const results = this.searchResults;
     const prompt = `## Role
 You're Chrome extension, you can answer user questions based on the search results from duckduckgo.
 
