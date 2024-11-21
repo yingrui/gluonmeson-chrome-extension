@@ -1,0 +1,5 @@
+.react-markdown pre div {
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 8px;
+}

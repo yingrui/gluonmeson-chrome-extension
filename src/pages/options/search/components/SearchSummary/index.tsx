@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import CodeBlock from "@src/shared/components/Message/MarkDownBlock/CodeBlock";
 import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
+import "./index.css";
 
 interface SearchSummaryProps {
   content: string;
@@ -15,7 +16,7 @@ const remarkPlugins = [remarkGfm];
 
 const SearchSummary: React.FC<SearchSummaryProps> = ({ content, loading }) => {
   return (
-    <div>
+    <div className={"react-markdown"}>
       <ReactMarkdown
         components={{
           code: (props) => {
