@@ -46,6 +46,7 @@ export const ddg_search = async (userInput: string) => {
   }
 
   const result = {
+    query: userInput,
     about: getBriefOfSearchContent(search_html),
     search_results: getSearchResults(await response.text()),
   };

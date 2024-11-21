@@ -1,0 +1,18 @@
+.search-page {
+  background-color: #fff;
+}
+
+aside.search-page-sider {
+  background-color: #fff;
+}
+
+.search-page-results {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  margin-top: 20px;
+}
+
+.search-results, .search-summary {
+  width: 40vw;
+}
