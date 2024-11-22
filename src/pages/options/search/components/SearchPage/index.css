@@ -15,4 +15,5 @@ aside.search-page-sider {
 
 .search-results, .search-summary {
   width: 40vw;
+  padding: 10px;
 }
