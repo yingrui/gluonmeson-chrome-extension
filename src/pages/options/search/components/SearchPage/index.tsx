@@ -66,7 +66,7 @@ const SearchPage: React.FC<SearchPageProps> = ({ query, agent }) => {
         style={{ background: colorBgContainer }}
       ></Sider>
       <div className={"search-page-results"}>
-        {isSearchCompleted.current && (
+        {isSearchCompleted.current && currentText && (
           <div className={"search-summary"}>
             <SearchSummary content={currentText} loading={generating} />
           </div>
