@@ -3,7 +3,7 @@
   align-items: start;
   justify-content: end;
   margin-bottom: .5rem;
-  padding: 16px 20px 16px 10px;
+  padding: 16px 20px 16px 0px;
 }
 
 .message-item.message-assistant {
