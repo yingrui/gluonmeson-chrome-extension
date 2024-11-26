@@ -6,6 +6,8 @@ import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import copy from "copy-to-clipboard";
+import Interaction from "@src/shared/agents/Interaction";
+import { useState } from "react";
 
 interface Props {
   index?: number;
@@ -13,18 +15,28 @@ interface Props {
   content: string;
   name?: string;
   loading?: boolean;
+  interaction?: Interaction;
 }
 
 const rehypePlugins = [rehypeKatex];
 const remarkPlugins = [remarkGfm];
 
 const Message = (props: Props) => {
-  const { index, role, content, loading, name } = props;
+  const { index, role, content, loading, name, interaction } = props;
   const isAssistant = role === "assistant";
+  const [statusMessage, setStatusMessage] = useState<string>(
+    interaction ? interaction.getStatusMessage() : "",
+  );
 
   function handleCopy() {
     copy(content, {});
     message.success("copy success");
+  }
+
+  if (interaction) {
+    interaction.onChange(() => {
+      setStatusMessage(interaction.getStatusMessage());
+    });
   }
 
   return (
@@ -57,8 +69,12 @@ const Message = (props: Props) => {
           )}
         </div>
       ) : (
+        // When content is empty
         <div className="message-spin">
           <Spin />
+          {interaction && (
+            <span className={"interaction-status"}>{statusMessage}</span>
+          )}
         </div>
       )}
       {!isAssistant && (

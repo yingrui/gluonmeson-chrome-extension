@@ -1,16 +1,14 @@
+import Interaction from "./Interaction";
+
 class Conversation {
+  interactions: Interaction[] = [];
   messages: ChatMessage[];
 
   constructor(messages: ChatMessage[] = []) {
     this.messages = messages;
   }
 
-  appendMessages(messages: ChatMessage[]): Conversation {
-    const message = messages.slice(-1)[0];
-    return this.appendMessage(message);
-  }
-
-  appendMessage(message: ChatMessage): Conversation {
+  public appendMessage(message: ChatMessage): Conversation {
     if (message.role === "user") {
       return this.appendUserMessage(message);
     } else if (message.role === "assistant") {
@@ -19,16 +17,17 @@ class Conversation {
     return this;
   }
 
-  appendUserMessage(message: ChatMessage): Conversation {
+  private appendUserMessage(message: ChatMessage): Conversation {
     if (message.role === "user") {
       this.messages.push(message);
+      this.interactions.push(new Interaction(message, this.messages));
     } else {
       console.error("Only user messages can be appended to the conversation");
     }
     return this;
   }
 
-  appendAssistantMessage(message: ChatMessage): Conversation {
+  private appendAssistantMessage(message: ChatMessage): Conversation {
     if (message.role === "assistant") {
       this.messages.push(message);
     } else {
@@ -37,6 +36,16 @@ class Conversation {
       );
     }
     return this;
+  }
+
+  public getCurrentInteraction(): Interaction {
+    return this.interactions[this.interactions.length - 1];
+  }
+
+  public getInteraction(message: ChatMessage): Interaction {
+    return this.interactions.findLast((interaction) => {
+      return interaction.inputMessage === message;
+    });
   }
 
   set(messages: ChatMessage[]): Conversation {

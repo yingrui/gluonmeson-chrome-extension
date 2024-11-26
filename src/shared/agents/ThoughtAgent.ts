@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import Tool from "./Tool";
 import Agent from "./Agent";
 import Conversation from "./Conversation";
+import Interaction from "./Interaction";
 import ThinkResult from "./ThinkResult";
 import { stringToAsyncIterator } from "../utils/streaming";
 
@@ -124,12 +125,14 @@ class ThoughtAgent implements Agent {
    */
   async plan(): Promise<ThinkResult> {
     const messages = this.conversation.getMessages();
+    const interaction = this.conversation.getCurrentInteraction();
     const env = await this.environment();
     const systemMessage = { role: "system", content: env } as ChatMessage;
     const messagesWithEnv = env
       ? [systemMessage, ...messages.slice(1)]
       : messages;
 
+    interaction.setStatus("Planning", `${this.getName()} is thinking...`);
     const toolCalls = this.getToolCalls();
     if (toolCalls.length === 0) {
       return { type: "actions", actions: [] };
@@ -227,10 +230,17 @@ Choose the best action to execute, or generate new answer, or suggest more quest
    */
   trackingDialogueState(actions: Action[]): Action[] {
     const messages = this.conversation.getMessages();
+    const interaction = this.conversation.getCurrentInteraction();
     // TODO: Implement tracking dialogue state
     if (actions.length === 0) {
       return [this.chatAction(messages[messages.length - 1].content)];
     }
+    // TODO: The connections between intent and actions are missing.
+    interaction.setState(
+      actions[0].name,
+      actions[0].name,
+      actions[0].arguments,
+    );
     return actions;
   }
 
@@ -242,6 +252,14 @@ Choose the best action to execute, or generate new answer, or suggest more quest
    */
   async execute(actions: Action[], conversation: Conversation): Promise<any> {
     const refinedActions = this.trackingDialogueState(actions);
+
+    const interaction = this.conversation.getCurrentInteraction();
+    const actionNameList = refinedActions.map((a) => a.name);
+    interaction.setStatus(
+      "Executing",
+      `${this.getName()} is executing ${actionNameList.join(", ")}...`,
+    );
+    interaction.setAgentName(this.getName());
 
     // TODO: support multiple actions in future
     const action = refinedActions[0].name;

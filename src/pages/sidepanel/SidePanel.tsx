@@ -233,6 +233,7 @@ function SidePanel(props: Record<string, unknown>) {
             <Message
               role="assistant"
               name={agent.getName()}
+              interaction={agent.getConversation().getCurrentInteraction()}
               content={currentText}
               loading
             ></Message>

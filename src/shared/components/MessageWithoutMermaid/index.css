@@ -52,8 +52,10 @@
   background: #d1e9ff80;
 }
 
-.message-content {
-
+.interaction-status {
+  color: #6b7280;
+  font-style: italic;
+  margin-left: 12px;
 }
 
 .user-avatar {
