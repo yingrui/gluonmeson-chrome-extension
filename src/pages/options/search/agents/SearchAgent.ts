@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
-import { ddg_search } from "@src/shared/utils/duckduckgo";
+import ThinkResult from "@src/shared/agents/ThinkResult";
 
 class SearchAgent extends ThoughtAgent {
   searchResults: any;
@@ -18,7 +18,7 @@ class SearchAgent extends ThoughtAgent {
     this.searchResults = results;
   }
 
-  async summary(args: object, messages: ChatMessage[]): Promise<any> {
+  async summary(args: object, messages: ChatMessage[]): Promise<ThinkResult> {
     const userInput = args["userInput"];
     const results = this.searchResults;
     const prompt = `## Role

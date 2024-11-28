@@ -3,6 +3,7 @@ import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
 import Conversation from "@src/shared/agents/Conversation";
 import WriterContext from "@src/pages/options/writer/context/WriterContext";
 import { parseCommand } from "@src/shared/agents/AgentUtils";
+import ThinkResult from "@src/shared/agents/ThinkResult";
 
 class WriterAgent extends ThoughtAgent {
   commands = [
@@ -30,7 +31,7 @@ class WriterAgent extends ThoughtAgent {
    * @returns {Promise<any>} ChatCompletion
    * @async
    */
-  async chat(message: ChatMessage): Promise<any> {
+  async chat(message: ChatMessage): Promise<ThinkResult> {
     const [command, userInput] = parseCommand(message.content, this.commands);
 
     if (this.commands.find((c) => c.value === command)) {
@@ -44,7 +45,7 @@ class WriterAgent extends ThoughtAgent {
   async executeCommandWithUserInput(
     command: string,
     userInput: string,
-  ): Promise<any> {
+  ): Promise<ThinkResult> {
     const args = {};
     // Find the tool with the given command
     for (const tool of this.getTools()) {
@@ -68,7 +69,7 @@ class WriterAgent extends ThoughtAgent {
       const title = this.context.getTitle();
       const content = this.context.getContent();
 
-      if (content) {
+      if (title) {
         resolve(`As an article writer assistant by GluonMeson, named Guru Mason. Here’s how you can help users:
 
 * Title: you can answer questions about reviewing/modifying/generating the title of current article.

@@ -2,7 +2,6 @@ import OpenAI from "openai";
 import Tool from "./Tool";
 import Agent from "./Agent";
 import Conversation from "./Conversation";
-import Interaction from "./Interaction";
 import ThinkResult from "./ThinkResult";
 import { stringToAsyncIterator } from "../utils/streaming";
 
@@ -93,10 +92,10 @@ class ThoughtAgent implements Agent {
   /**
    * Choose the tool agent to execute the tool
    * @param {ChatMessage} message - Chat message
-   * @returns {Promise<any>} ChatCompletion
+   * @returns {Promise<ThinkResult>} ChatCompletion
    * @async
    */
-  async chat(message: ChatMessage): Promise<ThinkResult | any> {
+  async chat(message: ChatMessage): Promise<ThinkResult> {
     this.conversation.appendMessage(message);
     const plan = await this.plan();
     if (plan.type === "actions") {
@@ -248,9 +247,12 @@ Choose the best action to execute, or generate new answer, or suggest more quest
    * Execute
    * @param {Action[]} actions - Actions
    * @param {Conversation} conversation - Conversation
-   * @returns {Promise<any>} ChatCompletion
+   * @returns {Promise<ThinkResult>} ChatCompletion
    */
-  async execute(actions: Action[], conversation: Conversation): Promise<any> {
+  async execute(
+    actions: Action[],
+    conversation: Conversation,
+  ): Promise<ThinkResult> {
     const refinedActions = this.trackingDialogueState(actions);
 
     const interaction = this.conversation.getCurrentInteraction();
@@ -299,13 +301,13 @@ Choose the best action to execute, or generate new answer, or suggest more quest
    * @param {string} action - Action
    * @param {object} args - Pojo object as Arguments
    * @param {Conversation} conversation - Conversation
-   * @returns {Promise<any>} ChatCompletion
+   * @returns {Promise<ThinkResult>} ChatCompletion
    */
   async executeAction(
     action: string,
     args: object,
     conversation: Conversation,
-  ): Promise<any> {
+  ): Promise<ThinkResult> {
     throw new Error("Unimplemented action: " + action);
   }
 
@@ -378,20 +380,19 @@ Choose the best action to execute, or generate new answer, or suggest more quest
    * @param {ChatMessage[]} messages - Messages
    * @param {OpenAI.Chat.Completions.ChatCompletionTool[]} tools - Tools
    * @param {bool} stream - Stream
-   * @returns {Promise<Choice[]>}
+   * @returns {Promise<any>}
    */
   private async toolsCall(
     messages: ChatMessage[],
     tools: OpenAI.Chat.Completions.ChatCompletionTool[],
     stream: boolean = false,
   ): Promise<any> {
-    return await this.client.chat.completions.create({
+    return this.client.chat.completions.create({
       model: this.toolsCallModel,
       messages: messages as OpenAI.ChatCompletionMessageParam[],
       stream: stream,
       tools: tools,
       max_tokens: 4096,
-      logprobs: false, // Log probability information for the choice.
     });
   }
 }

@@ -50,17 +50,17 @@ interface Agent {
    * Execute
    * @param {Action[]} actions - Actions
    * @param {Conversation} conversation - Conversation
-   * @returns {Promise<any>} ChatCompletion
+   * @returns {Promise<ThinkResult>} ChatCompletion
    */
-  execute(actions: Action[], conversation: Conversation): Promise<any>;
+  execute(actions: Action[], conversation: Conversation): Promise<ThinkResult>;
 
   /**
    * Chat with user
    * @param {ChatMessage} message - Chat message
-   * @returns {Promise<any>} ChatCompletion
+   * @returns {Promise<ThinkResult>} ChatCompletion
    * @async
    */
-  chat(message: ChatMessage): Promise<any>;
+  chat(message: ChatMessage): Promise<ThinkResult>;
 
   /**
    * Describe the current environment

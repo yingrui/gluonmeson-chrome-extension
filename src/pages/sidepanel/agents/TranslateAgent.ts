@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
 import Conversation from "@src/shared/agents/Conversation";
+import ThinkResult from "@src/shared/agents/ThinkResult";
 
 class TranslateAgent extends ThoughtAgent {
   constructor(
@@ -26,7 +27,7 @@ class TranslateAgent extends ThoughtAgent {
     );
   }
 
-  async translate(args: object, messages: ChatMessage[]) {
+  async translate(args: object, messages: ChatMessage[]): Promise<ThinkResult> {
     const userInput = args["userInput"];
     const targetLanguage =
       args["targetLanguage"] || "opposite language according to user input";

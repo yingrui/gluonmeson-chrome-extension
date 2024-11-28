@@ -4,6 +4,7 @@ import CompositeAgent from "@src/shared/agents/CompositeAgent";
 
 import { get_content } from "@src/shared/utils";
 import OpenAI from "openai";
+import ThinkResult from "@src/shared/agents/ThinkResult";
 
 /**
  * GluonMeson Agent
@@ -45,7 +46,7 @@ class GluonMesonAgent extends CompositeAgent {
     );
   }
 
-  private async handleCannotGetContentError(): Promise<any> {
+  private async handleCannotGetContentError(): Promise<ThinkResult> {
     const prompt = `You're an assistant or chrome copilot provided by GluonMeson, Guru Mason is your name.
 The user is viewing the page, but you cannot get any information, it's possible because the you're detached from the webpage.
 Reply sorry and ask user to refresh webpage, so you can get information from webpage.`;
@@ -55,7 +56,7 @@ Reply sorry and ask user to refresh webpage, so you can get information from web
     ]);
   }
 
-  async summary(args: object, messages: ChatMessage[]) {
+  async summary(args: object, messages: ChatMessage[]): Promise<ThinkResult> {
     const content = await get_content();
     if (!content) return this.handleCannotGetContentError();
 
@@ -95,7 +96,10 @@ The links are: ${JSON.stringify(content.links)}`;
    * @param {ChatMessage[]} messages - Messages
    * @returns {Promise<any>} ChatCompletion
    */
-  async generate_text(args: object, messages: ChatMessage[]): Promise<any> {
+  async generate_text(
+    args: object,
+    messages: ChatMessage[],
+  ): Promise<ThinkResult> {
     const userInput = args["userInput"];
     const content = await get_content();
     const prompt = `You're a good writer provided by GluonMeson,

@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import Tool from "./Tool";
 import ThoughtAgent from "./ThoughtAgent";
 import Conversation from "./Conversation";
+import ThinkResult from "@src/shared/agents/ThinkResult";
 
 /**
  * Composite Agent
@@ -42,7 +43,7 @@ class CompositeAgent extends ThoughtAgent {
    * 1. Add agent tools to the chat completion tools
    * 2. Map the tools agents
    * @constructor
-   * @param {any} agent - Agent
+   * @param {ThoughtAgent} agent - Agent
    * @returns {void}
    */
   private addAgent(agent: ThoughtAgent): void {
@@ -73,7 +74,7 @@ class CompositeAgent extends ThoughtAgent {
    * @param {string} command - Command
    * @param {object} args - Arguments
    * @param {Conversation} conversation - Conversation
-   * @returns {Promise<any>} ChatCompletion
+   * @returns {Promise<ThinkResult>} ChatCompletion
    * @async
    * @throws {Error} Unexpected action in CompositeAgent({agent}): {action}
    */
@@ -81,7 +82,7 @@ class CompositeAgent extends ThoughtAgent {
     action: string,
     args: object,
     conversation: Conversation,
-  ): Promise<any> {
+  ): Promise<ThinkResult> {
     const agent = this.mapToolsAgents[action];
     if (agent) {
       return agent.execute([{ name: action, arguments: args }], conversation);

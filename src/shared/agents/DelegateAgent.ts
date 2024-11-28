@@ -58,7 +58,7 @@ class DelegateAgent implements Agent {
   public async execute(
     actions: Action[],
     conversation: Conversation,
-  ): Promise<any> {
+  ): Promise<ThinkResult> {
     return await this.currentAgent.execute(actions, conversation);
   }
 
@@ -96,13 +96,13 @@ class DelegateAgent implements Agent {
    * The user input should be set to object args, need to figure out which parameter is the user input.
    * @param {string} command - Command
    * @param {string} userInput - User input
-   * @returns {Promise<any>} ChatCompletion
+   * @returns {Promise<ThinkResult>} ChatCompletion
    * @throws {Error} Unexpected tool call
    */
   async executeCommandWithUserInput(
     command: string,
     userInput: string,
-  ): Promise<any> {
+  ): Promise<ThinkResult> {
     const args = {};
     // Find the tool with the given command
     for (const tool of this.getTools()) {
@@ -125,10 +125,10 @@ class DelegateAgent implements Agent {
    * 4. If the command is not found and tools call model is specified, call the tool
    * 5. If the tool call model is not specified, return the chat completion
    * @param {ChatMessage} message - Chat message
-   * @returns {Promise<any>} ChatCompletion
+   * @returns {Promise<ThinkResult>} ChatCompletion
    * @async
    */
-  async chat(message: ChatMessage): Promise<any> {
+  async chat(message: ChatMessage): Promise<ThinkResult> {
     const [command, agent, userInput] = this.parseCommand(message.content);
     if (agent) {
       this.currentAgent = agent;

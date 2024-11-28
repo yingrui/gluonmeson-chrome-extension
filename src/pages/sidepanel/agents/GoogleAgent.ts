@@ -4,6 +4,7 @@ import Conversation from "@src/shared/agents/Conversation";
 import { get_content } from "@src/shared/utils";
 import { ddg_search } from "@src/shared/utils/duckduckgo";
 import { stringToAsyncIterator } from "@src/shared/utils/streaming";
+import ThinkResult from "@src/shared/agents/ThinkResult";
 
 class GoogleAgent extends ThoughtAgent {
   constructor(
@@ -37,7 +38,7 @@ class GoogleAgent extends ThoughtAgent {
     );
   }
 
-  async search(args: object, messages: ChatMessage[]): Promise<any> {
+  async search(args: object, messages: ChatMessage[]): Promise<ThinkResult> {
     const userInput = args["userInput"];
     const results = await ddg_search(userInput);
     const prompt = `## Role
@@ -76,7 +77,7 @@ ${userInput}
     ]);
   }
 
-  async handleCannotGetGoogleResultError(userInput): Promise<any> {
+  async handleCannotGetGoogleResultError(userInput): Promise<ThinkResult> {
     const prompt = `You're Chrome extension, you can help users to browse google.
 You can understand user's questions, open the google to search content, and most important, you can answer user's question based on search results
 There is a problem that you cannot get any information from current tab, it's possible because the you're detached from the webpage.
@@ -90,29 +91,38 @@ There is a problem that you cannot get any information from current tab, it's po
     ]);
   }
 
-  async open_url(args: object, messages: ChatMessage[]): Promise<any> {
+  async open_url(args: object, messages: ChatMessage[]): Promise<ThinkResult> {
     return new Promise<any>((resolve, reject) => {
       const url = args["url"];
       if (!url) {
-        resolve(stringToAsyncIterator("Url is required."));
+        resolve({
+          type: "stream",
+          stream: stringToAsyncIterator("Url is required."),
+        });
       }
       chrome.tabs.query({ currentWindow: true }, (tabs) => {
         if (tabs.length > 0) {
           for (const tab of tabs) {
             if (!!tab.url && tab.url.includes(url)) {
               chrome.tabs.update(tab.id, { selected: true, url: url });
-              resolve(stringToAsyncIterator("Url is opened."));
+              resolve({
+                type: "stream",
+                stream: stringToAsyncIterator("Url is opened."),
+              });
               return;
             }
           }
         }
         chrome.tabs.create({ url: url });
-        resolve(stringToAsyncIterator("Url is opened."));
+        resolve({
+          type: "stream",
+          stream: stringToAsyncIterator("Url is opened."),
+        });
       });
     });
   }
 
-  async google(args: object, messages: ChatMessage[]): Promise<any> {
+  async google(args: object, messages: ChatMessage[]): Promise<ThinkResult> {
     const userInput = args["userInput"];
     const url = await this.openGoogle(userInput);
     const content = await this.get_google_result(url, userInput);

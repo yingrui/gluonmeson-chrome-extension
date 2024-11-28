@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
 import Conversation from "@src/shared/agents/Conversation";
 import { fromReadableStream } from "@src/shared/utils/streaming";
+import ThinkResult from "@src/shared/agents/ThinkResult";
 
 class BACopilotAgent extends ThoughtAgent {
   baCopilotKnowledgeApi: string;
@@ -63,7 +64,7 @@ class BACopilotAgent extends ThoughtAgent {
     });
   }
 
-  async handleCannotGetBoardError(): Promise<any> {
+  async handleCannotGetBoardError(): Promise<ThinkResult> {
     const prompt = `You're an Business Analyst in Software Engineering Team.
 But you cannot get any information. Reply sorry and ask user to open or navigate to story board, so you can get information from board.`;
     return await this.chatCompletion([
@@ -72,7 +73,7 @@ But you cannot get any information. Reply sorry and ask user to open or navigate
     ]);
   }
 
-  async handleCannotGetCardError(): Promise<any> {
+  async handleCannotGetCardError(): Promise<ThinkResult> {
     const prompt = `You're an Business Analyst or software engineer in Software Engineering Team.
 But you cannot get any card information. Reply sorry and ask user to open or navigate to story board card page, so you can get information of card.`;
     return await this.chatCompletion([
@@ -81,7 +82,10 @@ But you cannot get any card information. Reply sorry and ask user to open or nav
     ]);
   }
 
-  async generateStoryWithGPTModel(board: any, userInput: string): Promise<any> {
+  async generateStoryWithGPTModel(
+    board: any,
+    userInput: string,
+  ): Promise<ThinkResult> {
     let prompt = "";
     if (board.type === "board") {
       const context = board.columns.map((column) => {
@@ -116,7 +120,10 @@ Use markdown format to beautify output.`;
     ]);
   }
 
-  async user_story(args: object, messages: ChatMessage[]): Promise<any> {
+  async user_story(
+    args: object,
+    messages: ChatMessage[],
+  ): Promise<ThinkResult> {
     const userInput = args["userInput"];
     const board = await this.get_board();
     if (!board) return this.handleCannotGetBoardError();
@@ -130,7 +137,7 @@ Use markdown format to beautify output.`;
   async generateStoryWithGluonMesonAgent(
     board: any,
     userInput: string,
-  ): Promise<any> {
+  ): Promise<ThinkResult> {
     try {
       const conversation = await this.createConversation(board, userInput);
       const conversationId = conversation.id;
@@ -145,7 +152,7 @@ Use markdown format to beautify output.`;
           body: JSON.stringify({ message: userInput }),
         },
       );
-      return fromReadableStream(response.body);
+      return { type: "stream", stream: fromReadableStream(response.body) };
     } catch (error) {
       console.error(error);
       return this.generateStoryWithGPTModel(board, userInput);
@@ -197,7 +204,7 @@ Use markdown format to beautify output.`;
     }
   }
 
-  async tasking(args: object, messages: ChatMessage[]): Promise<any> {
+  async tasking(args: object, messages: ChatMessage[]): Promise<ThinkResult> {
     let userInput = args["userInput"];
     if (!userInput || userInput === "") {
       userInput = `breakdown tasks in ${this.language}:`;
