@@ -152,7 +152,10 @@ Use markdown format to beautify output.`;
           body: JSON.stringify({ message: userInput }),
         },
       );
-      return { type: "stream", stream: fromReadableStream(response.body) };
+      return new ThinkResult({
+        type: "stream",
+        stream: fromReadableStream(response.body),
+      });
     } catch (error) {
       console.error(error);
       return this.generateStoryWithGPTModel(board, userInput);

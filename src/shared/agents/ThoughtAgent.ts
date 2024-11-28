@@ -134,7 +134,7 @@ class ThoughtAgent implements Agent {
     interaction.setStatus("Planning", `${this.getName()} is thinking...`);
     const toolCalls = this.getToolCalls();
     if (toolCalls.length === 0) {
-      return { type: "actions", actions: [] };
+      return new ThinkResult({ type: "actions", actions: [] });
     }
     const stream = await this.toolsCall(messagesWithEnv, toolCalls, true);
     const [first, second] = stream.tee();
@@ -151,12 +151,16 @@ class ThoughtAgent implements Agent {
             actions = tools.map((t) => this.toAction(t));
           }
         } else {
-          return { type: "stream", stream: second, firstChunk: chunk };
+          return new ThinkResult({
+            type: "stream",
+            stream: second,
+            firstChunk: chunk,
+          });
         }
       }
     }
 
-    return { type: "actions", actions };
+    return new ThinkResult({ type: "actions", actions });
   }
 
   /**
@@ -277,7 +281,10 @@ Choose the best action to execute, or generate new answer, or suggest more quest
     }
 
     if (action === "reply") {
-      return stringToAsyncIterator(args["content"]);
+      return new ThinkResult({
+        type: "stream",
+        stream: stringToAsyncIterator(args["content"]),
+      });
     }
 
     for (const member of this.getMemberOfSelf()) {
@@ -372,7 +379,7 @@ Choose the best action to execute, or generate new answer, or suggest more quest
       stream: stream,
       max_tokens: 4096,
     });
-    return { type: "stream", stream: streamResult };
+    return new ThinkResult({ type: "stream", stream: streamResult });
   }
 
   /**

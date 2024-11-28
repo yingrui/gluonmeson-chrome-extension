@@ -1,6 +1,5 @@
 import OpenAI from "openai";
 import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
-import Conversation from "@src/shared/agents/Conversation";
 import WriterContext from "@src/pages/options/writer/context/WriterContext";
 import { parseCommand } from "@src/shared/agents/AgentUtils";
 import ThinkResult from "@src/shared/agents/ThinkResult";

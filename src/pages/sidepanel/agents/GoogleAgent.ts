@@ -95,29 +95,35 @@ There is a problem that you cannot get any information from current tab, it's po
     return new Promise<any>((resolve, reject) => {
       const url = args["url"];
       if (!url) {
-        resolve({
-          type: "stream",
-          stream: stringToAsyncIterator("Url is required."),
-        });
+        resolve(
+          new ThinkResult({
+            type: "stream",
+            stream: stringToAsyncIterator("Url is required."),
+          }),
+        );
       }
       chrome.tabs.query({ currentWindow: true }, (tabs) => {
         if (tabs.length > 0) {
           for (const tab of tabs) {
             if (!!tab.url && tab.url.includes(url)) {
               chrome.tabs.update(tab.id, { selected: true, url: url });
-              resolve({
-                type: "stream",
-                stream: stringToAsyncIterator("Url is opened."),
-              });
+              resolve(
+                new ThinkResult({
+                  type: "stream",
+                  stream: stringToAsyncIterator("Url is opened."),
+                }),
+              );
               return;
             }
           }
         }
         chrome.tabs.create({ url: url });
-        resolve({
-          type: "stream",
-          stream: stringToAsyncIterator("Url is opened."),
-        });
+        resolve(
+          new ThinkResult({
+            type: "stream",
+            stream: stringToAsyncIterator("Url is opened."),
+          }),
+        );
       });
     });
   }
