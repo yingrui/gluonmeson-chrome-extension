@@ -8,7 +8,6 @@ class Interaction {
   inputMessage: ChatMessage;
   inputMessageIndex: number;
   outputMessage?: ChatMessage;
-  outputMessageIndex?: number;
 
   listener: () => void;
 
@@ -20,6 +19,10 @@ class Interaction {
     this.agentName = "";
     this.inputMessage = chatMessage;
     this.inputMessageIndex = chatMessages.lastIndexOf(chatMessage);
+  }
+
+  public setOutputMessage(message: ChatMessage) {
+    this.outputMessage = message;
   }
 
   public setStatus(status: string, statusMessage: string) {

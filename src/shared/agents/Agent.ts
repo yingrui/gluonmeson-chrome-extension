@@ -28,6 +28,14 @@ interface Agent {
   getConversation(): Conversation;
 
   /**
+   * Receive message
+   * @param result
+   */
+  onCompleted(result: ThinkResult): Promise<string>;
+
+  onReceiveStreamMessage(listener: (msg: string) => void): Agent;
+
+  /**
    * Think
    * @returns {Promise<ThinkResult>} PlanResult
    */

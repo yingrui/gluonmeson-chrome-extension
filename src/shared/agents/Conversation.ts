@@ -30,6 +30,7 @@ class Conversation {
   private appendAssistantMessage(message: ChatMessage): Conversation {
     if (message.role === "assistant") {
       this.messages.push(message);
+      this.getCurrentInteraction().setOutputMessage(message);
     } else {
       console.error(
         "Only assistant messages can be appended to the conversation",

@@ -1,19 +1,19 @@
 import OpenAI from "openai";
 import Tool from "./Tool";
-import Agent from "./Agent";
 import Conversation from "./Conversation";
 import ThinkResult from "./ThinkResult";
 import { stringToAsyncIterator } from "../utils/streaming";
+import BaseAgent from "@src/shared/agents/BaseAgent";
 
-class ThoughtAgent implements Agent {
+class ThoughtAgent extends BaseAgent {
   modelName: string;
   toolsCallModel: string;
   client: OpenAI;
   language: string;
   tools: Tool[] = [];
-  conversation: Conversation;
   name: string;
   description: string;
+  conversation: Conversation;
 
   constructor(
     modelName: string,
@@ -24,6 +24,7 @@ class ThoughtAgent implements Agent {
     description: string = "Guru",
     conversation: Conversation = new Conversation(),
   ) {
+    super();
     this.modelName = modelName;
     this.toolsCallModel = toolsCallModel;
     this.client = client;
@@ -389,7 +390,7 @@ Choose the best action to execute, or generate new answer, or suggest more quest
    * @param {bool} stream - Stream
    * @returns {Promise<any>}
    */
-  private async toolsCall(
+  async toolsCall(
     messages: ChatMessage[],
     tools: OpenAI.Chat.Completions.ChatCompletionTool[],
     stream: boolean = false,

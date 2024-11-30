@@ -2,12 +2,13 @@ import Tool from "./Tool";
 import Agent from "./Agent";
 import Conversation from "./Conversation";
 import ThinkResult from "./ThinkResult";
+import BaseAgent from "@src/shared/agents/BaseAgent";
 
 /**
  * Delegation Agent
  * @extends {DelegateAgent} - Agent with tools
  */
-class DelegateAgent implements Agent {
+class DelegateAgent extends BaseAgent {
   initAgent: Agent;
   currentAgent: Agent;
   commands: CommandOption[];
@@ -20,6 +21,7 @@ class DelegateAgent implements Agent {
     commands: CommandOption[] = [],
     conversation: Conversation = new Conversation(),
   ) {
+    super();
     this.initAgent = agent;
     this.currentAgent = agent;
     this.agents = agents;

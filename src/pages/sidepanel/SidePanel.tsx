@@ -118,11 +118,16 @@ function SidePanel(props: Record<string, unknown>) {
         appendMessage("user", userInput);
       }
 
-      const result = await generate_func();
-      message = await showStreamingMessage(result);
+      message = await agent
+        .onReceiveStreamMessage((msg) => {
+          setCurrentText(msg);
+          setTimeout(() => {
+            scrollToBottom();
+          });
+        })
+        .onCompleted(await generate_func());
 
       appendMessage("assistant", message);
-      agent.getConversation().appendMessage(messages[messages.length - 1]);
       setCurrentText("");
     } finally {
       setGenerating(false);
@@ -131,27 +136,6 @@ function SidePanel(props: Record<string, unknown>) {
     setTimeout(() => {
       scrollToBottom();
     }, 100);
-    return message;
-  }
-
-  async function showStreamingMessage(result): Promise<string> {
-    let message = "";
-
-    const stream = result.stream;
-    for await (const chunk of stream) {
-      if (chunk.choices) {
-        const finishReason = chunk.choices[0]?.finish_reason;
-        const content = chunk.choices[0]?.delta?.content ?? "";
-        message = message + content;
-      } else {
-        message = message + chunk.data;
-      }
-
-      setCurrentText(message);
-      setTimeout(() => {
-        scrollToBottom();
-      });
-    }
     return message;
   }
 
