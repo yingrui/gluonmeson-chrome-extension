@@ -10,6 +10,7 @@ import "@pages/options/Options.css";
 
 import type { GluonConfigure } from "@src/shared/storages/gluonConfig";
 import NavSearch from "@pages/options/components/NavSearch";
+import MoreComing from "@pages/options/components/MoreComing";
 
 const { Header } = Layout;
 
@@ -68,7 +69,7 @@ const Options: React.FC<OptionsProps> = ({ config }) => {
         <SearchApp config={config} query={query} onQueryChange={setQuery} />
       )}
       {selectedItem === WriterItemKey && <WriterApp config={config} />}
-      {selectedItem === OtherItemKey && <div>More Coming Soon!</div>}
+      {selectedItem === OtherItemKey && <MoreComing />}
     </Layout>
   );
 };
