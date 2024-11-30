@@ -96,7 +96,7 @@ ${content}.`);
         name: "Guru",
       },
     ] as ChatMessage[];
-    return messages;
+    return [...messages];
   }
 
   private getInitialSystemMessage(): string {

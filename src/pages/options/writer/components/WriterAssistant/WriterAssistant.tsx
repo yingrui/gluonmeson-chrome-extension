@@ -70,7 +70,14 @@ const WriterAssistant: React.FC<WriterAssistantProps> = ({
       appendMessage("user", userInput);
     }
     const result = await agent.chat(messages[messages.length - 1]);
-    const message = await showStreamingMessage(result);
+    const message = await agent
+      .onReceiveStreamMessage((msg) => {
+        setCurrentText(msg);
+        setTimeout(() => {
+          scrollToBottom();
+        });
+      })
+      .onCompleted(result);
 
     appendMessage("assistant", message);
     setCurrentText("");
@@ -79,27 +86,6 @@ const WriterAssistant: React.FC<WriterAssistantProps> = ({
     setTimeout(() => {
       scrollToBottom();
     });
-  }
-
-  async function showStreamingMessage(result): Promise<string> {
-    let message = "";
-
-    const stream = result.stream;
-    for await (const chunk of stream) {
-      if (chunk.choices) {
-        const finishReason = chunk.choices[0]?.finish_reason;
-        const content = chunk.choices[0]?.delta?.content ?? "";
-        message = message + content;
-      } else {
-        message = message + chunk.data;
-      }
-
-      setCurrentText(message);
-      setTimeout(() => {
-        scrollToBottom();
-      });
-    }
-    return message;
   }
 
   function appendMessage(role: ChatMessage["role"], content: string) {

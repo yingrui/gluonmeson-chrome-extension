@@ -25,33 +25,26 @@ const SearchPage: React.FC<SearchPageProps> = ({ query, agent }) => {
   const [currentText, setCurrentText] = useState<string>();
   const [generating, setGenerating] = useState<boolean>();
 
-  async function showStreamingMessage(result) {
-    let message = "";
-    setGenerating(true);
-
-    const stream = result.stream;
-    for await (const chunk of stream) {
-      if (chunk.choices) {
-        const finishReason = chunk.choices[0]?.finish_reason;
-        const content = chunk.choices[0]?.delta?.content ?? "";
-        message = message + content;
-      } else {
-        message = message + chunk.data;
-      }
-
-      setCurrentText(message);
-    }
-    setGenerating(false);
-  }
-
   const search = async (queryString: string) => {
     isSearchCompleted.current = false;
     if (searchResult.query !== queryString) {
+      // Search
       const result = await ddg_search(queryString);
       setSearchResult(result);
       agent.setSearchResults(result);
       setCurrentText("");
-      agent.summary({ userInput: queryString }, []).then(showStreamingMessage);
+
+      // Ask agent to generate summary
+      const thinkResult = await agent.summary({ userInput: queryString }, []);
+
+      // Show summary
+      setGenerating(true);
+      const message = await agent
+        .onReceiveStreamMessage((msg) => {
+          setCurrentText(msg);
+        })
+        .onCompleted(thinkResult);
+      setGenerating(false);
     }
     isSearchCompleted.current = true;
   };
@@ -66,16 +59,18 @@ const SearchPage: React.FC<SearchPageProps> = ({ query, agent }) => {
         style={{ background: colorBgContainer }}
       ></Sider>
       <div className={"search-page-results"}>
-        {isSearchCompleted.current && currentText && (
-          <div className={"search-summary"}>
-            <SearchSummary content={currentText} loading={generating} />
-          </div>
-        )}
         <div className={"search-results"}>
           {searchResult.search_results.map((result, index) => (
             <SearchResultItem result={result} key={index} />
           ))}
         </div>
+      </div>
+      <div className={"search-page-summary"}>
+        {isSearchCompleted.current && currentText && (
+          <div className={"search-summary"}>
+            <SearchSummary content={currentText} loading={generating} />
+          </div>
+        )}
       </div>
     </Layout>
   );

@@ -10,10 +10,16 @@ aside.search-page-sider {
   display: flex;
   flex-direction: column;
   justify-content: start;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
-.search-results, .search-summary {
+.search-results {
   width: 40vw;
   padding: 10px;
+}
+
+.search-page-summary {
+  margin-top: 20px;
+  margin-left: 20px;
+  width: 40vw;
 }
