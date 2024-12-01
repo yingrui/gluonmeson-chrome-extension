@@ -18,11 +18,15 @@ const SearchItemKey = "search";
 const WriterItemKey = "writer";
 const OtherItemKey = "more";
 
-const header_items: MenuProps["items"] = [
-  { key: SearchItemKey, label: "Search" },
-  { key: WriterItemKey, label: "Writing" },
-  { key: OtherItemKey, label: "Coming Soon" },
-];
+const getHeaderItems = (config: GluonConfigure) => {
+  const header_items: MenuProps["items"] = [];
+  header_items.push({ key: SearchItemKey, label: "Search" });
+  if (config.enableWriting) {
+    header_items.push({ key: WriterItemKey, label: "Writing" });
+  }
+  header_items.push({ key: OtherItemKey, label: "Coming Soon" });
+  return header_items;
+};
 
 interface OptionsProps extends Record<string, unknown> {
   config: GluonConfigure;
@@ -30,7 +34,7 @@ interface OptionsProps extends Record<string, unknown> {
 
 const Options: React.FC<OptionsProps> = ({ config }) => {
   const [query, setQuery] = useState<string>("");
-  const defaultSelectedItem = header_items[0].key as string;
+  const defaultSelectedItem = getHeaderItems(config)[0].key as string;
   const [selectedItem, setSelectedItem] = useState<string>(defaultSelectedItem);
 
   const handleMenuClick = (item: string) => {
@@ -59,7 +63,7 @@ const Options: React.FC<OptionsProps> = ({ config }) => {
             mode="horizontal"
             defaultSelectedKeys={[defaultSelectedItem]}
             selectedKeys={[selectedItem]}
-            items={header_items}
+            items={getHeaderItems(config)}
             style={{ flex: 1, minWidth: 0 }}
             onClick={(e) => handleMenuClick(e.key)}
           />

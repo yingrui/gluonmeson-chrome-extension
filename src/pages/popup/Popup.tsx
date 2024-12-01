@@ -138,6 +138,13 @@ const Popup = () => {
           >
             <Switch />
           </Form.Item>
+          <Form.Item
+            label="Writing Tools"
+            name="enableWriting"
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
         </>
       ),
     },

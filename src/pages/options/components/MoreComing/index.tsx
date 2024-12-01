@@ -15,7 +15,7 @@ const MoreComing = () => {
         <a>Product Elevator Pitch</a>
         <a>Tech Strategy</a>
         <a>Brainstorming</a>
-        <a>Writing</a>
+        <a>Writing Tools</a>
         <a>...</a>
       </div>
     </Layout>

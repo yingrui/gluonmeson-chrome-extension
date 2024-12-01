@@ -16,6 +16,7 @@ export type GluonConfigure = {
   language: string;
   enableFloatingBall: boolean;
   enableReflection: boolean;
+  enableWriting: boolean;
 };
 
 type ConfigureStorage = BaseStorage<GluonConfigure>;
@@ -32,6 +33,7 @@ export const DEFAULT_GM_CONFIG_VALUE = {
   language: "English",
   enableFloatingBall: true,
   enableReflection: false,
+  enableWriting: false,
 };
 
 const storage = createStorage<GluonConfigure>(
