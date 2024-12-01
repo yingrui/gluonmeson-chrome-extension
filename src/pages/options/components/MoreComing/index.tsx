@@ -11,6 +11,13 @@ const MoreComing = () => {
           <h6>More Coming Soon</h6>
         </div>
       </div>
+      <div className={"more-coming-soon-list"}>
+        <a>Product Elevator Pitch</a>
+        <a>Tech Strategy</a>
+        <a>Brainstorming</a>
+        <a>Writing</a>
+        <a>...</a>
+      </div>
     </Layout>
   );
 };

@@ -30,3 +30,17 @@
   vertical-align: middle;
   display: inline;
 }
+
+.more-coming-soon-list {
+  justify-content: end;
+  align-items: center;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.more-coming-soon-list a {
+  margin: 10px;
+  text-decoration: underline;
+  font-style: italic;
+}
