@@ -36,6 +36,13 @@ These are parameters and supported LLM providers that you need to set up in the 
 ### BA Copilot for Trello
 If you need to add more configurations, you can add a new tab popup window. For example, there is a Trello tab in the popup page.
 
+<img src="../images/configure_ba_copilot.png"/>
+
+You can configure the following parameters:
+* **Knowledge Api**: The API URL to search project documents.
+* **Copilot Api**: The URL to specify the Copilot created by GluonMeson.
+* **Technical Description**: The technical description of current project, this is useful for GPT to understand what are you working on.
+
 #### Usecase 
 When developer try to break down the story in the trello card, they can use the extension to generate the tasking result.
 
@@ -50,12 +57,14 @@ You can find out all the tasking examples are in the `docs/tasking` folder. if y
 
 Then you need let Agent know this search api url, and then use this API to get the tasking examples.
 
-***Note:*** *The Search Api Url configurations only support when you have GluonMeson deployed in your environment.*
+***Note:*** *The Knowledge Api Url configurations only support when you have GluonMeson deployed in your environment.*
 
 *If there is no tasking example, then the generate tasking result will be less useful.*
 <img src="../images/generate_tasking_without_examples.png"/>
 
 *If there are tasking examples, then the generate tasking result will be very useful.*
 <img src="../images/generate_tasking_with_examples.png"/>
+
+Above pictures are the older version of the extension, so the configuration is still called `Search Api Url`.
 
 You can check the [How to add new agent and command](../tasking/how_to_add_new_agent_and_command.md) to see how useful are the tasking results for the software engineer.

@@ -11,18 +11,14 @@ There are many features in this Chrome extension, and you can use them in differ
 6. Generate tasking results based on the trello card
 
 ### 1. Write a blog post
-When you are writing a blog post, you can use the `Generate Text` context menu action to help you generate the content you need.
+When you are writing a blog post, you can use the `Writing` app in options page to help you generate the content you need.
 
 <img src="../images/generate_text_for_blog_writing.png"/>
 
 ### 2. Read a long article
-When you are reading a long article, you can use the `/ask_page` command to get an answer from this article.
+When you are reading a long article, you can use the `/summary` command to get an answer from this article.
 
-<img src="../images/demo_ask_page.png"/>
-
-When you want to know the summary of an article, you can use the `/summary` command, then use `/ask_page` command to dive in some topics.
-
-<img src="../images/demo_summary_command.png"/>
+<img src="../images/demo_summarization.png"/>
 
 ### 3. Translate summarized text
 When you get the summarized text, you can use the `/translate` command to translate it into another language.

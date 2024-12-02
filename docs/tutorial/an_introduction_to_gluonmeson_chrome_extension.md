@@ -216,6 +216,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 ```
 
-## 5. Conclusion
+## 5. Options Page
+You can click the `Other Tools` button in the popup window to open the options page.
+
+<img src="../images/options_page_entrance.png"/>
+
+Then you can home page like below:
+
+<img src="../images/options_page_home_page.png"/>
+
+### 5.1. Search App
+You can just type keyword in the search box, then you will get search results and answer from the search engine.
+
+<img src="../images/options_page_search_result.png"/>
+
+### 5.2. More Tools are Coming Soon
+We can build many tools in the options page, please wait for the next version.
+
+## 6. Conclusion
 
 This Chrome extension is designed to provide a seamless experience for users, offering a range of features to enhance your browsing experience. By following the steps outlined in this document, you can make the most of the extension's capabilities and enjoy a more efficient and productive browsing experience. If you have any questions or need further assistance, please feel free to reach out to us. We are here to help you make the most of this extension and ensure you have a positive experience. Happy browsing!
