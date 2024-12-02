@@ -6,20 +6,22 @@ The interactions with this extension include:
 
 * **Chat in Side Panel**: This is a conversation UI extension, you can have a conversation with GluonMesonAgent in the side panel. 
 * **Right-click**: when you right-click the mouse in webpage, the context menu will showup. Currently, it only supports `Generate Text` action.
-* **Shortcut key**: Use `alt + enter` to open side panel. In the future, there will be more shortcuts to trigger new functions.
+* **Floating Ball or Shortcut key**: Click floating ball or type `alt + enter` to open side panel. In the future, there will be more shortcuts to trigger new functions.
+* **Tools in Options Page**: There are many tools you can use in options page when you click `Other Tools` button in popup window.  
 
 Before we dive in, let's introduce some concepts in this Chrome extension:
 
 * **Popup Window**: Manages additional settings and can save configurations specifically for the agent operations within the Side Panel.
 * **Agents & Commands**: in this extension, there are many agents with different tools, such as `GluonMesonAgent`, `SummaryAgent`, `GoogleAgent`, `TranslateAgent`, `TrelloAgent`, etc. These agents are packed in side panel, the agent can recognize your intent and then call other agents to help you. Some tools of agent have been set as commands, you can type `/` in the chat box to execute corresponding tools directly.
 * **Side Panel**: the side panel is used to chat with GluonMesonAgent, and it will show the results of the tools you executed. All the results will be displayed in Markdown format. Other agents do not need to write code for displaying.
+* **Options Page**: the options page is like offline Web application run in your local environment, there are many tools in options page.
 * **Context Menus**: in Chrome extension, when you right-click the mouse it can provide some quick actions, it is called context menu. This extension provide `Generate Text` action when you are writing in a text area and right-click the mouse.
 * **Content Script**: Some actions need to get more details information from webpage, or need to execute automatically in webpage. For example, if you think the generated story is good, then you want to create a Trello card automatically.
 * **Background Service Worker**: Extension service workers are an extension's central event handler, it is processing layer that manages interactions and data flow between the Content Script and the Side Panel.
 
 ```mermaid
 graph TD;
-    B[Popup Window] -->|saves config for| C[AI Agents & Commands in Side Panel]
+    B[Popup Window] -->|saves config for| C[AI Agents & Commands in Side Panel or Option Page]
     C -->|sends message & instruction to| D[Content Script]
     D -->|gets info from| E[Web Page]
     D -->|sends info to| F[Background Service Worker]
@@ -36,6 +38,10 @@ The `GluonMesonAgent` will try to understand your intent and call the tools prov
 <img src="../images/type_slash_show_commands.png"/>
 
 Command `/clear` is used to clear the chat history, it does not belong to any agent.
+
+You can also type `@` to directly send instructions to specific agent. Below shows 4 current existed agents:
+
+<img src="../images/type_at_show_agents.png"/>
 
 Next, we will introduce the agents and the tools provided by them.
 

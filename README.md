@@ -3,14 +3,18 @@
 GluonMeson Chrome Extension is a Chrome Web Browser Copilot, his name is Guru Mason.
 
 ## Features
-
-* **Summary**: Quickly list the main points with our summarization tool.
-* **Ask Page**: Answer questions based on the content of current web page.
-* **Search Information**: Conduct search from your browser side panel.
+As a Web browser Copilot, it can:
+* **Question Answer**: Answer questions based on the opened web pages.
+* **Summary**: Quickly list the main points according to your instructions.
+* **Search**: Find out the answer by searching.
 * **Translate**: translate content between Chinese and English or into other specified languages.
-* **Generate Story**: Automatically create engaging narrative content for new Trello board cards.
+
+For users from software development teams, it can: 
+* **Generate User Story**: Automatically create engaging narrative content for new Trello board cards.
 * **Generate Tasking**: Generate tasking results based on the description of the trello card you are currently viewing.
-* ... and more you can define by yourself!
+* **Generate UI Test**: Generate test script against current web page.
+
+... and more you can define by yourself!
 
 ## Build or Install
 
@@ -20,9 +24,9 @@ GluonMeson Chrome Extension is a Chrome Web Browser Copilot, his name is Guru Ma
 2. Run build command:
     - Dev: `pnpm dev` or `npm run dev`
     - Prod: `pnpm build` or `npm run build`
-3. Follow steps 2 to 5 in [Install from Release file](#install-from-release-file).
+3. Follow steps 2 to 5 in [Install from Package](#install-from-package).
 
-### Install from Release file
+### Install from Package
 1. Download & unzip the latest release zip file from [releases page](https://github.com/yingrui/gluonmeson-chrome-extension/releases).
 2. Open in browser - `chrome://extensions`
 3. Check - `Developer mode`
