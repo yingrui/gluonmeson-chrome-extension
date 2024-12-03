@@ -26,7 +26,9 @@ const getHeaderItems = (config: GluonConfigure) => {
   if (config.enableWriting) {
     header_items.push({ key: WriterItemKey, label: "Writing" });
   }
-  header_items.push({ key: HistoryItemKey, label: "History" });
+  if (config.enableHistoryRecording) {
+    header_items.push({ key: HistoryItemKey, label: "History" });
+  }
   header_items.push({ key: OtherItemKey, label: "Coming Soon" });
   return header_items;
 };

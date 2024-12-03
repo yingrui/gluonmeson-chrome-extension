@@ -17,6 +17,7 @@ export type GluonConfigure = {
   enableFloatingBall: boolean;
   enableReflection: boolean;
   enableWriting: boolean;
+  enableHistoryRecording: boolean;
 };
 
 type ConfigureStorage = BaseStorage<GluonConfigure>;
@@ -34,6 +35,7 @@ export const DEFAULT_GM_CONFIG_VALUE = {
   enableFloatingBall: true,
   enableReflection: false,
   enableWriting: false,
+  enableHistoryRecording: false,
 };
 
 const storage = createStorage<GluonConfigure>(

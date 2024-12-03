@@ -145,6 +145,13 @@ const Popup = () => {
           >
             <Switch />
           </Form.Item>
+          <Form.Item
+            label="History Records"
+            name="enableHistoryRecording"
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
         </>
       ),
     },
