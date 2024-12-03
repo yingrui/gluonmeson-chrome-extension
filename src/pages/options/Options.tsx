@@ -11,11 +11,13 @@ import "@pages/options/Options.css";
 import type { GluonConfigure } from "@src/shared/storages/gluonConfig";
 import NavSearch from "@pages/options/components/NavSearch";
 import MoreComing from "@pages/options/components/MoreComing";
+import HistoryApp from "@pages/options/history/components/HistoryApp";
 
 const { Header } = Layout;
 
 const SearchItemKey = "search";
 const WriterItemKey = "writer";
+const HistoryItemKey = "history";
 const OtherItemKey = "more";
 
 const getHeaderItems = (config: GluonConfigure) => {
@@ -24,6 +26,7 @@ const getHeaderItems = (config: GluonConfigure) => {
   if (config.enableWriting) {
     header_items.push({ key: WriterItemKey, label: "Writing" });
   }
+  header_items.push({ key: HistoryItemKey, label: "History" });
   header_items.push({ key: OtherItemKey, label: "Coming Soon" });
   return header_items;
 };
@@ -73,6 +76,7 @@ const Options: React.FC<OptionsProps> = ({ config }) => {
         <SearchApp config={config} query={query} onQueryChange={setQuery} />
       )}
       {selectedItem === WriterItemKey && <WriterApp config={config} />}
+      {selectedItem === HistoryItemKey && <HistoryApp config={config} />}
       {selectedItem === OtherItemKey && <MoreComing />}
     </Layout>
   );
