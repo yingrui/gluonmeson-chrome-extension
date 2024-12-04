@@ -2,10 +2,12 @@ import Tool from "./Tool";
 import Agent from "./Agent";
 import Conversation from "./Conversation";
 import ThinkResult from "./ThinkResult";
+import ConversationRepository from "./ConversationRepository";
 
 abstract class BaseAgent implements Agent {
   private result: ThinkResult;
   private receiveStreamMessageListener: (msg: string) => void;
+  private repo: ConversationRepository;
 
   protected constructor() {}
 
@@ -39,12 +41,25 @@ abstract class BaseAgent implements Agent {
       name: this.getName(),
     };
     this.getConversation().appendMessage(chatMessage);
+    await this.record();
     return message;
   }
 
   onReceiveStreamMessage(listener: (msg: string) => void): Agent {
     this.receiveStreamMessageListener = listener;
     return this;
+  }
+
+  async record(): Promise<string> {
+    if (this.repo) {
+      return await this.repo.save(this.getConversation());
+    }
+
+    return null;
+  }
+
+  setConversationRepository(conversationRepository: ConversationRepository) {
+    this.repo = conversationRepository;
   }
 
   /**

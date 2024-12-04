@@ -36,7 +36,7 @@ const Code = ({ children, className, node }) => {
           }
         })
         .catch((error) => {
-          console.log("error:", error);
+          console.error("error:", error);
         });
     }
   }, [container, isMermaid, code, demoId]);

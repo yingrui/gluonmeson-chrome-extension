@@ -1,4 +1,8 @@
+import { v4 as uuidv4 } from "uuid";
+
 class Interaction {
+  private readonly uuid: string;
+  private readonly datetime: string;
   state: string; // State is the description of user intents, for example: "Searching", "Viewing", etc.
   intent: string; // The specific intent, for example: "google_search", "open_url", etc.
   intentArguments?: any; // The arguments of the intent
@@ -19,6 +23,8 @@ class Interaction {
     this.agentName = "";
     this.inputMessage = chatMessage;
     this.inputMessageIndex = chatMessages.lastIndexOf(chatMessage);
+    this.uuid = uuidv4();
+    this.datetime = new Date().toISOString();
   }
 
   public setOutputMessage(message: ChatMessage) {
@@ -55,8 +61,20 @@ class Interaction {
     this.listener && this.listener();
   }
 
+  /**
+   * On state change
+   * @param listener
+   */
   public onChange(listener: () => void) {
     this.listener = listener;
+  }
+
+  public getUuid(): string {
+    return this.uuid;
+  }
+
+  public getDatetime(): string {
+    return this.datetime;
   }
 }
 

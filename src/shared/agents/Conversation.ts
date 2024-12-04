@@ -1,11 +1,16 @@
 import Interaction from "./Interaction";
+import { v4 as uuidv4 } from "uuid";
 
 class Conversation {
+  private readonly uuid: string;
+  private readonly datetime: string;
   interactions: Interaction[] = [];
   messages: ChatMessage[];
 
   constructor(messages: ChatMessage[] = []) {
     this.messages = messages;
+    this.uuid = uuidv4();
+    this.datetime = new Date().toISOString();
   }
 
   public appendMessage(message: ChatMessage): Conversation {
@@ -59,6 +64,18 @@ class Conversation {
 
   getMessages() {
     return this.messages;
+  }
+
+  public getKey(): string {
+    return `conversation_${this.datetime}_${this.uuid}`;
+  }
+
+  public getUuid(): string {
+    return this.uuid;
+  }
+
+  public getDatetime(): string {
+    return this.datetime;
   }
 }
 

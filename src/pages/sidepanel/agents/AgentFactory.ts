@@ -8,6 +8,7 @@ import UiTestAgent from "./UiTestAgent";
 import GoogleAgent from "./GoogleAgent";
 import Conversation from "@src/shared/agents/Conversation";
 import Agent from "@src/shared/agents/Agent";
+import LocalConversationRepository from "@src/shared/repositories/LocalConversationRepository";
 
 class AgentFactory {
   static createGluonMesonAgent(
@@ -22,6 +23,7 @@ class AgentFactory {
     const apiKey = config.apiKey ?? "";
     const language = config.language ?? "English";
     const enableReflection = config.enableReflection ?? false;
+    const repository = new LocalConversationRepository();
 
     const client = new OpenAI({
       apiKey: config.apiKey,
@@ -77,6 +79,7 @@ class AgentFactory {
       conversation,
       agents,
     );
+
     const commands = [
       { value: "summary", label: "/summary" },
       { value: "search", label: "/search" },
@@ -91,6 +94,7 @@ class AgentFactory {
       conversation,
     );
     delegateAgent.getConversation().set(initMessages);
+    delegateAgent.setConversationRepository(repository);
     return delegateAgent;
   }
 }
