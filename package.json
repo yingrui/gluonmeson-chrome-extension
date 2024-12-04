@@ -41,13 +41,14 @@
     "rehype-katex": "6.0.3",
     "remark-gfm": "4.0.0",
     "remark-mermaidjs": "4.1.1",
+    "uuid": "^11.0.3",
     "webextension-polyfill": "0.10.0"
   },
   "devDependencies": {
     "@rollup/plugin-sucrase": "5.0.2",
     "@rollup/plugin-typescript": "11.1.6",
     "@testing-library/react": "14.0.0",
-    "@types/chrome": "0.0.263",
+    "@types/chrome": "0.0.287",
     "@types/lodash": "4.17.4",
     "@types/node": "20.8.10",
     "@types/react": "18.2.37",

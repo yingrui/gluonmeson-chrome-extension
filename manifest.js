@@ -19,6 +19,7 @@ const manifest = {
   host_permissions: ["<all_urls>"],
   permissions: [
     "storage",
+    "unlimitedStorage",
     "sidePanel",
     "scripting",
     "activeTab",
