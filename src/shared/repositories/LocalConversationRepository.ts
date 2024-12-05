@@ -8,6 +8,22 @@ interface ConversationRecord {
   rounds: number;
   recordStatus: "Kept" | "Plan to delete";
   states: string[];
+  messages: ChatMessage[];
+  interactions: InteractionRecord[];
+}
+
+interface InteractionRecord {
+  uuid: string;
+  datetime: string;
+  state: string;
+  intent: string;
+  intentArguments?: any;
+  status: string;
+  statusMessage: string;
+  agentName: string;
+  inputMessage: ChatMessage;
+  inputMessageIndex: number;
+  outputMessage?: ChatMessage;
 }
 
 class LocalConversationRepository implements ConversationRepository {
@@ -47,6 +63,8 @@ class LocalConversationRepository implements ConversationRepository {
           _.state ? _.state : defaultDialogueState,
         ),
         recordStatus: conversation.recordStatus ?? "Plan to delete",
+        messages: conversation.messages,
+        interactions: conversation.interactions,
       };
       conversations.push(record);
     }
@@ -55,4 +73,4 @@ class LocalConversationRepository implements ConversationRepository {
 }
 
 export default LocalConversationRepository;
-export type { ConversationRecord };
+export type { ConversationRecord, InteractionRecord };
