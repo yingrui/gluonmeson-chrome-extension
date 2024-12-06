@@ -41,7 +41,9 @@ class LocalConversationRepository implements ConversationRepository {
   }
 
   delete(key: string): void {
-    this.storage.remove(key).then((r) => console.warn("remove: " + key));
+    this.storage.remove([key], () => {
+      console.warn(`Deleted conversation with key: ${key}`);
+    });
   }
 
   async findAll(): Promise<ConversationRecord[]> {
@@ -56,8 +58,8 @@ class LocalConversationRepository implements ConversationRepository {
       const defaultDialogueState = "chat";
       const record = {
         uuid: conversation.uuid,
-        key: conversation.key,
         datetime: conversation.datetime,
+        key: `conversation_${conversation.datetime}_${conversation.uuid}`,
         rounds: conversation.interactions.length,
         states: conversation.interactions.map((_) =>
           _.state ? _.state : defaultDialogueState,
