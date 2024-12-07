@@ -12,6 +12,7 @@ import LocalConversationRepository, {
   ConversationRecord,
   InteractionRecord,
 } from "@src/shared/repositories/LocalConversationRepository";
+import "./index.css";
 
 interface ConversationTableProps {
   config: GluonConfigure;
@@ -19,11 +20,32 @@ interface ConversationTableProps {
 
 const ConversationTable: React.FC<ConversationTableProps> = ({ config }) => {
   const [records, setRecords] = useState<ConversationRecord[]>([]);
+  const [brief, setBrief] = useState<string>("");
   const repository = new LocalConversationRepository();
+
+  const recordsBrief = (records: ConversationRecord[]) => {
+    const interactionsCount = records.reduce(
+      (c, r) => c + r.interactions.length,
+      0,
+    );
+    const evaluatedCount = records.reduce(
+      (c, r) => c + r.interactions.filter((i) => i.like !== undefined).length,
+      0,
+    );
+    const satisfiedCount = records.reduce(
+      (c, r) => c + r.interactions.filter((i) => i.like === true).length,
+      0,
+    );
+    const satisfiedRate =
+      evaluatedCount === 0 ? 0 : satisfiedCount / evaluatedCount;
+    return `Total ${interactionsCount} interactions, satisfied rate is ${satisfiedRate.toFixed(2)}`;
+  };
 
   const getRecords = async () => {
     if (records.length === 0) {
-      setRecords(await repository.findAll());
+      const conversationRecords = await repository.findAll();
+      setRecords(conversationRecords);
+      setBrief(recordsBrief(conversationRecords));
     }
   };
   getRecords();
@@ -196,13 +218,17 @@ const ConversationTable: React.FC<ConversationTableProps> = ({ config }) => {
 
   return (
     <>
+      <Space className={"conversation-records-desc"}>
+        <span>{brief}</span>
+      </Space>
       <Table<ConversationRecord>
         rowKey="uuid"
         columns={columns}
         expandable={{ expandedRowRender }}
+        expandRowByClick
         dataSource={records}
         bordered
-        footer={() => ""}
+        footer={() => `Total ${records.length} records`}
       />
     </>
   );
