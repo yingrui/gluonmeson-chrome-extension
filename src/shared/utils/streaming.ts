@@ -1,6 +1,6 @@
 type Bytes = string | ArrayBuffer | Uint8Array | Buffer | null | undefined;
 
-export const stringToAsyncIterator = async (content: string): Promise<any> => {
+export const stringToAsyncIterator = (content: string): any => {
   let index = 0;
 
   return {
