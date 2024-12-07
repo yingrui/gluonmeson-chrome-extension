@@ -24,6 +24,7 @@ interface InteractionRecord {
   inputMessage: ChatMessage;
   inputMessageIndex: number;
   outputMessage?: ChatMessage;
+  like?: boolean;
 }
 
 class LocalConversationRepository implements ConversationRepository {
@@ -31,6 +32,12 @@ class LocalConversationRepository implements ConversationRepository {
 
   async save(conversation: Conversation): Promise<string> {
     const key = conversation.getKey();
+    await this.storage.set({ [key]: conversation });
+    return key;
+  }
+
+  async update(conversation: ConversationRecord): Promise<string> {
+    const key = conversation.key;
     await this.storage.set({ [key]: conversation });
     return key;
   }
