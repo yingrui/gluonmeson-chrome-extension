@@ -1,18 +1,22 @@
 import React from "react";
 import type { GluonConfigure } from "@src/shared/storages/gluonConfig";
 import "./index.css";
-import ConversationTable from "@pages/options/history/components/ConversationTable";
+import ConversationsManagement from "@pages/options/history/components/ConversationsManagement";
+import DatasetsManagement from "@pages/options/history/components/DatasetsManagement";
 
 interface HistoryPanelProps {
   config: GluonConfigure;
-  historyType: string;
+  historyType: "Conversations" | "Datasets";
 }
 
 const HistoryPanel: React.FC<HistoryPanelProps> = ({ config, historyType }) => {
   return (
     <div className={"history-table"}>
       {historyType === "Conversations" && (
-        <ConversationTable config={config}></ConversationTable>
+        <ConversationsManagement config={config}></ConversationsManagement>
+      )}
+      {historyType === "Datasets" && (
+        <DatasetsManagement config={config}></DatasetsManagement>
       )}
     </div>
   );

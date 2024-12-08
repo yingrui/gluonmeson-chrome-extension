@@ -15,11 +15,13 @@ import LocalConversationRepository, {
 } from "@src/shared/repositories/LocalConversationRepository";
 import "./index.css";
 
-interface ConversationTableProps {
+interface ConversationsManagementProps {
   config: GluonConfigure;
 }
 
-const ConversationTable: React.FC<ConversationTableProps> = ({ config }) => {
+const ConversationsManagement: React.FC<ConversationsManagementProps> = ({
+  config,
+}) => {
   const [records, setRecords] = useState<ConversationRecord[]>([]);
   const [brief, setBrief] = useState<string>("");
   const repository = new LocalConversationRepository();
@@ -259,4 +261,4 @@ const ConversationTable: React.FC<ConversationTableProps> = ({ config }) => {
   );
 };
 
-export default ConversationTable;
+export default ConversationsManagement;
