@@ -6,7 +6,7 @@ interface ConversationRecord {
   uuid: string;
   datetime: string;
   rounds: number;
-  recordStatus: "Kept" | "Plan to delete";
+  recordStatus: "Kept" | "Unkept";
   states: string[];
   messages: ChatMessage[];
   interactions: InteractionRecord[];
@@ -28,12 +28,43 @@ interface InteractionRecord {
 }
 
 class LocalConversationRepository implements ConversationRepository {
-  private storage = chrome.storage.local;
+  private storage: chrome.storage.StorageArea;
+  private readonly maxConversations: number;
+
+  constructor(maxConversations = 1000) {
+    this.storage = chrome.storage.local;
+    this.maxConversations = maxConversations;
+  }
 
   async save(conversation: Conversation): Promise<string> {
     const key = conversation.getKey();
+    if (!key.startsWith("conversation_")) {
+      throw new Error("Invalid conversation key");
+    }
+
+    const isCreateNewConversation = !(await this.exists(key));
+    if (isCreateNewConversation) {
+      await this.checkAndRemoveConversations();
+    }
+
     await this.storage.set({ [key]: conversation });
     return key;
+  }
+
+  private async exists(key: string): Promise<boolean> {
+    const value = await this.storage.get([key]);
+    return !!value[key];
+  }
+
+  private async checkAndRemoveConversations() {
+    const keys = await this.getKeys();
+    if (keys.length > this.maxConversations) {
+      const deleteCount = keys.length - this.maxConversations;
+      const deleteKeys = await this.findUnkeptConversations(keys, deleteCount);
+      for (const key of deleteKeys) {
+        await this.delete(key);
+      }
+    }
   }
 
   async update(conversation: ConversationRecord): Promise<string> {
@@ -42,42 +73,64 @@ class LocalConversationRepository implements ConversationRepository {
     return key;
   }
 
-  async find(key: string): Promise<any> {
+  async find(key: string): Promise<ConversationRecord> {
     const value = await this.storage.get([key]);
-    return value;
+    const conversation = value[key];
+    const defaultDialogueState = "chat";
+    return {
+      uuid: conversation.uuid,
+      datetime: conversation.datetime,
+      key: `conversation_${conversation.datetime}_${conversation.uuid}`,
+      rounds: conversation.interactions.length,
+      states: conversation.interactions.map((_) =>
+        _.state ? _.state : defaultDialogueState,
+      ),
+      recordStatus: conversation.recordStatus !== "Kept" ? "Unkept" : "Kept",
+      messages: conversation.messages,
+      interactions: conversation.interactions,
+    };
   }
 
-  delete(key: string): void {
-    this.storage.remove([key], () => {
-      console.warn(`Deleted conversation with key: ${key}`);
+  delete(key: string): Promise<void> {
+    return new Promise((resolve) => {
+      this.storage.remove([key], () => {
+        console.warn(`Deleted conversation with key: ${key}`);
+        resolve();
+      });
     });
   }
 
   async findAll(): Promise<ConversationRecord[]> {
-    const keys = await this.storage.getKeys();
-    const conversationKeys = keys.filter((key) =>
-      key.startsWith("conversation_"),
-    );
     const conversations = [];
-    for (const key of conversationKeys) {
-      const value = await this.storage.get([key]);
-      const conversation = value[key];
-      const defaultDialogueState = "chat";
-      const record = {
-        uuid: conversation.uuid,
-        datetime: conversation.datetime,
-        key: `conversation_${conversation.datetime}_${conversation.uuid}`,
-        rounds: conversation.interactions.length,
-        states: conversation.interactions.map((_) =>
-          _.state ? _.state : defaultDialogueState,
-        ),
-        recordStatus: conversation.recordStatus ?? "Plan to delete",
-        messages: conversation.messages,
-        interactions: conversation.interactions,
-      };
+    for (const key of await this.getKeys()) {
+      const record = await this.find(key);
       conversations.push(record);
     }
     return conversations;
+  }
+
+  private async getKeys(): Promise<string[]> {
+    const keys = await this.storage.getKeys();
+    return keys.filter((key) => key.startsWith("conversation_")).sort();
+  }
+
+  private async findUnkeptConversations(
+    keys: string[],
+    max: number,
+  ): Promise<string[]> {
+    // keys already sorted by datetime ascending
+    const unkeptKeys = [];
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      const value = await this.find(key);
+      if (value.recordStatus !== "Kept") {
+        unkeptKeys.push(key);
+      }
+      if (unkeptKeys.length >= max) {
+        break;
+      }
+    }
+    return unkeptKeys;
   }
 }
 

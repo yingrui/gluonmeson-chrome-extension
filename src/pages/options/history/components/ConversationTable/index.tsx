@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import type { TableColumnsType } from "antd";
-import { Space, Table, Tag } from "antd";
+import { Space, Table, Tag, Tooltip } from "antd";
+
 import {
   LikeOutlined,
   LikeFilled,
@@ -38,7 +39,12 @@ const ConversationTable: React.FC<ConversationTableProps> = ({ config }) => {
     );
     const satisfiedRate =
       evaluatedCount === 0 ? 0 : satisfiedCount / evaluatedCount;
-    return `Total ${interactionsCount} interactions, satisfied rate is ${satisfiedRate.toFixed(2)}`;
+
+    if (evaluatedCount > 0) {
+      return `Total ${interactionsCount} interactions, satisfied rate is ${satisfiedRate.toFixed(2)}`;
+    } else {
+      return `Total ${interactionsCount} interactions, no evaluation yet.`;
+    }
   };
 
   const getRecords = async () => {
@@ -95,6 +101,8 @@ const ConversationTable: React.FC<ConversationTableProps> = ({ config }) => {
       title: "Time",
       dataIndex: "datetime",
       key: "datetime",
+      sorter: (a, b) => a.datetime.localeCompare(b.datetime),
+      render: (text) => new Date(text).toLocaleString(),
     },
     {
       title: "Rounds",
@@ -121,6 +129,17 @@ const ConversationTable: React.FC<ConversationTableProps> = ({ config }) => {
       title: "Status",
       dataIndex: "recordStatus",
       key: "recordStatus",
+      filters: [
+        {
+          text: "Kept",
+          value: "Kept",
+        },
+        {
+          text: "Unkept",
+          value: "Unkept",
+        },
+      ],
+      onFilter: (value, record) => record.recordStatus === value,
     },
     {
       title: "Action",
@@ -228,7 +247,12 @@ const ConversationTable: React.FC<ConversationTableProps> = ({ config }) => {
         expandRowByClick
         dataSource={records}
         bordered
-        footer={() => `Total ${records.length} records`}
+        footer={() => (
+          <Tooltip title="The number of conversation records are limited, the oldest unkept record will be deleted if the total exceeds 1000.">
+            {`Total ${records.length} records.`}
+          </Tooltip>
+        )}
+        pagination={{ pageSize: 15 }}
       />
     </>
   );
