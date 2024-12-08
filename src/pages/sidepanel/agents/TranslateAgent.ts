@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
 import Conversation from "@src/shared/agents/Conversation";
 import ThinkResult from "@src/shared/agents/ThinkResult";
+import intl from "react-intl-universal";
 
 class TranslateAgent extends ThoughtAgent {
   constructor(
@@ -17,7 +18,9 @@ class TranslateAgent extends ThoughtAgent {
       client,
       language,
       "Translator",
-      "Translator, your translation assistant",
+      intl
+        .get("agent_description_translator")
+        .d("Translator, your translation assistant"),
       conversation,
     );
     this.addTool(

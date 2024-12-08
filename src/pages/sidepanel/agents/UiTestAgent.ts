@@ -3,6 +3,7 @@ import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
 import Conversation from "@src/shared/agents/Conversation";
 import { get_html } from "@src/shared/utils";
 import ThinkResult from "@src/shared/agents/ThinkResult";
+import intl from "react-intl-universal";
 
 class UiTestAgent extends ThoughtAgent {
   constructor(
@@ -18,7 +19,9 @@ class UiTestAgent extends ThoughtAgent {
       client,
       language,
       "QACopilot",
-      "QACopilot, your QA assistant",
+      intl
+        .get("agent_description_qa_copilot")
+        .d("QACopilot, your QA assistant"),
       conversation,
     );
     this.addTool(

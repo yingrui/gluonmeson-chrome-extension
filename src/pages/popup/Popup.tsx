@@ -114,14 +114,14 @@ const Popup = () => {
         <>
           <Form.Item
             name="baCopilotKnowledgeApi"
-            label={intl.get("baCopilotKnowledgeApi").d("Knowledge Api")}
+            label={intl.get("baCopilotKnowledgeApi").d("Knowledge API")}
             rules={[{ type: "url" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="baCopilotApi"
-            label={intl.get("baCopilotApi").d("Copilot Api")}
+            label={intl.get("baCopilotApi").d("Copilot API")}
             rules={[{ type: "url" }]}
           >
             <Input />

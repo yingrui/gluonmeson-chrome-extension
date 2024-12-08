@@ -17,6 +17,7 @@ import useStorage from "@root/src/shared/hooks/useStorage";
 import configureStorage from "@root/src/shared/storages/gluonConfig";
 import type { MentionsRef } from "antd/lib/mentions";
 import type { MentionProps } from "antd";
+import intl from "react-intl-universal";
 
 const { Text } = Typography;
 
@@ -238,7 +239,11 @@ function SidePanel(props: Record<string, unknown>) {
           disabled={generating}
           readOnly={generating}
           options={getCommandOptions()}
-          placeholder="Hit Enter to send the message..."
+          placeholder={intl
+            .get("placeholder_side_panel_input")
+            .d(
+              "`/` specify instruction, `@` find agent, type `Enter` ask question.",
+            )}
           onChange={(value) => {
             setText(value);
           }}

@@ -5,6 +5,7 @@ import { get_content } from "@src/shared/utils";
 import { ddg_search } from "@src/shared/utils/duckduckgo";
 import { stringToAsyncIterator } from "@src/shared/utils/streaming";
 import ThinkResult from "@src/shared/agents/ThinkResult";
+import intl from "react-intl-universal";
 
 class GoogleAgent extends ThoughtAgent {
   constructor(
@@ -20,7 +21,7 @@ class GoogleAgent extends ThoughtAgent {
       client,
       language,
       "Seeker",
-      "Seeker, your search assistant",
+      intl.get("agent_description_seeker").d("Seeker, your search assistant"),
       conversation,
     );
     this.addTool("google", "only when user want to visit google.", [

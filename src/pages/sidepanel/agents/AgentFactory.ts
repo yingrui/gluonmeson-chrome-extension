@@ -9,6 +9,7 @@ import GoogleAgent from "./GoogleAgent";
 import Conversation from "@src/shared/agents/Conversation";
 import Agent from "@src/shared/agents/Agent";
 import LocalConversationRepository from "@src/shared/repositories/LocalConversationRepository";
+import intl from "react-intl-universal";
 
 class AgentFactory {
   static createGluonMesonAgent(
@@ -21,7 +22,7 @@ class AgentFactory {
     const baCopilotTechDescription = config.baCopilotTechDescription ?? "";
     const baCopilotApi = config.baCopilotApi ?? "";
     const apiKey = config.apiKey ?? "";
-    const language = config.language ?? "English";
+    const language = intl.get(config.language).d("English");
     const enableReflection = config.enableReflection ?? false;
     const repository = new LocalConversationRepository();
 
@@ -75,17 +76,20 @@ class AgentFactory {
       client,
       language,
       "Guru",
-      "Guru, your browser assistant",
+      intl.get("agent_description_guru").d("Guru, your browser assistant"),
       conversation,
       agents,
     );
 
     const commands = [
-      { value: "summary", label: "/summary" },
-      { value: "search", label: "/search" },
-      { value: "tasking", label: "/tasking" },
-      { value: "ui_test", label: "/ui_test" },
-      { value: "user_story", label: "/user_story" },
+      { value: "summary", label: intl.get("command_summary").d("/summary") },
+      { value: "search", label: intl.get("command_search").d("/search") },
+      { value: "tasking", label: intl.get("command_tasking").d("/tasking") },
+      { value: "ui_test", label: intl.get("command_ui_test").d("/ui_test") },
+      {
+        value: "user_story",
+        label: intl.get("command_user_story").d("/user_story"),
+      },
     ];
     const delegateAgent = new DelegateAgent(
       agent,

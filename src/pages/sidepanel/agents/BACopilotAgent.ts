@@ -3,6 +3,7 @@ import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
 import Conversation from "@src/shared/agents/Conversation";
 import { fromReadableStream } from "@src/shared/utils/streaming";
 import ThinkResult from "@src/shared/agents/ThinkResult";
+import intl from "react-intl-universal";
 
 class BACopilotAgent extends ThoughtAgent {
   baCopilotKnowledgeApi: string;
@@ -28,7 +29,9 @@ class BACopilotAgent extends ThoughtAgent {
       client,
       language,
       "BACopilot",
-      "BACopilot, your BA assistant",
+      intl
+        .get("agent_description_ba_copilot")
+        .d("BACopilot, your BA assistant"),
       conversation,
     );
     this.addTool(
