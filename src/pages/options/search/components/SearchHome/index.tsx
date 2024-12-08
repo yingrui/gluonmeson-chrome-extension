@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import type { AutoCompleteProps } from "antd";
 import { AutoComplete, Input } from "antd";
 import "./index.css";
+import intl from "react-intl-universal";
 
 interface SearchHomeProps {
   query: string;
@@ -37,7 +38,7 @@ const SearchHome: React.FC<SearchHomeProps> = ({ query, onQueryChange }) => {
       <div className={"search-icon-area"}>
         <div className={"search-logo"}>
           <img src={"/icons/gm_logo.svg"} />
-          <h6>Ask Mason</h6>
+          <h6>{intl.get("options_search_ask_assistant").d("Ask Mason")}</h6>
         </div>
       </div>
       <div className={"search-input-first-page"}>
@@ -52,7 +53,9 @@ const SearchHome: React.FC<SearchHomeProps> = ({ query, onQueryChange }) => {
               value={text}
               onKeyUp={onKeyUp}
               onChange={(e) => onChange(e.target.value)}
-              placeholder="Hit Enter to search."
+              placeholder={intl
+                .get("options_search_textarea_placeholder")
+                .d("Hit Enter to search.")}
               autoSize={{ minRows: 3, maxRows: 5 }}
               allowClear
             />

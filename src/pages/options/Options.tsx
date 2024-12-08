@@ -12,6 +12,7 @@ import type { GluonConfigure } from "@src/shared/storages/gluonConfig";
 import NavSearch from "@pages/options/components/NavSearch";
 import MoreComing from "@pages/options/components/MoreComing";
 import HistoryApp from "@pages/options/history/components/HistoryApp";
+import intl from "react-intl-universal";
 
 const { Header } = Layout;
 
@@ -22,14 +23,26 @@ const OtherItemKey = "more";
 
 const getHeaderItems = (config: GluonConfigure) => {
   const header_items: MenuProps["items"] = [];
-  header_items.push({ key: SearchItemKey, label: "Search" });
+  header_items.push({
+    key: SearchItemKey,
+    label: intl.get("options_app_search").d("Search"),
+  });
   if (config.enableWriting) {
-    header_items.push({ key: WriterItemKey, label: "Writing" });
+    header_items.push({
+      key: WriterItemKey,
+      label: intl.get("options_app_writer").d("Writing"),
+    });
   }
   if (config.enableHistoryRecording) {
-    header_items.push({ key: HistoryItemKey, label: "History" });
+    header_items.push({
+      key: HistoryItemKey,
+      label: intl.get("options_app_history").d("History"),
+    });
   }
-  header_items.push({ key: OtherItemKey, label: "Coming Soon" });
+  header_items.push({
+    key: OtherItemKey,
+    label: intl.get("options_app_more").d("Coming Soon"),
+  });
   return header_items;
 };
 
@@ -58,7 +71,7 @@ const Options: React.FC<OptionsProps> = ({ config }) => {
             onClick={() => handleMenuClick(SearchItemKey)}
           >
             <img src="/icons/gm_logo.png" />
-            <h6>Guru Mason</h6>
+            <h6>{intl.get("assistant_name").d("Guru Mason")}</h6>
           </div>
           {!!query && <NavSearch query={query} onQueryChange={setQuery} />}
         </div>

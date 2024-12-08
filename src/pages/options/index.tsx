@@ -4,6 +4,7 @@ import "@pages/options/index.css";
 import Options from "@pages/options/Options";
 import refreshOnUpdate from "virtual:reload-on-update-in-view";
 import configureStorage from "@root/src/shared/storages/gluonConfig";
+import { initI18n } from "@src/shared/utils/i18n";
 
 refreshOnUpdate("pages/options");
 
@@ -14,7 +15,9 @@ function init() {
   }
   const root = createRoot(appContainer);
   configureStorage.get().then((config) => {
-    root.render(<Options config={config} />);
+    initI18n(config.language).then(() => {
+      root.render(<Options config={config} />);
+    });
   });
 }
 
