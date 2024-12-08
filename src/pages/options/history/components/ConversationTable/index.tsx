@@ -166,6 +166,7 @@ const ConversationTable: React.FC<ConversationTableProps> = ({ config }) => {
       title: "Time",
       dataIndex: "datetime",
       key: "datetime",
+      render: (text) => new Date(text).toLocaleString(),
     },
     {
       title: "Agent",
