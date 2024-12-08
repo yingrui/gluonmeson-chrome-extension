@@ -15,6 +15,7 @@
     "lint": "eslint src --ext .ts,.js,.tsx,.jsx",
     "lint:fix": "pnpm lint --fix",
     "prettier": "prettier . --write",
+    "intl:extract": "npx react-intl-universal-extract --cmd extract --source-path ./src --output-path ./src/locales/en-US.json --verbose",
     "prepare": "husky install"
   },
   "type": "module",
@@ -35,13 +36,14 @@
     "react-bootstrap": "2.10.2",
     "react-dom": "18.2.0",
     "react-draggable": "4.4.6",
+    "react-intl-universal": "2.12.0",
     "react-markdown": "9.0.1",
     "react-syntax-highlighter": "15.5.0",
     "rehype-highlight": "6.0.0",
     "rehype-katex": "6.0.3",
     "remark-gfm": "4.0.0",
     "remark-mermaidjs": "4.1.1",
-    "uuid": "^11.0.3",
+    "uuid": "11.0.3",
     "webextension-polyfill": "0.10.0"
   },
   "devDependencies": {
@@ -75,6 +77,7 @@
     "magic-string": "0.30.10",
     "npm-run-all": "4.1.5",
     "prettier": "3.2.5",
+    "react-intl-universal-extract": "^1.0.8",
     "rollup": "4.3.0",
     "sass": "1.72.0",
     "ts-loader": "9.5.0",

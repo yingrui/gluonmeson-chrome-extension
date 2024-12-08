@@ -7,8 +7,10 @@ import HistoryPanel from "@pages/options/history/components/HistoryPanel";
 
 const { Sider } = Layout;
 
-const ConversationsItemKey = "Conversations";
-const DatasetsItemKey = "Datasets";
+type HistoryType = "Conversations" | "Datasets";
+
+const ConversationsItemKey: HistoryType = "Conversations";
+const DatasetsItemKey: HistoryType = "Datasets";
 
 interface HistoryAppProps {
   config: GluonConfigure;
@@ -17,14 +19,14 @@ interface HistoryAppProps {
 const HistoryApp: React.FC<HistoryAppProps> = ({ config }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedItem, setSelectedItem] =
-    useState<string>(ConversationsItemKey);
+    useState<HistoryType>(ConversationsItemKey);
 
   const historyTypeItems: MenuProps["items"] = [
     { key: ConversationsItemKey, label: "Conversations" },
     { key: DatasetsItemKey, label: "Datasets" },
   ];
 
-  const handleMenuClick = (item: string) => {
+  const handleMenuClick = (item: HistoryType) => {
     setSelectedItem(item);
   };
 
@@ -57,7 +59,7 @@ const HistoryApp: React.FC<HistoryAppProps> = ({ config }) => {
           selectedKeys={[selectedItem]}
           items={historyTypeItems}
           style={{ height: "89vh", borderRight: 0 }}
-          onClick={(e) => handleMenuClick(e.key)}
+          onClick={(e) => handleMenuClick(e.key as HistoryType)}
         />
       </Sider>
       <HistoryPanel config={config} historyType={selectedItem} />
@@ -66,3 +68,4 @@ const HistoryApp: React.FC<HistoryAppProps> = ({ config }) => {
 };
 
 export default HistoryApp;
+export type { HistoryType };

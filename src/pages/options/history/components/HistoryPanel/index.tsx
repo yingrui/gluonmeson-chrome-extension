@@ -3,10 +3,11 @@ import type { GluonConfigure } from "@src/shared/storages/gluonConfig";
 import "./index.css";
 import ConversationsManagement from "@pages/options/history/components/ConversationsManagement";
 import DatasetsManagement from "@pages/options/history/components/DatasetsManagement";
+import type { HistoryType } from "@pages/options/history/components/HistoryApp";
 
 interface HistoryPanelProps {
   config: GluonConfigure;
-  historyType: "Conversations" | "Datasets";
+  historyType: HistoryType;
 }
 
 const HistoryPanel: React.FC<HistoryPanelProps> = ({ config, historyType }) => {

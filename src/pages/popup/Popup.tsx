@@ -1,4 +1,4 @@
-import { Button, Form, Input, Switch, Modal, Tabs } from "antd";
+import { Button, Form, Input, Switch, Modal, Tabs, Select } from "antd";
 import { isEqual } from "lodash";
 import withSuspense from "@src/shared/hoc/withSuspense";
 import withErrorBoundary from "@src/shared/hoc/withErrorBoundary";
@@ -6,6 +6,7 @@ import configureStorage, {
   DEFAULT_GM_CONFIG_VALUE,
 } from "@root/src/shared/storages/gluonConfig";
 import useStorage from "@root/src/shared/hooks/useStorage";
+import intl from "react-intl-universal";
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -16,6 +17,7 @@ const Popup = () => {
   const [modal, contextHolder] = Modal.useModal();
   const initData = useStorage(configureStorage);
   const [form] = Form.useForm();
+  const locale = initData.language === "en" ? "en" : "zh";
 
   const onSaveSettings = async () => {
     const values = await form.validateFields();
@@ -46,14 +48,14 @@ const Popup = () => {
 
   const tabItems = [
     {
-      label: `Basic`,
+      label: intl.get("basic").d("Basic"),
       key: `basic`,
       forceRender: true,
       children: (
         <>
           <Form.Item
             name="apiKey"
-            label="API key"
+            label={intl.get("apiKey").d("API Key")}
             rules={[
               {
                 required: true,
@@ -64,7 +66,7 @@ const Popup = () => {
           </Form.Item>
           <Form.Item
             name="baseURL"
-            label="Base URL"
+            label={intl.get("baseURL").d("Base URL")}
             rules={[
               {
                 required: true,
@@ -74,44 +76,61 @@ const Popup = () => {
           >
             <Input placeholder="https://api.openai.com/v1" />
           </Form.Item>
-          <Form.Item name="organization" label="Organization">
+          <Form.Item
+            name="organization"
+            label={intl.get("organization").d("Organization")}
+          >
             <Input placeholder="your team or your personal information" />
           </Form.Item>
-          <Form.Item name="defaultModel" label="GPT Model">
+          <Form.Item
+            name="defaultModel"
+            label={intl.get("defaultModel").d("GPT Model")}
+          >
             <Input placeholder="please specify gpt model, eg. gpt-3.5-turbo" />
           </Form.Item>
-          <Form.Item name="toolsCallModel" label="Tools Call Model">
+          <Form.Item
+            name="toolsCallModel"
+            label={intl.get("toolsCallModel").d("Tools Call Model")}
+          >
             <Input placeholder="please specify tools call model, eg. gpt-4-turbo" />
           </Form.Item>
-          <Form.Item name="language" label="Language">
-            <Input placeholder="please specify prefer language, eg. Chinese or 中文" />
+          <Form.Item name="language" label={intl.get("language").d("Language")}>
+            <Select
+              defaultValue={locale}
+              options={[
+                { value: "zh", label: intl.get("zh").d("Chinese") },
+                { value: "en", label: intl.get("en").d("English") },
+              ]}
+            />
           </Form.Item>
         </>
       ),
     },
     {
-      label: `BA Copilot`,
+      label: intl.get("ba_copilot").d("BA Copilot"),
       key: `ba_copilot`,
       forceRender: true,
       children: (
         <>
           <Form.Item
             name="baCopilotKnowledgeApi"
-            label="Knowledge Api"
+            label={intl.get("baCopilotKnowledgeApi").d("Knowledge Api")}
             rules={[{ type: "url" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="baCopilotApi"
-            label="Copilot Api"
+            label={intl.get("baCopilotApi").d("Copilot Api")}
             rules={[{ type: "url" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="baCopilotTechDescription"
-            label="Technical Description"
+            label={intl
+              .get("baCopilotTechDescription")
+              .d("Technical Description")}
           >
             <Input.TextArea style={{ height: 120 }} />
           </Form.Item>
@@ -119,34 +138,34 @@ const Popup = () => {
       ),
     },
     {
-      label: `Features`,
+      label: intl.get("feature_toggles").d("Features"),
       key: `feature_toggles`,
       forceRender: true,
       children: (
         <>
           <Form.Item
-            label="Floating Ball"
+            label={intl.get("enableFloatingBall").d("Floating Ball")}
             name="enableFloatingBall"
             valuePropName="checked"
           >
             <Switch />
           </Form.Item>
           <Form.Item
-            label="Reflection"
+            label={intl.get("enableReflection").d("Reflection")}
             name="enableReflection"
             valuePropName="checked"
           >
             <Switch />
           </Form.Item>
           <Form.Item
-            label="Writing Tools"
+            label={intl.get("enableWriting").d("Writing Tools")}
             name="enableWriting"
             valuePropName="checked"
           >
             <Switch />
           </Form.Item>
           <Form.Item
-            label="History Records"
+            label={intl.get("enableHistoryRecording").d("History Records")}
             name="enableHistoryRecording"
             valuePropName="checked"
           >
@@ -175,10 +194,10 @@ const Popup = () => {
         />
         <div className="popup-footer">
           <Button key="create" type="primary" htmlType="submit">
-            Save
+            {intl.get("save").d("Save")}
           </Button>
           <Button key="cancel" htmlType="button" onClick={reset}>
-            Reset
+            {intl.get("reset").d("Reset")}
           </Button>
           <Button
             key="open_side_panel"
@@ -186,19 +205,25 @@ const Popup = () => {
             onClick={open_side_panel}
             data-toggle="tooltip"
             data-placement="top"
-            title="Type Alt + Enter can also open side panel"
+            title={intl
+              .get("tooltip_side_panel")
+              .d("Type Alt + Enter can also open side panel")}
           >
-            Side Panel
+            {intl.get("open_side_panel").d("Side Panel")}
           </Button>
           <Button key="options" htmlType="button" onClick={open_options_page}>
-            Other Tools
+            {intl.get("open_more_tools").d("More Tools")}
           </Button>
         </div>
         <p style={{ textAlign: "center" }}>
           <a href="https://github.com/yingrui/gluonmeson-chrome-extension">
-            Guru Mason
+            {intl.get("assistant_name").d("Guru Mason")}
           </a>{" "}
-          is glad to help you, type `Alt + Enter` can also open side panel.
+          {intl
+            .get("tooltip_assistant_shortcut")
+            .d(
+              "is glad to help you, type `Alt + Enter` can also open side panel.",
+            )}
         </p>
       </Form>
       {contextHolder}
