@@ -3,12 +3,22 @@ import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
 import WriterContext from "@src/pages/options/writer/context/WriterContext";
 import { parseCommand } from "@src/shared/agents/AgentUtils";
 import ThinkResult from "@src/shared/agents/ThinkResult";
+import intl from "react-intl-universal";
 
 class WriterAgent extends ThoughtAgent {
   commands = [
-    { value: "outline", label: "/outline" },
-    { value: "review", label: "/review" },
-    { value: "search", label: "/search" },
+    {
+      value: "outline",
+      label: intl.get("options_app_writer_command_outline").d("/outline"),
+    },
+    {
+      value: "review",
+      label: intl.get("options_app_writer_command_review").d("/review"),
+    },
+    {
+      value: "search",
+      label: intl.get("options_app_writer_command_search").d("/search"),
+    },
   ];
   context: WriterContext;
 
@@ -92,7 +102,9 @@ ${content}.`);
       },
       {
         role: "assistant",
-        content: "Ask me anything about writing!",
+        content: intl
+          .get("options_app_writer_assistant_greeting")
+          .d("Ask me anything about writing!"),
         name: "Guru",
       },
     ] as ChatMessage[];

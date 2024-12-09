@@ -44,9 +44,20 @@ const ConversationsManagement: React.FC<ConversationsManagementProps> = ({
       evaluatedCount === 0 ? 0 : satisfiedCount / evaluatedCount;
 
     if (evaluatedCount > 0) {
-      return `Total ${interactionsCount} interactions, satisfied rate is ${satisfiedRate.toFixed(2)}`;
+      return intl
+        .get("options_app_history_conversations_brief", {
+          interactionsCount,
+          satisfiedRate: satisfiedRate.toFixed(2),
+        })
+        .d(
+          `Total {interactionsCount} interactions, satisfied rate is {satisfiedRate}`,
+        );
     } else {
-      return `Total ${interactionsCount} interactions, no evaluation yet.`;
+      return intl
+        .get("options_app_history_conversations_brief_no_eval", {
+          interactionsCount,
+        })
+        .d(`Total {interactionsCount} interactions, no evaluation yet.`);
     }
   };
 
@@ -255,7 +266,11 @@ const ConversationsManagement: React.FC<ConversationsManagementProps> = ({
         bordered
         footer={() => (
           <Tooltip title="The number of conversation records are limited, the oldest unkept record will be deleted if the total exceeds 1000.">
-            {`Total ${records.length} records.`}
+            {intl
+              .get("options_app_history_conversations_total", {
+                length: records.length,
+              })
+              .d(`Total {length} records.`)}
           </Tooltip>
         )}
         pagination={{ pageSize: 15 }}
