@@ -11,6 +11,7 @@ import {
 
 import "./WriterSider.css";
 import WriterContext from "@pages/options/writer/context/WriterContext";
+import intl from "react-intl-universal";
 
 const chapters: MenuProps["items"] = [
   UserOutlined,
@@ -66,8 +67,12 @@ const WriterSider: React.FC<WriterSiderProps> = ({ context }) => {
         />
         {collapsed ? null : (
           <Radio.Group value={"Outline"}>
-            <Radio.Button value="Outline">Outline</Radio.Button>
-            <Radio.Button value="Reference">Reference</Radio.Button>
+            <Radio.Button value="Outline">
+              {intl.get("options_app_writer_outline").d("Outline")}
+            </Radio.Button>
+            <Radio.Button value="Reference">
+              {intl.get("options_app_writer_reference").d("Reference")}
+            </Radio.Button>
           </Radio.Group>
         )}
       </div>

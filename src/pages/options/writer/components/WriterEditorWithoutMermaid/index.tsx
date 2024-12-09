@@ -4,6 +4,7 @@ import { Input, Layout, theme } from "antd";
 import MDEditor from "@uiw/react-md-editor";
 import "./index.css";
 import WriterContext from "@pages/options/writer/context/WriterContext";
+import intl from "react-intl-universal";
 
 const { Header, Content } = Layout;
 
@@ -25,7 +26,9 @@ const WriterEditor: React.FC<WriterEditorWithoutMermaidProps> = ({
       <Header style={{ padding: 0, background: colorBgContainer }}>
         <Input
           id="writer-title-input"
-          placeholder="Untitled"
+          placeholder={intl
+            .get("options_app_writer_title_placeholder")
+            .d("Untitled")}
           autoComplete="off"
           variant="borderless"
           value={title}
@@ -50,7 +53,9 @@ const WriterEditor: React.FC<WriterEditorWithoutMermaidProps> = ({
             setValue(newValue);
           }}
           textareaProps={{
-            placeholder: "Please enter Markdown text",
+            placeholder: intl
+              .get("options_app_writer_content_placeholder")
+              .d("Please enter Markdown text"),
           }}
           height={"100%"}
           value={value}

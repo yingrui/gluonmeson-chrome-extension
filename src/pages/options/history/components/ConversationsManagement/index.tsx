@@ -14,6 +14,7 @@ import LocalConversationRepository, {
   InteractionRecord,
 } from "@src/shared/repositories/LocalConversationRepository";
 import "./index.css";
+import intl from "react-intl-universal";
 
 interface ConversationsManagementProps {
   config: GluonConfigure;
@@ -94,25 +95,27 @@ const ConversationsManagement: React.FC<ConversationsManagementProps> = ({
 
   const columns: TableColumnsType<ConversationRecord> = [
     {
-      title: "Uuid",
+      title: intl.get("options_app_history_column_uuid").d("Uuid"),
       dataIndex: "uuid",
       key: "uuid",
       render: (text) => text.substring(0, 8).toLowerCase(),
     },
     {
-      title: "Time",
+      title: intl.get("options_app_history_column_time").d("Time"),
       dataIndex: "datetime",
       key: "datetime",
       sorter: (a, b) => a.datetime.localeCompare(b.datetime),
       render: (text) => new Date(text).toLocaleString(),
     },
     {
-      title: "Rounds",
+      title: intl.get("options_app_history_column_rounds").d("Rounds"),
       dataIndex: "rounds",
       key: "rounds",
     },
     {
-      title: "Dialogue States Tracking",
+      title: intl
+        .get("options_app_history_column_states")
+        .d("Dialogue States Tracking"),
       key: "states",
       dataIndex: "states",
       render: (_, { states }) => (
@@ -128,7 +131,7 @@ const ConversationsManagement: React.FC<ConversationsManagementProps> = ({
       ),
     },
     {
-      title: "Status",
+      title: intl.get("options_app_history_column_status").d("Status"),
       dataIndex: "recordStatus",
       key: "recordStatus",
       filters: [
@@ -144,7 +147,7 @@ const ConversationsManagement: React.FC<ConversationsManagementProps> = ({
       onFilter: (value, record) => record.recordStatus === value,
     },
     {
-      title: "Action",
+      title: intl.get("options_app_history_column_action").d("Action"),
       key: "action",
       render: (_, record) => (
         <Space size="middle">
@@ -159,36 +162,36 @@ const ConversationsManagement: React.FC<ConversationsManagementProps> = ({
 
   const interactionColumns: TableColumnsType<InteractionRecord> = [
     {
-      title: "Uuid",
+      title: intl.get("options_app_history_column_uuid").d("Uuid"),
       dataIndex: "uuid",
       key: "uuid",
       render: (text) => text.substring(0, 8).toLowerCase(),
     },
     {
-      title: "Time",
+      title: intl.get("options_app_history_column_time").d("Time"),
       dataIndex: "datetime",
       key: "datetime",
       render: (text) => new Date(text).toLocaleString(),
     },
     {
-      title: "Agent",
+      title: intl.get("options_app_history_column_agent").d("Agent"),
       dataIndex: "agentName",
       key: "agentName",
     },
     {
-      title: "Question",
+      title: intl.get("options_app_history_column_question").d("Question"),
       dataIndex: "inputMessage",
       key: "inputMessage",
       render: (msg: ChatMessage) => msg.content,
     },
     {
-      title: "Answer",
+      title: intl.get("options_app_history_column_answer").d("Answer"),
       dataIndex: "outputMessage",
       key: "outputMessage",
       render: (msg: ChatMessage) => (msg ? msg.content : ""),
     },
     {
-      title: "State",
+      title: intl.get("options_app_history_column_state").d("State"),
       dataIndex: "state",
       key: "state",
       render: (s: string) => (
@@ -198,7 +201,7 @@ const ConversationsManagement: React.FC<ConversationsManagementProps> = ({
       ),
     },
     {
-      title: "Action",
+      title: intl.get("options_app_history_column_action").d("Action"),
       key: "action",
       render: (_, record) => (
         <Space size="middle">

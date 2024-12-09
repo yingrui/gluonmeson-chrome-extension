@@ -4,6 +4,7 @@ import type { GluonConfigure } from "@src/shared/storages/gluonConfig";
 import "./index.css";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import HistoryPanel from "@pages/options/history/components/HistoryPanel";
+import intl from "react-intl-universal";
 
 const { Sider } = Layout;
 
@@ -22,8 +23,14 @@ const HistoryApp: React.FC<HistoryAppProps> = ({ config }) => {
     useState<HistoryType>(ConversationsItemKey);
 
   const historyTypeItems: MenuProps["items"] = [
-    { key: ConversationsItemKey, label: "Conversations" },
-    { key: DatasetsItemKey, label: "Datasets" },
+    {
+      key: ConversationsItemKey,
+      label: intl.get("options_app_history_conversations").d("Conversations"),
+    },
+    {
+      key: DatasetsItemKey,
+      label: intl.get("options_app_history_datasets").d("Datasets"),
+    },
   ];
 
   const handleMenuClick = (item: HistoryType) => {

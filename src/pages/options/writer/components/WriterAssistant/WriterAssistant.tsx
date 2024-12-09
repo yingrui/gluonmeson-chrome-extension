@@ -15,6 +15,7 @@ import WriterAgent from "@pages/options/writer/agents/WriterAgent";
 import Message from "@src/shared/components/Message";
 
 import { delay } from "@src/shared/utils";
+import intl from "react-intl-universal";
 
 const { Sider } = Layout;
 
@@ -122,7 +123,9 @@ const WriterAssistant: React.FC<WriterAssistantProps> = ({
           {chatCollapsed ? null : (
             <>
               <img src="/icons/gm_logo.png" />
-              <h6>Chat</h6>
+              <h6>
+                {intl.get("options_app_writer_assistant_header").d("Chat")}
+              </h6>
             </>
           )}
           <Button
@@ -195,7 +198,9 @@ const WriterAssistant: React.FC<WriterAssistantProps> = ({
               disabled={generating}
               readOnly={generating}
               options={agent.getCommandOptions()}
-              placeholder="Hit Enter to send the message..."
+              placeholder={intl
+                .get("options_app_writer_assistant_input_placeholder")
+                .d("Hit Enter to send the message...")}
               onChange={(value) => {
                 setText(value);
               }}
