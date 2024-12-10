@@ -2,6 +2,7 @@ import Tool from "./Tool";
 import Conversation from "./Conversation";
 import ThinkResult from "./ThinkResult";
 import Environment from "./Environment";
+import ChatMessage from "./ChatMessage";
 
 interface Agent {
   /**

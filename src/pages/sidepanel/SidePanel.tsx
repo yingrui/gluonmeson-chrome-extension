@@ -18,6 +18,7 @@ import configureStorage from "@root/src/shared/storages/gluonConfig";
 import type { MentionsRef } from "antd/lib/mentions";
 import type { MentionProps } from "antd";
 import intl from "react-intl-universal";
+import ChatMessage from "@src/shared/agents/ChatMessage";
 
 const { Text } = Typography;
 
@@ -155,7 +156,7 @@ function SidePanel(props: Record<string, unknown>) {
       name = agent.getName();
     }
 
-    const message = { role, content, name };
+    const message = new ChatMessage({ role, content, name });
     messages.push(message);
     setList([...messages]);
   }

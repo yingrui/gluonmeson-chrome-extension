@@ -6,6 +6,7 @@ import { get_content } from "@src/shared/utils";
 import OpenAI from "openai";
 import ThinkResult from "@src/shared/agents/ThinkResult";
 import Environment from "@src/shared/agents/Environment";
+import ChatMessage from "@src/shared/agents/ChatMessage";
 
 /**
  * GluonMeson Agent
@@ -56,8 +57,11 @@ class GluonMesonAgent extends CompositeAgent {
 The user is viewing the page, but you cannot get any information, it's possible because the you're detached from the webpage.
 Reply sorry and ask user to refresh webpage, so you can get information from webpage.`;
     return await this.chatCompletion([
-      { role: "system", content: prompt },
-      { role: "user", content: `explain in ${this.language}:` },
+      new ChatMessage({ role: "system", content: prompt }),
+      new ChatMessage({
+        role: "user",
+        content: `explain in ${this.language}:`,
+      }),
     ]);
   }
 
@@ -113,8 +117,11 @@ the webpage text: ${content.text}.
 Please help user to beautify or complete the text with Markdown format.`;
 
     return await this.chatCompletion([
-      { role: "system", content: prompt },
-      { role: "user", content: `please generate text in ${this.language}:` },
+      new ChatMessage({ role: "system", content: prompt }),
+      new ChatMessage({
+        role: "user",
+        content: `please generate text in ${this.language}:`,
+      }),
     ]);
   }
 

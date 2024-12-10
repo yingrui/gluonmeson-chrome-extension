@@ -15,6 +15,7 @@ import LocalConversationRepository, {
 } from "@src/shared/repositories/LocalConversationRepository";
 import "./index.css";
 import intl from "react-intl-universal";
+import ChatMessage from "@src/shared/agents/ChatMessage";
 
 interface ConversationsManagementProps {
   config: GluonConfigure;
@@ -193,13 +194,13 @@ const ConversationsManagement: React.FC<ConversationsManagementProps> = ({
       title: intl.get("options_app_history_column_question").d("Question"),
       dataIndex: "inputMessage",
       key: "inputMessage",
-      render: (msg: ChatMessage) => msg.content,
+      render: (msg: ChatMessage) => msg.getContentText(),
     },
     {
       title: intl.get("options_app_history_column_answer").d("Answer"),
       dataIndex: "outputMessage",
       key: "outputMessage",
-      render: (msg: ChatMessage) => (msg ? msg.content : ""),
+      render: (msg: ChatMessage) => (msg ? msg.getContentText() : ""),
     },
     {
       title: intl.get("options_app_history_column_state").d("State"),

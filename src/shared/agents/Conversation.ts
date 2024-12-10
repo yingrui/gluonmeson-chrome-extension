@@ -1,5 +1,6 @@
 import Interaction from "./Interaction";
 import { v4 as uuidv4 } from "uuid";
+import ChatMessage from "./ChatMessage";
 
 class Conversation {
   private readonly uuid: string;
@@ -62,7 +63,7 @@ class Conversation {
     return this;
   }
 
-  getMessages() {
+  getMessages(): ChatMessage[] {
     return this.messages;
   }
 

@@ -16,6 +16,7 @@ import Message from "@src/shared/components/Message";
 
 import { delay } from "@src/shared/utils";
 import intl from "react-intl-universal";
+import ChatMessage from "@src/shared/agents/ChatMessage";
 
 const { Sider } = Layout;
 
@@ -97,7 +98,11 @@ const WriterAssistant: React.FC<WriterAssistantProps> = ({
       name = "Guru";
     }
 
-    const message = { role: role, content: content, name: name };
+    const message = new ChatMessage({
+      role: role,
+      content: content,
+      name: name,
+    });
     messages.push(message);
     setList([...messages]);
   }

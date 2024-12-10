@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
 import ThinkResult from "@src/shared/agents/ThinkResult";
+import ChatMessage from "@src/shared/agents/ChatMessage";
 
 class SearchAgent extends ThoughtAgent {
   searchResults: any;
@@ -49,11 +50,11 @@ ${userInput}
 
 `;
     return await this.chatCompletion([
-      { role: "system", content: prompt },
-      {
+      new ChatMessage({ role: "system", content: prompt }),
+      new ChatMessage({
         role: "user",
         content: `please analysis search results and answer questions in ${this.language}:`,
-      },
+      }),
     ]);
   }
 }

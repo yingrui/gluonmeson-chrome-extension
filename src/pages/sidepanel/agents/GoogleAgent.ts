@@ -7,6 +7,7 @@ import { stringToAsyncIterator } from "@src/shared/utils/streaming";
 import ThinkResult from "@src/shared/agents/ThinkResult";
 import intl from "react-intl-universal";
 import Environment from "@src/shared/agents/Environment";
+import ChatMessage from "@src/shared/agents/ChatMessage";
 
 class GoogleAgent extends ThoughtAgent {
   constructor(
@@ -71,11 +72,11 @@ ${userInput}
 
 `;
     return await this.chatCompletion([
-      { role: "system", content: prompt },
-      {
+      new ChatMessage({ role: "system", content: prompt }),
+      new ChatMessage({
         role: "user",
         content: `please analysis search results and answer questions in ${this.language}:`,
-      },
+      }),
     ]);
   }
 
@@ -85,11 +86,11 @@ You can understand user's questions, open the google to search content, and most
 There is a problem that you cannot get any information from current tab, it's possible because the you're detached from the webpage.
 `;
     return await this.chatCompletion([
-      { role: "system", content: prompt },
-      {
+      new ChatMessage({ role: "system", content: prompt }),
+      new ChatMessage({
         role: "user",
         content: `Directly answer question in ${this.language}: "${userInput}"`,
-      },
+      }),
     ]);
   }
 
@@ -147,11 +148,11 @@ The search results page information are:
 The links are: ${JSON.stringify(content.links)}`;
 
     return await this.chatCompletion([
-      { role: "system", content: prompt },
-      {
+      new ChatMessage({ role: "system", content: prompt }),
+      new ChatMessage({
         role: "user",
         content: `please summarize this page in ${this.language}, and recommend links or new search query: `,
-      },
+      }),
     ]);
   }
 

@@ -4,6 +4,7 @@ import Conversation from "@src/shared/agents/Conversation";
 import { get_html } from "@src/shared/utils";
 import ThinkResult from "@src/shared/agents/ThinkResult";
 import intl from "react-intl-universal";
+import ChatMessage from "@src/shared/agents/ChatMessage";
 
 class UiTestAgent extends ThoughtAgent {
   constructor(
@@ -36,8 +37,11 @@ class UiTestAgent extends ThoughtAgent {
 The user is viewing the page, but you cannot get any information, it's possible because the you're detached from the webpage.
 Reply sorry and ask user to refresh webpage, so you can get information from webpage.`;
     return await this.chatCompletion([
-      { role: "system", content: prompt },
-      { role: "user", content: `explain in ${this.language}:` },
+      new ChatMessage({ role: "system", content: prompt }),
+      new ChatMessage({
+        role: "user",
+        content: `explain in ${this.language}:`,
+      }),
     ]);
   }
 
@@ -58,8 +62,11 @@ The webpage html is below:
 ${html}`;
 
     return await this.chatCompletion([
-      { role: "system", content: prompt },
-      { role: "user", content: `please generate cypress test:` },
+      new ChatMessage({ role: "system", content: prompt }),
+      new ChatMessage({
+        role: "user",
+        content: `please generate cypress test:`,
+      }),
     ]);
   }
 }

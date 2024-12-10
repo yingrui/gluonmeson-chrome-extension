@@ -4,6 +4,7 @@ import Conversation from "./Conversation";
 import ThinkResult from "./ThinkResult";
 import BaseAgent from "./BaseAgent";
 import Environment from "./Environment";
+import ChatMessage from "./ChatMessage";
 
 /**
  * Delegation Agent
@@ -132,7 +133,9 @@ class DelegateAgent extends BaseAgent {
    * @async
    */
   async chat(message: ChatMessage): Promise<ThinkResult> {
-    const [command, agent, userInput] = this.parseCommand(message.content);
+    const [command, agent, userInput] = this.parseCommand(
+      message.getContentText(),
+    );
     if (agent) {
       this.currentAgent = agent;
     }

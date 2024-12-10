@@ -10,6 +10,7 @@ import Conversation from "@src/shared/agents/Conversation";
 import Agent from "@src/shared/agents/Agent";
 import LocalConversationRepository from "@src/shared/repositories/LocalConversationRepository";
 import intl from "react-intl-universal";
+import ChatMessage from "@src/shared/agents/ChatMessage";
 
 class AgentFactory {
   static createGluonMesonAgent(

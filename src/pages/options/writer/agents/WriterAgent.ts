@@ -5,6 +5,7 @@ import { parseCommand } from "@src/shared/agents/AgentUtils";
 import ThinkResult from "@src/shared/agents/ThinkResult";
 import intl from "react-intl-universal";
 import Environment from "@src/shared/agents/Environment";
+import ChatMessage from "@src/shared/agents/ChatMessage";
 
 class WriterAgent extends ThoughtAgent {
   commands = [
@@ -42,7 +43,10 @@ class WriterAgent extends ThoughtAgent {
    * @async
    */
   async chat(message: ChatMessage): Promise<ThinkResult> {
-    const [command, userInput] = parseCommand(message.content, this.commands);
+    const [command, userInput] = parseCommand(
+      message.getContentText(),
+      this.commands,
+    );
 
     if (this.commands.find((c) => c.value === command)) {
       this.getConversation().appendMessage(message);
@@ -99,18 +103,18 @@ ${content}.`,
 
   public getInitialMessages(): ChatMessage[] {
     const messages = [
-      {
+      new ChatMessage({
         role: "system",
         content: this.getInitialSystemMessage(),
-      },
-      {
+      }),
+      new ChatMessage({
         role: "assistant",
         content: intl
           .get("options_app_writer_assistant_greeting")
           .d("Ask me anything about writing!"),
         name: "Guru",
-      },
-    ] as ChatMessage[];
+      }),
+    ];
     return [...messages];
   }
 

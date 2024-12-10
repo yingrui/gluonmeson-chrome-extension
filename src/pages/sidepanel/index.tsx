@@ -7,6 +7,7 @@ import SidePanel from "@pages/sidepanel/SidePanel";
 import AgentFactory from "./agents/AgentFactory";
 import { initI18n } from "@src/shared/utils/i18n";
 import intl from "react-intl-universal";
+import ChatMessage from "@src/shared/agents/ChatMessage";
 
 refreshOnUpdate("pages/sidepanel");
 
@@ -19,17 +20,17 @@ Output format should be in markdown format, and use mermaid format for diagram g
 
 function getInitialMessages(language: string): ChatMessage[] {
   const messages = [
-    {
+    new ChatMessage({
       role: "system",
       content: getInitialSystemMessage(language),
-    },
-    {
+    }),
+    new ChatMessage({
       role: "assistant",
       content: intl
         .get("guru_greeting")
         .d("Hello! How can I assist you today?"),
-    },
-  ] as ChatMessage[];
+    }),
+  ];
   return messages;
 }
 

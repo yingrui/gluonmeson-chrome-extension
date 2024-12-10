@@ -6,11 +6,13 @@ import ReactMarkdown from "react-markdown";
 import copy from "copy-to-clipboard";
 import Interaction from "@src/shared/agents/Interaction";
 import { useState } from "react";
+import ChatMessage from "@src/shared/agents/ChatMessage";
+import type { MessageContent } from "@src/shared/agents/ChatMessage";
 
 interface Props {
   index?: number;
   role: ChatMessage["role"];
-  content: string;
+  content: string | MessageContent[];
   name?: string;
   loading?: boolean;
   interaction?: Interaction;
@@ -26,8 +28,15 @@ const Message = (props: Props) => {
     interaction ? interaction.getStatusMessage() : "",
   );
 
+  function getContent(): string {
+    if (content instanceof Array) {
+      return content.find((c) => c.type === "text")?.text;
+    }
+    return content as string;
+  }
+
   function handleCopy() {
-    copy(content, {});
+    copy(getContent(), {});
     message.success("copy success");
   }
 
@@ -58,7 +67,7 @@ const Message = (props: Props) => {
             rehypePlugins={rehypePlugins as any}
             remarkPlugins={remarkPlugins as any}
           >
-            {content}
+            {getContent()}
           </ReactMarkdown>
           {isAssistant && !loading && index > 0 && (
             <div>

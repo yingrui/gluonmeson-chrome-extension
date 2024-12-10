@@ -3,6 +3,7 @@ import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
 import Conversation from "@src/shared/agents/Conversation";
 import ThinkResult from "@src/shared/agents/ThinkResult";
 import intl from "react-intl-universal";
+import ChatMessage from "@src/shared/agents/ChatMessage";
 
 class TranslateAgent extends ThoughtAgent {
   constructor(

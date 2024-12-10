@@ -5,6 +5,8 @@ import ThinkResult from "./ThinkResult";
 import { stringToAsyncIterator } from "../utils/streaming";
 import BaseAgent from "./BaseAgent";
 import Environment from "./Environment";
+import ChatMessage from "./ChatMessage";
+import type { MessageContent } from "./ChatMessage";
 
 class ThoughtAgent extends BaseAgent {
   modelName: string;
@@ -98,7 +100,6 @@ class ThoughtAgent extends BaseAgent {
    * @async
    */
   async chat(message: ChatMessage): Promise<ThinkResult> {
-    console.log("Chat with user", message);
     this.conversation.appendMessage(message);
     const plan = await this.plan();
     if (plan.type === "actions") {
@@ -129,10 +130,10 @@ class ThoughtAgent extends BaseAgent {
     const messages = this.conversation.getMessages();
     const interaction = this.conversation.getCurrentInteraction();
     const env = await this.environment();
-    const systemMessage = {
+    const systemMessage = new ChatMessage({
       role: "system",
       content: env.systemPrompt,
-    } as ChatMessage;
+    });
     const messagesWithEnv = env.systemPrompt
       ? [systemMessage, ...messages.slice(1)]
       : messages;
@@ -188,14 +189,14 @@ class ThoughtAgent extends BaseAgent {
    * @returns {Promise<Action[]>} Actions
    */
   async reflection(): Promise<Action[]> {
-    const systemMessage = {
+    const systemMessage = new ChatMessage({
       role: "system",
       content: this.getReflectionPrompt(),
-    } as ChatMessage;
-    const userMessage = {
+    });
+    const userMessage = new ChatMessage({
       role: "user",
       content: "Based on reflection gives action, answer or suggestions",
-    } as ChatMessage;
+    });
     const messagesWithEnv = [systemMessage, userMessage];
 
     const toolCalls = this.getToolCalls();
@@ -356,12 +357,7 @@ Choose the best action to execute, or generate new answer, or suggest more quest
   }
 
   private chatAction(userInput: string | MessageContent[]): Action {
-    if (userInput instanceof Array) {
-      const contents: MessageContent[] = userInput as MessageContent[];
-      const input = contents.find((c) => c.type === "text").text;
-      return { name: "chat", arguments: { userInput: input } } as Action;
-    }
-    return { name: "chat", arguments: { userInput } } as Action;
+    return { name: "chat", arguments: { userInput: userInput } } as Action;
   }
 
   /**
@@ -375,14 +371,14 @@ Choose the best action to execute, or generate new answer, or suggest more quest
   async chatCompletion(
     messages: ChatMessage[],
     systemPrompt: string = "",
-    replaceUserInput: string = "",
+    replaceUserInput: string | MessageContent[] = "",
     stream: boolean = true,
   ): Promise<ThinkResult> {
     if (systemPrompt && messages.length > 0 && messages[0].role === "system") {
-      const systemMessage = {
+      const systemMessage = new ChatMessage({
         role: "system",
         content: systemPrompt,
-      } as ChatMessage;
+      });
       messages = [systemMessage, ...messages.slice(1)];
     }
 
@@ -391,10 +387,10 @@ Choose the best action to execute, or generate new answer, or suggest more quest
       messages.length > 1 &&
       messages[messages.length - 1].role === "user"
     ) {
-      const userMessage = {
+      const userMessage = new ChatMessage({
         role: "user",
         content: replaceUserInput,
-      } as ChatMessage;
+      });
       messages = [...messages.slice(0, messages.length - 1), userMessage];
     }
 

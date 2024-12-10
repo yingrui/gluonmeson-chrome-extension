@@ -1,5 +1,6 @@
 import ConversationRepository from "@src/shared/agents/ConversationRepository";
 import Conversation from "@src/shared/agents/Conversation";
+import ChatMessage from "@src/shared/agents/ChatMessage";
 
 interface ConversationRecord {
   key: string;
@@ -86,7 +87,7 @@ class LocalConversationRepository implements ConversationRepository {
         _.state ? _.state : defaultDialogueState,
       ),
       recordStatus: conversation.recordStatus !== "Kept" ? "Unkept" : "Kept",
-      messages: conversation.messages,
+      messages: conversation.messages.map((msg) => new ChatMessage(msg)),
       interactions: conversation.interactions,
     };
   }

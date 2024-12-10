@@ -4,6 +4,7 @@ import Conversation from "@src/shared/agents/Conversation";
 import { fromReadableStream } from "@src/shared/utils/streaming";
 import ThinkResult from "@src/shared/agents/ThinkResult";
 import intl from "react-intl-universal";
+import ChatMessage from "@src/shared/agents/ChatMessage";
 
 class BACopilotAgent extends ThoughtAgent {
   baCopilotKnowledgeApi: string;
@@ -71,8 +72,11 @@ class BACopilotAgent extends ThoughtAgent {
     const prompt = `You're an Business Analyst in Software Engineering Team.
 But you cannot get any information. Reply sorry and ask user to open or navigate to story board, so you can get information from board.`;
     return await this.chatCompletion([
-      { role: "system", content: prompt },
-      { role: "user", content: `explain in ${this.language}:` },
+      new ChatMessage({ role: "system", content: prompt }),
+      new ChatMessage({
+        role: "user",
+        content: `explain in ${this.language}:`,
+      }),
     ]);
   }
 
@@ -80,8 +84,11 @@ But you cannot get any information. Reply sorry and ask user to open or navigate
     const prompt = `You're an Business Analyst or software engineer in Software Engineering Team.
 But you cannot get any card information. Reply sorry and ask user to open or navigate to story board card page, so you can get information of card.`;
     return await this.chatCompletion([
-      { role: "system", content: prompt },
-      { role: "user", content: `explain in ${this.language}:` },
+      new ChatMessage({ role: "system", content: prompt }),
+      new ChatMessage({
+        role: "user",
+        content: `explain in ${this.language}:`,
+      }),
     ]);
   }
 
@@ -118,8 +125,11 @@ Use markdown format to beautify output.`;
     }
 
     return await this.chatCompletion([
-      { role: "system", content: prompt },
-      { role: "user", content: `generate story in ${this.language}:` },
+      new ChatMessage({ role: "system", content: prompt }),
+      new ChatMessage({
+        role: "user",
+        content: `generate story in ${this.language}:`,
+      }),
     ]);
   }
 
@@ -251,11 +261,11 @@ At last, use markdown format to output the details of some tasks, including:
 Output language: ${this.language}`;
 
     return await this.chatCompletion([
-      { role: "system", content: prompt },
-      {
+      new ChatMessage({ role: "system", content: prompt }),
+      new ChatMessage({
         role: "user",
         content: userInput,
-      },
+      }),
     ]);
   }
 

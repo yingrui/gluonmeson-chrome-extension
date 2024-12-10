@@ -1,20 +1,3 @@
-declare interface MessageContent {
-  type: "text" | "image_url" | "video_url";
-  text?: string;
-  image_url?: {
-    url: string;
-  };
-  video_url?: {
-    url: string;
-  };
-}
-
-declare interface ChatMessage {
-  role: "assistant" | "user" | "system";
-  content: string | MessageContent[];
-  name?: string;
-}
-
 declare interface ChatSession {
   id: string;
   lastActive: number;

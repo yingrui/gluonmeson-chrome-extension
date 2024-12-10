@@ -4,6 +4,7 @@ import Conversation from "./Conversation";
 import ThinkResult from "./ThinkResult";
 import ConversationRepository from "./ConversationRepository";
 import Environment from "./Environment";
+import ChatMessage from "./ChatMessage";
 
 abstract class BaseAgent implements Agent {
   private result: ThinkResult;
@@ -36,11 +37,11 @@ abstract class BaseAgent implements Agent {
     }
     this.result = null; // reset result
 
-    const chatMessage: ChatMessage = {
+    const chatMessage = new ChatMessage({
       role: "assistant",
       content: message,
       name: this.getName(),
-    };
+    });
     this.getConversation().appendMessage(chatMessage);
     await this.record();
     return message;
