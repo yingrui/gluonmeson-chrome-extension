@@ -2,7 +2,8 @@ import Tool from "./Tool";
 import Agent from "./Agent";
 import Conversation from "./Conversation";
 import ThinkResult from "./ThinkResult";
-import BaseAgent from "@src/shared/agents/BaseAgent";
+import BaseAgent from "./BaseAgent";
+import Environment from "./Environment";
 
 /**
  * Delegation Agent
@@ -64,7 +65,7 @@ class DelegateAgent extends BaseAgent {
     return await this.currentAgent.execute(actions, conversation);
   }
 
-  public async environment(): Promise<string> {
+  public async environment(): Promise<Environment> {
     return await this.currentAgent.environment();
   }
 

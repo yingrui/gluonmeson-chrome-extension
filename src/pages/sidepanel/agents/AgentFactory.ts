@@ -24,6 +24,7 @@ class AgentFactory {
     const apiKey = config.apiKey ?? "";
     const language = intl.get(config.language).d("English");
     const enableReflection = config.enableReflection ?? false;
+    const enableMultiModal = config.enableMultiModal ?? false;
     const repository = new LocalConversationRepository();
 
     const client = new OpenAI({
@@ -77,6 +78,7 @@ class AgentFactory {
       language,
       "Guru",
       intl.get("agent_description_guru").d("Guru, your browser assistant"),
+      enableMultiModal,
       conversation,
       agents,
     );

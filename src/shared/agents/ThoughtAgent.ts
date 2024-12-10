@@ -3,7 +3,8 @@ import Tool from "./Tool";
 import Conversation from "./Conversation";
 import ThinkResult from "./ThinkResult";
 import { stringToAsyncIterator } from "../utils/streaming";
-import BaseAgent from "@src/shared/agents/BaseAgent";
+import BaseAgent from "./BaseAgent";
+import Environment from "./Environment";
 
 class ThoughtAgent extends BaseAgent {
   modelName: string;
@@ -97,6 +98,7 @@ class ThoughtAgent extends BaseAgent {
    * @async
    */
   async chat(message: ChatMessage): Promise<ThinkResult> {
+    console.log("Chat with user", message);
     this.conversation.appendMessage(message);
     const plan = await this.plan();
     if (plan.type === "actions") {
@@ -111,11 +113,11 @@ class ThoughtAgent extends BaseAgent {
 
   /**
    * Describe the current environment
-   * @returns {string} Environment description
+   * @returns {Environment} Environment description
    */
-  async environment(): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      resolve("");
+  async environment(): Promise<Environment> {
+    return new Promise<Environment>((resolve, reject) => {
+      resolve({ systemPrompt: "" });
     });
   }
 
@@ -127,8 +129,11 @@ class ThoughtAgent extends BaseAgent {
     const messages = this.conversation.getMessages();
     const interaction = this.conversation.getCurrentInteraction();
     const env = await this.environment();
-    const systemMessage = { role: "system", content: env } as ChatMessage;
-    const messagesWithEnv = env
+    const systemMessage = {
+      role: "system",
+      content: env.systemPrompt,
+    } as ChatMessage;
+    const messagesWithEnv = env.systemPrompt
       ? [systemMessage, ...messages.slice(1)]
       : messages;
 
@@ -162,6 +167,20 @@ class ThoughtAgent extends BaseAgent {
     }
 
     return new ThinkResult({ type: "actions", actions });
+  }
+
+  private addScreenshotToMessage(messages: ChatMessage[], env: Environment) {
+    const text = messages.at(-1).content;
+    messages.at(-1).content = [
+      {
+        type: "text",
+        text: text,
+      },
+      {
+        type: "image_url",
+        image_url: { url: env.screenshot },
+      },
+    ] as MessageContent[];
   }
 
   /**
@@ -276,7 +295,7 @@ Choose the best action to execute, or generate new answer, or suggest more quest
       const env = await this.environment();
       return this.chatCompletion(
         conversation.getMessages(),
-        env,
+        env.systemPrompt,
         args["userInput"],
       );
     }
@@ -336,7 +355,12 @@ Choose the best action to execute, or generate new answer, or suggest more quest
     return { name: "reply", arguments: { content } } as Action;
   }
 
-  private chatAction(userInput: string): Action {
+  private chatAction(userInput: string | MessageContent[]): Action {
+    if (userInput instanceof Array) {
+      const contents: MessageContent[] = userInput as MessageContent[];
+      const input = contents.find((c) => c.type === "text").text;
+      return { name: "chat", arguments: { userInput: input } } as Action;
+    }
     return { name: "chat", arguments: { userInput } } as Action;
   }
 

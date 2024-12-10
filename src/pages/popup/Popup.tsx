@@ -151,6 +151,13 @@ const Popup = () => {
             <Switch />
           </Form.Item>
           <Form.Item
+            label={intl.get("enableMultiModal").d("Multi Modal")}
+            name="enableMultiModal"
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
+          <Form.Item
             label={intl.get("enableReflection").d("Reflection")}
             name="enableReflection"
             valuePropName="checked"

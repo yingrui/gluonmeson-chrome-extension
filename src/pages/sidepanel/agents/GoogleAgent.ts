@@ -6,6 +6,7 @@ import { ddg_search } from "@src/shared/utils/duckduckgo";
 import { stringToAsyncIterator } from "@src/shared/utils/streaming";
 import ThinkResult from "@src/shared/agents/ThinkResult";
 import intl from "react-intl-universal";
+import Environment from "@src/shared/agents/Environment";
 
 class GoogleAgent extends ThoughtAgent {
   constructor(
@@ -198,9 +199,9 @@ The links are: ${JSON.stringify(content.links)}`;
 
   /**
    * Describe the current environment
-   * @returns {string} Environment description
+   * @returns {Environment} Environment description
    */
-  async environment(): Promise<string> {
+  async environment(): Promise<Environment> {
     const content = await get_content();
     const maxContentLength = 100 * 1024;
     if (content) {
@@ -208,14 +209,16 @@ The links are: ${JSON.stringify(content.links)}`;
         content.text.length > maxContentLength
           ? content.text.slice(0, maxContentLength)
           : content.text;
-      return `${this.getInitialSystemMessage()}
+      return {
+        systemPrompt: `${this.getInitialSystemMessage()}
 
 ## Situation
 Current user is viewing the page: ${content.title}, the url is ${content.url}, the content is:
 ${textContent}.
-The links are: ${JSON.stringify(content.links)}`;
+The links are: ${JSON.stringify(content.links)}`,
+      };
     } else {
-      return this.getInitialSystemMessage();
+      return { systemPrompt: this.getInitialSystemMessage() };
     }
   }
 

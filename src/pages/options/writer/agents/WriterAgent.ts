@@ -4,6 +4,7 @@ import WriterContext from "@src/pages/options/writer/context/WriterContext";
 import { parseCommand } from "@src/shared/agents/AgentUtils";
 import ThinkResult from "@src/shared/agents/ThinkResult";
 import intl from "react-intl-universal";
+import Environment from "@src/shared/agents/Environment";
 
 class WriterAgent extends ThoughtAgent {
   commands = [
@@ -73,13 +74,14 @@ class WriterAgent extends ThoughtAgent {
     return this.commands;
   }
 
-  async environment(): Promise<string> {
-    return new Promise<any>((resolve, reject) => {
+  async environment(): Promise<Environment> {
+    return new Promise<Environment>((resolve, reject) => {
       const title = this.context.getTitle();
       const content = this.context.getContent();
 
       if (title) {
-        resolve(`As an article writer assistant by GluonMeson, named Guru Mason. Here’s how you can help users:
+        resolve({
+          systemPrompt: `As an article writer assistant by GluonMeson, named Guru Mason. Here’s how you can help users:
 
 * Title: you can answer questions about reviewing/modifying/generating the title of current article.
 
@@ -87,9 +89,10 @@ Please answer questions in ${this.language}.
 Current user is working on article
 Title: ${title}
 Content:
-${content}.`);
+${content}.`,
+        });
       } else {
-        resolve(this.getInitialSystemMessage());
+        resolve({ systemPrompt: this.getInitialSystemMessage() });
       }
     });
   }

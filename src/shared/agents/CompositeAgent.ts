@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import Tool from "./Tool";
 import ThoughtAgent from "./ThoughtAgent";
 import Conversation from "./Conversation";
-import ThinkResult from "@src/shared/agents/ThinkResult";
+import ThinkResult from "./ThinkResult";
 
 /**
  * Composite Agent

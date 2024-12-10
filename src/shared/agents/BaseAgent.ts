@@ -3,6 +3,7 @@ import Agent from "./Agent";
 import Conversation from "./Conversation";
 import ThinkResult from "./ThinkResult";
 import ConversationRepository from "./ConversationRepository";
+import Environment from "./Environment";
 
 abstract class BaseAgent implements Agent {
   private result: ThinkResult;
@@ -126,9 +127,9 @@ abstract class BaseAgent implements Agent {
 
   /**
    * Describe the current environment
-   * @returns {string} Environment description
+   * @returns {Environment} Environment description
    */
-  abstract environment(): Promise<string>;
+  abstract environment(): Promise<Environment>;
 }
 
 export default BaseAgent;

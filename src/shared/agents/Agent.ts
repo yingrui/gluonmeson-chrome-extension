@@ -1,6 +1,7 @@
 import Tool from "./Tool";
 import Conversation from "./Conversation";
 import ThinkResult from "./ThinkResult";
+import Environment from "./Environment";
 
 interface Agent {
   /**
@@ -33,6 +34,10 @@ interface Agent {
    */
   onCompleted(result: ThinkResult): Promise<string>;
 
+  /**
+   * Add listener for receiving stream message
+   * @param listener
+   */
   onReceiveStreamMessage(listener: (msg: string) => void): Agent;
 
   /**
@@ -72,9 +77,9 @@ interface Agent {
 
   /**
    * Describe the current environment
-   * @returns {string} Environment description
+   * @returns {Environment} Environment description
    */
-  environment(): Promise<string>;
+  environment(): Promise<Environment>;
 }
 
 export default Agent;

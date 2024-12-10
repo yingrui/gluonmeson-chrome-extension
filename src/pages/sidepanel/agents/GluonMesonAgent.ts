@@ -5,12 +5,15 @@ import CompositeAgent from "@src/shared/agents/CompositeAgent";
 import { get_content } from "@src/shared/utils";
 import OpenAI from "openai";
 import ThinkResult from "@src/shared/agents/ThinkResult";
+import Environment from "@src/shared/agents/Environment";
 
 /**
  * GluonMeson Agent
  * @extends {CompositeAgent} - Agent with tools
  */
 class GluonMesonAgent extends CompositeAgent {
+  enableMultiModal: boolean;
+
   constructor(
     defaultModelName: string,
     toolsCallModel: string,
@@ -18,6 +21,7 @@ class GluonMesonAgent extends CompositeAgent {
     language: string,
     name: string = "Guru",
     description: string = "Guru",
+    enableMultiModal: boolean = false,
     conversation: Conversation = new Conversation(),
     agents: ThoughtAgent[] = [],
   ) {
@@ -32,6 +36,7 @@ class GluonMesonAgent extends CompositeAgent {
       agents,
     );
 
+    this.enableMultiModal = enableMultiModal;
     this.addTools();
   }
 
@@ -115,9 +120,12 @@ Please help user to beautify or complete the text with Markdown format.`;
 
   /**
    * Describe the current environment
-   * @returns {string} Environment description
+   * @returns {Environment} Environment description
    */
-  async environment(): Promise<string> {
+  async environment(): Promise<Environment> {
+    const screenshot = this.enableMultiModal
+      ? await this.getScreenshot()
+      : undefined;
     const content = await get_content();
     const maxContentLength = 100 * 1024;
     if (content) {
@@ -125,16 +133,29 @@ Please help user to beautify or complete the text with Markdown format.`;
         content.text.length > maxContentLength
           ? content.text.slice(0, maxContentLength)
           : content.text;
-      return `As an assistant or chrome copilot provided by GluonMeson, named Guru Mason.
+      return {
+        systemPrompt: `As an assistant or chrome copilot provided by GluonMeson, named Guru Mason.
 You're an assistant and good at data extraction, data analysis, summarization, wikipedia, and many kinds of internet tools.
 Please decide to call different tools or directly answer questions in ${this.language}, and consider the language of user input, should not add assistant in answer.
 Output format should be in markdown format, and use mermaid format for diagram generation.
 Current user is viewing the page: ${content.title}, the url is ${content.url}, the content is:
 ${textContent}.
-The links are: ${JSON.stringify(content.links)}`;
+The links are: ${JSON.stringify(content.links)}`,
+        screenshot,
+      };
     } else {
-      return this.getInitialSystemMessage();
+      return { systemPrompt: this.getInitialSystemMessage(), screenshot };
     }
+  }
+
+  private async getScreenshot(): Promise<string> {
+    console.log("get screenshot");
+    return new Promise<string>((resolve, reject) => {
+      chrome.tabs.captureVisibleTab(null, (dataUrl) => {
+        console.log(dataUrl);
+        resolve(dataUrl);
+      });
+    });
   }
 
   getInitialSystemMessage(): string {
