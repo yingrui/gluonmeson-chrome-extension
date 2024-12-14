@@ -88,8 +88,20 @@ class LocalConversationRepository implements ConversationRepository {
       ),
       recordStatus: conversation.recordStatus !== "Kept" ? "Unkept" : "Kept",
       messages: conversation.messages.map((msg) => new ChatMessage(msg)),
-      interactions: conversation.interactions,
+      interactions: this.loadInteractions(conversation.interactions),
     };
+  }
+
+  private loadInteractions(
+    interactions: InteractionRecord[],
+  ): InteractionRecord[] {
+    for (const i of interactions) {
+      i.inputMessage = new ChatMessage(i.inputMessage);
+      if (i.outputMessage) {
+        i.outputMessage = new ChatMessage(i.outputMessage);
+      }
+    }
+    return interactions;
   }
 
   delete(key: string): Promise<void> {

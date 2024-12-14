@@ -170,20 +170,6 @@ class ThoughtAgent extends BaseAgent {
     return new ThinkResult({ type: "actions", actions });
   }
 
-  private addScreenshotToMessage(messages: ChatMessage[], env: Environment) {
-    const text = messages.at(-1).content;
-    messages.at(-1).content = [
-      {
-        type: "text",
-        text: text,
-      },
-      {
-        type: "image_url",
-        image_url: { url: env.screenshot },
-      },
-    ] as MessageContent[];
-  }
-
   /**
    * Reflection
    * @returns {Promise<Action[]>} Actions

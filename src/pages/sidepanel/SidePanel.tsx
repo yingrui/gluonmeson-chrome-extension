@@ -70,12 +70,16 @@ function SidePanel(props: Record<string, unknown>) {
     if (generating) {
       return;
     }
-    generateReply(userInput, () =>
-      agent.execute(
+    const result = await generateReply(userInput, async () => {
+      agent
+        .getConversation()
+        .appendMessage(new ChatMessage({ role: "user", content: userInput }));
+      return agent.execute(
         [{ name: action, arguments: args }],
         agent.getConversation(),
-      ),
-    );
+      );
+    });
+    // TODO: post process the result by action
   }
 
   installContentScriptCommandListener(handleCommandFromContentScript);
