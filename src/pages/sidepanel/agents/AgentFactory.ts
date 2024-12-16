@@ -11,6 +11,7 @@ import Agent from "@src/shared/agents/Agent";
 import LocalConversationRepository from "@src/shared/repositories/LocalConversationRepository";
 import intl from "react-intl-universal";
 import ChatMessage from "@src/shared/agents/ChatMessage";
+import { locale } from "@src/shared/utils/i18n";
 
 class AgentFactory {
   static createGluonMesonAgent(
@@ -23,7 +24,7 @@ class AgentFactory {
     const baCopilotTechDescription = config.baCopilotTechDescription ?? "";
     const baCopilotApi = config.baCopilotApi ?? "";
     const apiKey = config.apiKey ?? "";
-    const language = intl.get(config.language).d("English");
+    const language = intl.get(locale(config.language)).d("English");
     const enableReflection = config.enableReflection ?? false;
     const enableMultiModal = config.enableMultiModal ?? false;
     const repository = new LocalConversationRepository();
