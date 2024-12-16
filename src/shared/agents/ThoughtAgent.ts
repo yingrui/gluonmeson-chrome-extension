@@ -7,6 +7,8 @@ import BaseAgent from "./BaseAgent";
 import Environment from "./Environment";
 import ChatMessage from "./ChatMessage";
 import type { MessageContent } from "./ChatMessage";
+import ModelService from "./ModelService";
+import DefaultModelService from "@src/shared/agents/DefaultModelService";
 
 class ThoughtAgent extends BaseAgent {
   modelName: string;
@@ -17,6 +19,7 @@ class ThoughtAgent extends BaseAgent {
   name: string;
   description: string;
   conversation: Conversation;
+  modelService: ModelService;
 
   constructor(
     modelName: string,
@@ -35,6 +38,11 @@ class ThoughtAgent extends BaseAgent {
     this.name = name;
     this.description = description;
     this.conversation = conversation;
+    this.modelService = new DefaultModelService({
+      client,
+      modelName,
+      toolsCallModel,
+    });
   }
 
   getName(): string {
@@ -143,31 +151,7 @@ class ThoughtAgent extends BaseAgent {
     if (toolCalls.length === 0) {
       return new ThinkResult({ type: "actions", actions: [] });
     }
-    const stream = await this.toolsCall(messagesWithEnv, toolCalls, true);
-    const [first, second] = stream.tee();
-    let actions = [];
-    for await (const chunk of first) {
-      if (chunk.choices) {
-        if (chunk.choices.length == 0) {
-          throw new Error("Empty choices in chunk");
-        }
-        const choice = chunk.choices[0];
-        if (choice.finish_reason === "tool_calls") {
-          const tools = choice.delta.tool_calls;
-          if (tools) {
-            actions = tools.map((t) => this.toAction(t));
-          }
-        } else {
-          return new ThinkResult({
-            type: "stream",
-            stream: second,
-            firstChunk: chunk,
-          });
-        }
-      }
-    }
-
-    return new ThinkResult({ type: "actions", actions });
+    return await this.toolsCall(messagesWithEnv, toolCalls, true);
   }
 
   /**
@@ -184,22 +168,9 @@ class ThoughtAgent extends BaseAgent {
       content: "Based on reflection gives action, answer or suggestions",
     });
     const messagesWithEnv = [systemMessage, userMessage];
-
     const toolCalls = this.getToolCalls();
-    const result = await this.toolsCall(messagesWithEnv, toolCalls);
-    const choices = result.choices;
-    if (choices.length > 0) {
-      const choice = choices[0];
-      if (choice.finish_reason === "tool_calls") {
-        const tools = choice.message.tool_calls;
-        if (tools) {
-          return tools.map((t) => this.toAction(t));
-        }
-      } else if (choice.finish_reason === "stop" && choice.message.content) {
-        return [this.replyAction(choice.message.content)];
-      }
-    }
-    return [];
+    const result = await this.toolsCall(messagesWithEnv, toolCalls, false);
+    return result.actions;
   }
 
   private getReflectionPrompt(): string {
@@ -325,19 +296,6 @@ Choose the best action to execute, or generate new answer, or suggest more quest
     throw new Error("Unimplemented action: " + action);
   }
 
-  private toAction(tool: ToolCall): Action {
-    let args = {};
-    try {
-      if (tool.function.arguments) {
-        args = JSON.parse(tool.function.arguments);
-      }
-    } catch (e) {
-      console.error("Error parsing tool arguments", e);
-      console.error("tool.function.arguments", tool.function.arguments);
-    }
-    return { name: tool.function.name, arguments: args } as Action;
-  }
-
   private replyAction(content: string): Action {
     return { name: "reply", arguments: { content } } as Action;
   }
@@ -380,13 +338,7 @@ Choose the best action to execute, or generate new answer, or suggest more quest
       messages = [...messages.slice(0, messages.length - 1), userMessage];
     }
 
-    const streamResult = await this.client.chat.completions.create({
-      messages: messages as OpenAI.ChatCompletionMessageParam[],
-      model: this.modelName,
-      stream: stream,
-      max_tokens: 4096,
-    });
-    return new ThinkResult({ type: "stream", stream: streamResult });
+    return await this.modelService.chatCompletion(messages, stream);
   }
 
   /**
@@ -400,14 +352,8 @@ Choose the best action to execute, or generate new answer, or suggest more quest
     messages: ChatMessage[],
     tools: OpenAI.Chat.Completions.ChatCompletionTool[],
     stream: boolean = false,
-  ): Promise<any> {
-    return this.client.chat.completions.create({
-      model: this.toolsCallModel,
-      messages: messages as OpenAI.ChatCompletionMessageParam[],
-      stream: stream,
-      tools: tools,
-      max_tokens: 4096,
-    });
+  ): Promise<ThinkResult> {
+    return await this.modelService.toolsCall(messages, tools, stream);
   }
 }
 
