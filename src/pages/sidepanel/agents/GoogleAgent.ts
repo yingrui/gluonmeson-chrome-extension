@@ -1,6 +1,6 @@
-import OpenAI from "openai";
-import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
-import Conversation from "@src/shared/agents/Conversation";
+import ThoughtAgent, {
+  ThoughtAgentProps,
+} from "@src/shared/agents/ThoughtAgent";
 import { get_content } from "@src/shared/utils";
 import { ddg_search } from "@src/shared/utils/duckduckgo";
 import { stringToAsyncIterator } from "@src/shared/utils/streaming";
@@ -10,21 +10,11 @@ import Environment from "@src/shared/agents/Environment";
 import ChatMessage from "@src/shared/agents/ChatMessage";
 
 class GoogleAgent extends ThoughtAgent {
-  constructor(
-    defaultModelName: string,
-    toolsCallModel: string,
-    client: OpenAI,
-    language: string,
-    conversation: Conversation = new Conversation(),
-  ) {
+  constructor(props: ThoughtAgentProps) {
     super(
-      defaultModelName,
-      toolsCallModel,
-      client,
-      language,
+      props,
       "Seeker",
       intl.get("agent_description_seeker").d("Seeker, your search assistant"),
-      conversation,
     );
     this.addTool("google", "only when user want to visit google.", [
       "userInput",

@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import Tool from "./Tool";
-import ThoughtAgent from "./ThoughtAgent";
+import ThoughtAgent, { ThoughtAgentProps } from "./ThoughtAgent";
 import Conversation from "./Conversation";
 import ThinkResult from "./ThinkResult";
 
@@ -14,24 +14,12 @@ class CompositeAgent extends ThoughtAgent {
   subAgents: ThoughtAgent[] = [];
 
   constructor(
-    defaultModelName,
-    toolsCallModel,
-    client,
-    language,
+    props: ThoughtAgentProps,
     name: string = "Guru",
     description: string = "Guru, your browser assistant",
-    conversation: Conversation = new Conversation(),
     agents: ThoughtAgent[] = [],
   ) {
-    super(
-      defaultModelName,
-      toolsCallModel,
-      client,
-      language,
-      name,
-      description,
-      conversation,
-    );
+    super(props, name, description);
 
     for (const agent of agents) {
       this.addAgent(agent);

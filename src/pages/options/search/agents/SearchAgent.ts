@@ -1,18 +1,14 @@
-import OpenAI from "openai";
-import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
+import ThoughtAgent, {
+  ThoughtAgentProps,
+} from "@src/shared/agents/ThoughtAgent";
 import ThinkResult from "@src/shared/agents/ThinkResult";
 import ChatMessage from "@src/shared/agents/ChatMessage";
 
 class SearchAgent extends ThoughtAgent {
   searchResults: any;
 
-  constructor(
-    defaultModelName: string,
-    toolsCallModel: string,
-    client: OpenAI,
-    language: string,
-  ) {
-    super(defaultModelName, toolsCallModel, client, language);
+  constructor(props: ThoughtAgentProps) {
+    super(props);
   }
 
   setSearchResults(results: any) {

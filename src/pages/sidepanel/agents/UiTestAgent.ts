@@ -1,29 +1,19 @@
-import OpenAI from "openai";
-import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
-import Conversation from "@src/shared/agents/Conversation";
+import ThoughtAgent, {
+  ThoughtAgentProps,
+} from "@src/shared/agents/ThoughtAgent";
 import { get_html } from "@src/shared/utils";
 import ThinkResult from "@src/shared/agents/ThinkResult";
 import intl from "react-intl-universal";
 import ChatMessage from "@src/shared/agents/ChatMessage";
 
 class UiTestAgent extends ThoughtAgent {
-  constructor(
-    defaultModelName: string,
-    toolsCallModel: string,
-    client: OpenAI,
-    language: string,
-    conversation: Conversation = new Conversation(),
-  ) {
+  constructor(props: ThoughtAgentProps) {
     super(
-      defaultModelName,
-      toolsCallModel,
-      client,
-      language,
+      props,
       "QACopilot",
       intl
         .get("agent_description_qa_copilot")
         .d("QACopilot, your QA assistant"),
-      conversation,
     );
     this.addTool(
       "ui_test",

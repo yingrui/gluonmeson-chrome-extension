@@ -1,5 +1,6 @@
-import OpenAI from "openai";
-import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
+import ThoughtAgent, {
+  ThoughtAgentProps,
+} from "@src/shared/agents/ThoughtAgent";
 import WriterContext from "@src/pages/options/writer/context/WriterContext";
 import { parseCommand } from "@src/shared/agents/AgentUtils";
 import ThinkResult from "@src/shared/agents/ThinkResult";
@@ -24,14 +25,8 @@ class WriterAgent extends ThoughtAgent {
   ];
   context: WriterContext;
 
-  constructor(
-    defaultModelName: string,
-    toolsCallModel: string,
-    client: OpenAI,
-    language: string,
-    context: WriterContext,
-  ) {
-    super(defaultModelName, toolsCallModel, client, language);
+  constructor(props: ThoughtAgentProps, context: WriterContext) {
+    super(props);
     this.getConversation().set(this.getInitialMessages());
     this.context = context;
   }
@@ -71,7 +66,7 @@ class WriterAgent extends ThoughtAgent {
         );
       }
     }
-    return this.execute([], this.conversation);
+    return this.execute([], this.getConversation());
   }
 
   public getCommandOptions(): CommandOption[] {

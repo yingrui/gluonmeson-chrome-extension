@@ -1,5 +1,7 @@
 import OpenAI from "openai";
-import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
+import ThoughtAgent, {
+  ThoughtAgentProps,
+} from "@src/shared/agents/ThoughtAgent";
 import DelegateAgent from "@src/shared/agents/DelegateAgent";
 import GluonMesonAgent from "./GluonMesonAgent";
 import BACopilotAgent from "./BACopilotAgent";
@@ -18,15 +20,11 @@ class AgentFactory {
     config: any,
     initMessages: ChatMessage[],
   ): Agent {
-    const defaultModel = config.defaultModel ?? "gpt-3.5-turbo";
-    const toolsCallModel = config.toolsCallModel ?? null;
     const baCopilotKnowledgeApi = config.baCopilotKnowledgeApi ?? "";
     const baCopilotTechDescription = config.baCopilotTechDescription ?? "";
     const baCopilotApi = config.baCopilotApi ?? "";
     const apiKey = config.apiKey ?? "";
-    const language = intl.get(locale(config.language)).d("English");
-    const enableReflection = config.enableReflection ?? false;
-    const enableMultiModal = config.enableMultiModal ?? false;
+
     const repository = new LocalConversationRepository();
 
     const client = new OpenAI({
@@ -36,52 +34,33 @@ class AgentFactory {
       dangerouslyAllowBrowser: true,
     });
 
-    const conversation = new Conversation();
+    const props: ThoughtAgentProps = {
+      modelName: config.defaultModel ?? "gpt-3.5-turbo",
+      toolsCallModel: config.toolsCallModel ?? null,
+      client: client,
+      language: intl.get(locale(config.language)).d("English"),
+      conversation: new Conversation(),
+      enableMultiModal: config.enableMultiModal ?? false,
+      enableReflection: config.enableReflection ?? false,
+    };
 
     const agents: ThoughtAgent[] = [
-      new GoogleAgent(
-        defaultModel,
-        toolsCallModel,
-        client,
-        language,
-        conversation,
-      ),
-      new TranslateAgent(
-        defaultModel,
-        toolsCallModel,
-        client,
-        language,
-        conversation,
-      ),
-      new UiTestAgent(
-        defaultModel,
-        toolsCallModel,
-        client,
-        language,
-        conversation,
-      ),
+      new GoogleAgent(props),
+      new TranslateAgent(props),
+      new UiTestAgent(props),
       new BACopilotAgent(
-        defaultModel,
-        toolsCallModel,
-        client,
-        language,
+        props,
         baCopilotKnowledgeApi,
         baCopilotApi,
         baCopilotTechDescription,
         apiKey,
-        conversation,
       ),
     ];
 
     const agent = new GluonMesonAgent(
-      defaultModel,
-      toolsCallModel,
-      client,
-      language,
+      props,
       "Guru",
       intl.get("agent_description_guru").d("Guru, your browser assistant"),
-      enableMultiModal,
-      conversation,
       agents,
     );
 
@@ -99,7 +78,7 @@ class AgentFactory {
       agent,
       agents,
       commands,
-      conversation,
+      props.conversation,
     );
     delegateAgent.getConversation().set(initMessages);
     delegateAgent.setConversationRepository(repository);

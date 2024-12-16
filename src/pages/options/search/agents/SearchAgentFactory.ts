@@ -1,21 +1,30 @@
 import OpenAI from "openai";
 import SearchAgent from "./SearchAgent";
+import { ThoughtAgentProps } from "@src/shared/agents/ThoughtAgent";
+import intl from "react-intl-universal";
+import { locale } from "@src/shared/utils/i18n";
+import Conversation from "@src/shared/agents/Conversation";
 
 class SearchAgentFactory {
   static create(config: any): SearchAgent {
-    const defaultModel = config.defaultModel ?? "gpt-3.5-turbo";
-    const toolsCallModel = config.toolsCallModel ?? null;
-    const apiKey = config.apiKey ?? "";
-    const language = config.language ?? "English";
-
     const client = new OpenAI({
-      apiKey: apiKey,
+      apiKey: config.apiKey ?? "",
       baseURL: config.baseURL,
       organization: config.organization,
       dangerouslyAllowBrowser: true,
     });
 
-    return new SearchAgent(defaultModel, toolsCallModel, client, language);
+    const props: ThoughtAgentProps = {
+      modelName: config.defaultModel ?? "gpt-3.5-turbo",
+      toolsCallModel: config.toolsCallModel ?? null,
+      client: client,
+      language: intl.get(locale(config.language)).d("English"),
+      conversation: new Conversation(),
+      enableMultiModal: config.enableMultiModal ?? false,
+      enableReflection: config.enableReflection ?? false,
+    };
+
+    return new SearchAgent(props);
   }
 }
 

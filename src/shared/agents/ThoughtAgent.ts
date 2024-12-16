@@ -5,35 +5,36 @@ import ThinkResult from "./ThinkResult";
 import { stringToAsyncIterator } from "../utils/streaming";
 import BaseAgent from "./BaseAgent";
 import Environment from "./Environment";
-import ChatMessage from "./ChatMessage";
 import type { MessageContent } from "./ChatMessage";
+import ChatMessage from "./ChatMessage";
 import ModelService from "./ModelService";
 import DefaultModelService from "@src/shared/agents/DefaultModelService";
 
-class ThoughtAgent extends BaseAgent {
+interface ThoughtAgentProps {
   modelName: string;
   toolsCallModel: string;
   client: OpenAI;
   language: string;
-  tools: Tool[] = [];
-  name: string;
-  description: string;
   conversation: Conversation;
-  modelService: ModelService;
+  enableMultiModal: boolean;
+  enableReflection: boolean;
+}
+
+class ThoughtAgent extends BaseAgent {
+  language: string;
+  private readonly tools: Tool[] = [];
+  private readonly name: string;
+  private readonly description: string;
+  private readonly conversation: Conversation;
+  private readonly modelService: ModelService;
 
   constructor(
-    modelName: string,
-    toolsCallModel: string,
-    client: OpenAI,
-    language: string,
+    props: ThoughtAgentProps,
     name: string = "Guru",
     description: string = "Guru",
-    conversation: Conversation = new Conversation(),
   ) {
     super();
-    this.modelName = modelName;
-    this.toolsCallModel = toolsCallModel;
-    this.client = client;
+    const { modelName, toolsCallModel, client, language, conversation } = props;
     this.language = language;
     this.name = name;
     this.description = description;
@@ -358,3 +359,4 @@ Choose the best action to execute, or generate new answer, or suggest more quest
 }
 
 export default ThoughtAgent;
+export type { ThoughtAgentProps };

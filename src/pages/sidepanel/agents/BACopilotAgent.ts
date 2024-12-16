@@ -1,6 +1,6 @@
-import OpenAI from "openai";
-import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
-import Conversation from "@src/shared/agents/Conversation";
+import ThoughtAgent, {
+  ThoughtAgentProps,
+} from "@src/shared/agents/ThoughtAgent";
 import { fromReadableStream } from "@src/shared/utils/streaming";
 import ThinkResult from "@src/shared/agents/ThinkResult";
 import intl from "react-intl-universal";
@@ -14,26 +14,18 @@ class BACopilotAgent extends ThoughtAgent {
   conversationIds = {};
 
   constructor(
-    defaultModelName: string,
-    toolsCallModel: string,
-    client: OpenAI,
-    language: string,
+    props: ThoughtAgentProps,
     baCopilotKnowledgeApi: string,
     baCopilotApi: string,
     baCopilotTechDescription: string,
     apiKey: string,
-    conversation: Conversation = new Conversation(),
   ) {
     super(
-      defaultModelName,
-      toolsCallModel,
-      client,
-      language,
+      props,
       "BACopilot",
       intl
         .get("agent_description_ba_copilot")
         .d("BACopilot, your BA assistant"),
-      conversation,
     );
     this.addTool(
       "user_story",

@@ -1,9 +1,9 @@
-import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
-import Conversation from "@src/shared/agents/Conversation";
+import ThoughtAgent, {
+  ThoughtAgentProps,
+} from "@src/shared/agents/ThoughtAgent";
 import CompositeAgent from "@src/shared/agents/CompositeAgent";
 
 import { get_content } from "@src/shared/utils";
-import OpenAI from "openai";
 import ThinkResult from "@src/shared/agents/ThinkResult";
 import Environment from "@src/shared/agents/Environment";
 import ChatMessage from "@src/shared/agents/ChatMessage";
@@ -16,28 +16,14 @@ class GluonMesonAgent extends CompositeAgent {
   enableMultiModal: boolean;
 
   constructor(
-    defaultModelName: string,
-    toolsCallModel: string,
-    client: OpenAI,
-    language: string,
+    props: ThoughtAgentProps,
     name: string = "Guru",
     description: string = "Guru",
-    enableMultiModal: boolean = false,
-    conversation: Conversation = new Conversation(),
     agents: ThoughtAgent[] = [],
   ) {
-    super(
-      defaultModelName,
-      toolsCallModel,
-      client,
-      language,
-      name,
-      description,
-      conversation,
-      agents,
-    );
+    super(props, name, description, agents);
 
-    this.enableMultiModal = enableMultiModal;
+    this.enableMultiModal = props.enableMultiModal;
     this.addTools();
   }
 
