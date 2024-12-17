@@ -8,11 +8,11 @@ import BACopilotAgent from "./BACopilotAgent";
 import TranslateAgent from "./TranslateAgent";
 import UiTestAgent from "./UiTestAgent";
 import GoogleAgent from "./GoogleAgent";
-import Conversation from "@src/shared/agents/Conversation";
-import Agent from "@src/shared/agents/Agent";
+import Conversation from "@src/shared/agents/core/Conversation";
+import Agent from "@src/shared/agents/core/Agent";
 import LocalConversationRepository from "@src/shared/repositories/LocalConversationRepository";
 import intl from "react-intl-universal";
-import ChatMessage from "@src/shared/agents/ChatMessage";
+import ChatMessage from "@src/shared/agents/core/ChatMessage";
 import { locale } from "@src/shared/utils/i18n";
 
 class AgentFactory {

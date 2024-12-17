@@ -1,8 +1,8 @@
 import OpenAI from "openai";
-import Tool from "./Tool";
+import Tool from "./core/Tool";
 import ThoughtAgent, { ThoughtAgentProps } from "./ThoughtAgent";
-import Conversation from "./Conversation";
-import ThinkResult from "./ThinkResult";
+import Conversation from "./core/Conversation";
+import ThinkResult from "./core/ThinkResult";
 
 /**
  * Composite Agent

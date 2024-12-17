@@ -6,10 +6,10 @@ import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import copy from "copy-to-clipboard";
-import Interaction from "@src/shared/agents/Interaction";
+import Interaction from "@src/shared/agents/core/Interaction";
 import { useState } from "react";
-import ChatMessage from "@src/shared/agents/ChatMessage";
-import type { MessageContent } from "@src/shared/agents/ChatMessage";
+import ChatMessage from "@src/shared/agents/core/ChatMessage";
+import type { MessageContent } from "@src/shared/agents/core/ChatMessage";
 
 interface Props {
   index?: number;

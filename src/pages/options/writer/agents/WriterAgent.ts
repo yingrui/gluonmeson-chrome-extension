@@ -3,10 +3,10 @@ import ThoughtAgent, {
 } from "@src/shared/agents/ThoughtAgent";
 import WriterContext from "@src/pages/options/writer/context/WriterContext";
 import { parseCommand } from "@src/shared/agents/AgentUtils";
-import ThinkResult from "@src/shared/agents/ThinkResult";
+import ThinkResult from "@src/shared/agents/core/ThinkResult";
 import intl from "react-intl-universal";
-import Environment from "@src/shared/agents/Environment";
-import ChatMessage from "@src/shared/agents/ChatMessage";
+import Environment from "@src/shared/agents/core/Environment";
+import ChatMessage from "@src/shared/agents/core/ChatMessage";
 
 class WriterAgent extends ThoughtAgent {
   commands = [

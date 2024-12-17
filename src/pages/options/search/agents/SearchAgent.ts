@@ -1,8 +1,8 @@
 import ThoughtAgent, {
   ThoughtAgentProps,
 } from "@src/shared/agents/ThoughtAgent";
-import ThinkResult from "@src/shared/agents/ThinkResult";
-import ChatMessage from "@src/shared/agents/ChatMessage";
+import ThinkResult from "@src/shared/agents/core/ThinkResult";
+import ChatMessage from "@src/shared/agents/core/ChatMessage";
 
 class SearchAgent extends ThoughtAgent {
   searchResults: any;

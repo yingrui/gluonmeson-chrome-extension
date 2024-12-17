@@ -18,7 +18,7 @@ import configureStorage from "@root/src/shared/storages/gluonConfig";
 import type { MentionsRef } from "antd/lib/mentions";
 import type { MentionProps } from "antd";
 import intl from "react-intl-universal";
-import ChatMessage from "@src/shared/agents/ChatMessage";
+import ChatMessage from "@src/shared/agents/core/ChatMessage";
 
 const { Text } = Typography;
 

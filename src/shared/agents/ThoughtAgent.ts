@@ -1,14 +1,14 @@
 import OpenAI from "openai";
-import Tool from "./Tool";
-import Conversation from "./Conversation";
-import ThinkResult from "./ThinkResult";
+import Tool from "./core/Tool";
+import Conversation from "./core/Conversation";
+import ThinkResult from "./core/ThinkResult";
 import { stringToAsyncIterator } from "../utils/streaming";
 import BaseAgent from "./BaseAgent";
-import Environment from "./Environment";
-import type { MessageContent } from "./ChatMessage";
-import ChatMessage from "./ChatMessage";
+import Environment from "./core/Environment";
+import type { MessageContent } from "./core/ChatMessage";
+import ChatMessage from "./core/ChatMessage";
 import ModelService from "./ModelService";
-import DefaultModelService from "@src/shared/agents/DefaultModelService";
+import DefaultModelService from "./DefaultModelService";
 
 interface ThoughtAgentProps {
   modelName: string;

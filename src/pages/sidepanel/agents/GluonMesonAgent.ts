@@ -4,9 +4,9 @@ import ThoughtAgent, {
 import CompositeAgent from "@src/shared/agents/CompositeAgent";
 
 import { get_content } from "@src/shared/utils";
-import ThinkResult from "@src/shared/agents/ThinkResult";
-import Environment from "@src/shared/agents/Environment";
-import ChatMessage from "@src/shared/agents/ChatMessage";
+import ThinkResult from "@src/shared/agents/core/ThinkResult";
+import Environment from "@src/shared/agents/core/Environment";
+import ChatMessage from "@src/shared/agents/core/ChatMessage";
 
 /**
  * GluonMeson Agent

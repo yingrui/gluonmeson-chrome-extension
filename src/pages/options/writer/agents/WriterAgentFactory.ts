@@ -4,7 +4,7 @@ import WriterAgent from "./WriterAgent";
 import intl from "react-intl-universal";
 import { locale } from "@src/shared/utils/i18n";
 import { ThoughtAgentProps } from "@src/shared/agents/ThoughtAgent";
-import Conversation from "@src/shared/agents/Conversation";
+import Conversation from "@src/shared/agents/core/Conversation";
 
 class WriterAgentFactory {
   static create(config: any, context: WriterContext): WriterAgent {

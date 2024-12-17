@@ -2,9 +2,9 @@ import ThoughtAgent, {
   ThoughtAgentProps,
 } from "@src/shared/agents/ThoughtAgent";
 import { get_html } from "@src/shared/utils";
-import ThinkResult from "@src/shared/agents/ThinkResult";
+import ThinkResult from "@src/shared/agents/core/ThinkResult";
 import intl from "react-intl-universal";
-import ChatMessage from "@src/shared/agents/ChatMessage";
+import ChatMessage from "@src/shared/agents/core/ChatMessage";
 
 class UiTestAgent extends ThoughtAgent {
   constructor(props: ThoughtAgentProps) {

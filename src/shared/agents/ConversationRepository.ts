@@ -1,4 +1,4 @@
-import Conversation from "./Conversation";
+import Conversation from "./core/Conversation";
 
 interface ConversationRepository {
   save(conversation: Conversation): Promise<string>;

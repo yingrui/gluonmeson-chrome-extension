@@ -3,7 +3,7 @@ import SearchAgent from "./SearchAgent";
 import { ThoughtAgentProps } from "@src/shared/agents/ThoughtAgent";
 import intl from "react-intl-universal";
 import { locale } from "@src/shared/utils/i18n";
-import Conversation from "@src/shared/agents/Conversation";
+import Conversation from "@src/shared/agents/core/Conversation";
 
 class SearchAgentFactory {
   static create(config: any): SearchAgent {

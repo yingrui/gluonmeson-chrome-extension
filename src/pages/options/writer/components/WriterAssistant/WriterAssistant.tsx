@@ -16,7 +16,7 @@ import Message from "@src/shared/components/Message";
 
 import { delay } from "@src/shared/utils";
 import intl from "react-intl-universal";
-import ChatMessage from "@src/shared/agents/ChatMessage";
+import ChatMessage from "@src/shared/agents/core/ChatMessage";
 
 const { Sider } = Layout;
 

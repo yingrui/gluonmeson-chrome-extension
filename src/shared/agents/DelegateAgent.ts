@@ -1,10 +1,10 @@
-import Tool from "./Tool";
-import Agent from "./Agent";
-import Conversation from "./Conversation";
-import ThinkResult from "./ThinkResult";
+import Tool from "./core/Tool";
+import Agent from "./core/Agent";
+import Conversation from "./core/Conversation";
+import ThinkResult from "./core/ThinkResult";
 import BaseAgent from "./BaseAgent";
-import Environment from "./Environment";
-import ChatMessage from "./ChatMessage";
+import Environment from "./core/Environment";
+import ChatMessage from "./core/ChatMessage";
 
 /**
  * Delegation Agent

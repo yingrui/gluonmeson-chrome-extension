@@ -15,7 +15,7 @@ import LocalConversationRepository, {
 } from "@src/shared/repositories/LocalConversationRepository";
 import "./index.css";
 import intl from "react-intl-universal";
-import ChatMessage from "@src/shared/agents/ChatMessage";
+import ChatMessage from "@src/shared/agents/core/ChatMessage";
 
 interface ConversationsManagementProps {
   config: GluonConfigure;

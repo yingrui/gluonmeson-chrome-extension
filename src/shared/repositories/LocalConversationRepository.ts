@@ -1,6 +1,6 @@
 import ConversationRepository from "@src/shared/agents/ConversationRepository";
-import Conversation from "@src/shared/agents/Conversation";
-import ChatMessage from "@src/shared/agents/ChatMessage";
+import Conversation from "@src/shared/agents/core/Conversation";
+import ChatMessage from "@src/shared/agents/core/ChatMessage";
 
 interface ConversationRecord {
   key: string;

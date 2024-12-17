@@ -7,7 +7,7 @@ import SidePanel from "@pages/sidepanel/SidePanel";
 import AgentFactory from "./agents/AgentFactory";
 import { initI18n, locale } from "@src/shared/utils/i18n";
 import intl from "react-intl-universal";
-import ChatMessage from "@src/shared/agents/ChatMessage";
+import ChatMessage from "@src/shared/agents/core/ChatMessage";
 
 refreshOnUpdate("pages/sidepanel");
 

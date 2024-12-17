@@ -1,5 +1,5 @@
-import ChatMessage from "./ChatMessage";
-import ThinkResult from "./ThinkResult";
+import ChatMessage from "./core/ChatMessage";
+import ThinkResult from "./core/ThinkResult";
 import OpenAI from "openai";
 
 interface ModelService {

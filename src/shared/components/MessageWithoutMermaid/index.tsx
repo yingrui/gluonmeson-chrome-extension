@@ -4,10 +4,10 @@ import "./index.css";
 import CodeBlock from "@src/shared/components/MessageWithoutMermaid/MarkDownBlockWithoutMermaid/CodeBlock";
 import ReactMarkdown from "react-markdown";
 import copy from "copy-to-clipboard";
-import Interaction from "@src/shared/agents/Interaction";
+import Interaction from "@src/shared/agents/core/Interaction";
 import { useState } from "react";
-import ChatMessage from "@src/shared/agents/ChatMessage";
-import type { MessageContent } from "@src/shared/agents/ChatMessage";
+import ChatMessage from "@src/shared/agents/core/ChatMessage";
+import type { MessageContent } from "@src/shared/agents/core/ChatMessage";
 
 interface Props {
   index?: number;

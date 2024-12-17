@@ -4,10 +4,10 @@ import ThoughtAgent, {
 import { get_content } from "@src/shared/utils";
 import { ddg_search } from "@src/shared/utils/duckduckgo";
 import { stringToAsyncIterator } from "@src/shared/utils/streaming";
-import ThinkResult from "@src/shared/agents/ThinkResult";
+import ThinkResult from "@src/shared/agents/core/ThinkResult";
 import intl from "react-intl-universal";
-import Environment from "@src/shared/agents/Environment";
-import ChatMessage from "@src/shared/agents/ChatMessage";
+import Environment from "@src/shared/agents/core/Environment";
+import ChatMessage from "@src/shared/agents/core/ChatMessage";
 
 class GoogleAgent extends ThoughtAgent {
   constructor(props: ThoughtAgentProps) {
