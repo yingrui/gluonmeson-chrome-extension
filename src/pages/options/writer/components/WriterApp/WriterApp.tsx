@@ -14,7 +14,7 @@ interface WriterAppProps {
 
 const WriterApp: React.FC<WriterAppProps> = ({ config }) => {
   const context = new WriterContext(config);
-  const agent: WriterAgent = WriterAgentFactory.create(config, context);
+  const agent: WriterAgent = new WriterAgentFactory().create(config, context);
 
   return (
     <Layout>

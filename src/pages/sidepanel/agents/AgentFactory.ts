@@ -1,48 +1,28 @@
-import OpenAI from "openai";
-import ThoughtAgent, {
-  ThoughtAgentProps,
-} from "@src/shared/agents/ThoughtAgent";
+import ThoughtAgent from "@src/shared/agents/ThoughtAgent";
 import DelegateAgent from "@src/shared/agents/DelegateAgent";
 import GluonMesonAgent from "./GluonMesonAgent";
 import BACopilotAgent from "./BACopilotAgent";
 import TranslateAgent from "./TranslateAgent";
 import UiTestAgent from "./UiTestAgent";
 import GoogleAgent from "./GoogleAgent";
-import Conversation from "@src/shared/agents/core/Conversation";
 import Agent from "@src/shared/agents/core/Agent";
 import LocalConversationRepository from "@src/shared/repositories/LocalConversationRepository";
 import intl from "react-intl-universal";
 import ChatMessage from "@src/shared/agents/core/ChatMessage";
-import { locale } from "@src/shared/utils/i18n";
+import BaseAgentFactory from "@src/shared/configurers/BaseAgentFactory";
+import type { GluonConfigure } from "@src/shared/storages/gluonConfig";
 
-class AgentFactory {
-  static createGluonMesonAgent(
-    config: any,
-    initMessages: ChatMessage[],
-  ): Agent {
+class AgentFactory extends BaseAgentFactory {
+  create(config: GluonConfigure, initMessages: ChatMessage[]): Agent {
+    const props = this.thoughtAgentProps(config);
+
     const baCopilotKnowledgeApi = config.baCopilotKnowledgeApi ?? "";
     const baCopilotTechDescription = config.baCopilotTechDescription ?? "";
     const baCopilotApi = config.baCopilotApi ?? "";
     const apiKey = config.apiKey ?? "";
 
-    const repository = new LocalConversationRepository();
-
-    const client = new OpenAI({
-      apiKey: config.apiKey,
-      baseURL: config.baseURL,
-      organization: config.organization,
-      dangerouslyAllowBrowser: true,
-    });
-
-    const props: ThoughtAgentProps = {
-      modelName: config.defaultModel ?? "gpt-3.5-turbo",
-      toolsCallModel: config.toolsCallModel ?? null,
-      client: client,
-      language: intl.get(locale(config.language)).d("English"),
-      conversation: new Conversation(),
-      enableMultiModal: config.enableMultiModal ?? false,
-      enableReflection: config.enableReflection ?? false,
-    };
+    this.setInitMessages(initMessages);
+    this.setConversationRepository(new LocalConversationRepository());
 
     const agents: ThoughtAgent[] = [
       new GoogleAgent(props),
@@ -80,8 +60,8 @@ class AgentFactory {
       commands,
       props.conversation,
     );
-    delegateAgent.getConversation().set(initMessages);
-    delegateAgent.setConversationRepository(repository);
+
+    this.postCreateAgent(delegateAgent);
     return delegateAgent;
   }
 }

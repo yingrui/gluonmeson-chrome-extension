@@ -17,7 +17,7 @@ const SearchApp: React.FC<SearchAppProps> = ({
   query,
   onQueryChange,
 }) => {
-  const agent = SearchAgentFactory.create(config);
+  const agent = new SearchAgentFactory().create(config);
   return (
     <Layout className={"search-app"}>
       {!query && <SearchHome query={query} onQueryChange={onQueryChange} />}

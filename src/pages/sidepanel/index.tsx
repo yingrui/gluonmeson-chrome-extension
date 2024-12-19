@@ -44,7 +44,7 @@ function init() {
     initI18n(config.language).then(() => {
       const language = intl.get(locale(config.language)).d("English");
       const initMessages = getInitialMessages(language);
-      const agent = AgentFactory.createGluonMesonAgent(config, initMessages);
+      const agent = new AgentFactory().create(config, initMessages);
       const enableReflection = config.enableReflection ?? false;
       root.render(
         <SidePanel
