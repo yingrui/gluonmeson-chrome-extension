@@ -10,6 +10,7 @@ export type GluonConfigure = {
   organization: string;
   defaultModel: string;
   toolsCallModel: string;
+  multimodalModel: string;
   baCopilotKnowledgeApi: string;
   baCopilotApi: string;
   baCopilotTechDescription: string;
@@ -18,7 +19,7 @@ export type GluonConfigure = {
   enableReflection: boolean;
   enableWriting: boolean;
   enableHistoryRecording: boolean;
-  enableMultiModal: boolean;
+  enableMultimodal: boolean;
 };
 
 type ConfigureStorage = BaseStorage<GluonConfigure>;
@@ -27,8 +28,9 @@ export const DEFAULT_GM_CONFIG_VALUE = {
   apiKey: "",
   baseURL: "",
   organization: "",
-  defaultModel: "gpt-3.5-turbo",
-  toolsCallModel: "gpt-4-turbo",
+  defaultModel: "glm-4-plus",
+  toolsCallModel: "glm-4-plus",
+  multimodalModel: "glm-4v-plus",
   baCopilotKnowledgeApi: "",
   baCopilotApi: "",
   baCopilotTechDescription: "",
@@ -37,7 +39,7 @@ export const DEFAULT_GM_CONFIG_VALUE = {
   enableReflection: false,
   enableWriting: false,
   enableHistoryRecording: false,
-  enableMultiModal: false,
+  enableMultimodal: false,
 };
 
 const storage = createStorage<GluonConfigure>(

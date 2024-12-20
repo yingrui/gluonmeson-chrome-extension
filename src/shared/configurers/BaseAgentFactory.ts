@@ -27,7 +27,7 @@ class BaseAgentFactory {
       client: client,
       language: intl.get(locale(config.language)).d("English"),
       conversation: new Conversation(),
-      enableMultiModal: config.enableMultiModal ?? false,
+      enableMultimodal: config.enableMultimodal ?? false,
       enableReflection: config.enableReflection ?? false,
     };
 

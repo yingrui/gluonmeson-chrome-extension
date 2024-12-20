@@ -16,7 +16,7 @@ interface ThoughtAgentProps {
   client: OpenAI;
   language: string;
   conversation: Conversation;
-  enableMultiModal: boolean;
+  enableMultimodal: boolean;
   enableReflection: boolean;
 }
 

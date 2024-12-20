@@ -13,7 +13,7 @@ import ChatMessage from "@src/shared/agents/core/ChatMessage";
  * @extends {CompositeAgent} - Agent with tools
  */
 class GluonMesonAgent extends CompositeAgent {
-  enableMultiModal: boolean;
+  enableMultimodal: boolean;
 
   constructor(
     props: ThoughtAgentProps,
@@ -23,7 +23,7 @@ class GluonMesonAgent extends CompositeAgent {
   ) {
     super(props, name, description, agents);
 
-    this.enableMultiModal = props.enableMultiModal;
+    this.enableMultimodal = props.enableMultimodal;
     this.addTools();
   }
 
@@ -116,7 +116,7 @@ Please help user to beautify or complete the text with Markdown format.`;
    * @returns {Environment} Environment description
    */
   async environment(): Promise<Environment> {
-    const screenshot = this.enableMultiModal
+    const screenshot = this.enableMultimodal
       ? await this.getScreenshot()
       : undefined;
     const content = await get_content();

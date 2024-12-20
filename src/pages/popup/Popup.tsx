@@ -8,16 +8,17 @@ import configureStorage, {
 import useStorage from "@root/src/shared/hooks/useStorage";
 import intl from "react-intl-universal";
 
-const formItemLayout = {
-  labelCol: { span: 6 },
-  wrapperCol: { span: 18 },
-};
-
 const Popup = () => {
   const [modal, contextHolder] = Modal.useModal();
   const initData = useStorage(configureStorage);
   const [form] = Form.useForm();
   const locale = initData.language === "en" ? "en" : "zh";
+
+  // Form layout, total is 24.
+  const formItemLayout = {
+    labelCol: { span: locale === "zh" ? 6 : 7 },
+    wrapperCol: { span: locale === "zh" ? 18 : 17 },
+  };
 
   const onSaveSettings = async () => {
     const values = await form.validateFields();
@@ -86,13 +87,19 @@ const Popup = () => {
             name="defaultModel"
             label={intl.get("defaultModel").d("GPT Model")}
           >
-            <Input placeholder="please specify gpt model, eg. gpt-3.5-turbo" />
+            <Input placeholder="glm-4-plus" />
           </Form.Item>
           <Form.Item
             name="toolsCallModel"
             label={intl.get("toolsCallModel").d("Tools Call Model")}
           >
-            <Input placeholder="please specify tools call model, eg. gpt-4-turbo" />
+            <Input placeholder="glm-4-plus" />
+          </Form.Item>
+          <Form.Item
+            name="multimodalModel"
+            label={intl.get("multimodalModel").d("Multimodal Model")}
+          >
+            <Input placeholder="glm-4v-plus" />
           </Form.Item>
           <Form.Item name="language" label={intl.get("language").d("Language")}>
             <Select
@@ -151,8 +158,8 @@ const Popup = () => {
             <Switch />
           </Form.Item>
           <Form.Item
-            label={intl.get("enableMultiModal").d("Multi Modal")}
-            name="enableMultiModal"
+            label={intl.get("enableMultimodal").d("Multimodal")}
+            name="enableMultimodal"
             valuePropName="checked"
           >
             <Switch />
