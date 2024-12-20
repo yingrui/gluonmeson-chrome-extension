@@ -30,6 +30,12 @@ interface Agent {
   getConversation(): Conversation;
 
   /**
+   * Starting interaction
+   * @returns {Promise<void>} void
+   */
+  onStartInteraction(message: ChatMessage): Promise<void>;
+
+  /**
    * Receive message
    * @param result
    */

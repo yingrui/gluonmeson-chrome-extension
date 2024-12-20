@@ -143,7 +143,7 @@ class DelegateAgent extends BaseAgent {
     if (this.commands.find((c) => c.value === command)) {
       // TODO: need to consider change commands according to current agent
       this.currentAgent = this.initAgent; // reset to init agent
-      this.getConversation().appendMessage(message);
+      await this.onStartInteraction(message);
       return this.executeCommandWithUserInput(command, userInput);
     } else {
       return this.currentAgent.chat(message);

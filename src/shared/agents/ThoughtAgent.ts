@@ -109,7 +109,7 @@ class ThoughtAgent extends BaseAgent {
    * @async
    */
   async chat(message: ChatMessage): Promise<ThinkResult> {
-    this.conversation.appendMessage(message);
+    await this.onStartInteraction(message);
     const plan = await this.plan();
     if (plan.type === "actions") {
       return this.execute(plan.actions, this.conversation);
@@ -138,7 +138,7 @@ class ThoughtAgent extends BaseAgent {
   async plan(): Promise<ThinkResult> {
     const messages = this.conversation.getMessages();
     const interaction = this.conversation.getCurrentInteraction();
-    const env = await this.environment();
+    const env = this.getCurrentEnvironment();
     const systemMessage = new ChatMessage({
       role: "system",
       content: env.systemPrompt,

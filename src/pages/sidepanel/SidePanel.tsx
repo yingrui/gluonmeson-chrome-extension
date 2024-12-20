@@ -71,9 +71,9 @@ function SidePanel(props: Record<string, unknown>) {
       return;
     }
     const result = await generateReply(userInput, async () => {
-      agent
-        .getConversation()
-        .appendMessage(new ChatMessage({ role: "user", content: userInput }));
+      await agent.onStartInteraction(
+        new ChatMessage({ role: "user", content: userInput }),
+      );
       return agent.execute(
         [{ name: action, arguments: args }],
         agent.getConversation(),

@@ -10,8 +10,27 @@ abstract class BaseAgent implements Agent {
   private result: ThinkResult;
   private receiveStreamMessageListener: (msg: string) => void;
   private repo: ConversationRepository;
+  private currentEnvironment: Environment = null;
 
   protected constructor() {}
+
+  /**
+   * On start interaction:
+   *  1. append user message
+   *  2. perception environment
+   * @returns {void}
+   */
+  async onStartInteraction(message: ChatMessage): Promise<void> {
+    this.getConversation().appendMessage(message);
+    this.currentEnvironment = await this.environment(); // Perception
+  }
+
+  /**
+   * Get current environment
+   */
+  getCurrentEnvironment(): Environment {
+    return this.currentEnvironment;
+  }
 
   /**
    * Receive message
@@ -36,6 +55,7 @@ abstract class BaseAgent implements Agent {
       }
     }
     this.result = null; // reset result
+    this.currentEnvironment = null; // reset environment
 
     const chatMessage = new ChatMessage({
       role: "assistant",
