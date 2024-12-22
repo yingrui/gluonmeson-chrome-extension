@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import ChatMessage from "./ChatMessage";
+import Environment from "./Environment";
 
 class Interaction {
   private readonly uuid: string;
@@ -13,6 +14,7 @@ class Interaction {
   inputMessage: ChatMessage;
   inputMessageIndex: number;
   outputMessage?: ChatMessage;
+  environment?: Environment;
 
   listener: () => void;
 

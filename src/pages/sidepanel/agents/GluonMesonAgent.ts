@@ -6,15 +6,13 @@ import CompositeAgent from "@src/shared/agents/CompositeAgent";
 import { get_content } from "@src/shared/utils";
 import ThinkResult from "@src/shared/agents/core/ThinkResult";
 import Environment from "@src/shared/agents/core/Environment";
-import ChatMessage from "@src/shared/agents/core/ChatMessage";
+import ChatMessage, { imageContent } from "@src/shared/agents/core/ChatMessage";
 
 /**
  * GluonMeson Agent
  * @extends {CompositeAgent} - Agent with tools
  */
 class GluonMesonAgent extends CompositeAgent {
-  enableMultimodal: boolean;
-
   constructor(
     props: ThoughtAgentProps,
     name: string = "Guru",
@@ -22,8 +20,6 @@ class GluonMesonAgent extends CompositeAgent {
     agents: ThoughtAgent[] = [],
   ) {
     super(props, name, description, agents);
-
-    this.enableMultimodal = props.enableMultimodal;
     this.addTools();
   }
 
@@ -68,14 +64,21 @@ The user is reading an article: ${content.title}.
 The content text is: ${textContent}
 The links are: ${JSON.stringify(content.links)}`;
 
+    const userInput = this.get(
+      args,
+      "userInput",
+      `please summary the content in ${this.language}`,
+    );
+    const screenshot = this.getCurrentEnvironment().screenshot;
+    const replaceUserInput = this.enableMultimodal
+      ? imageContent(userInput, screenshot)
+      : textContent(userInput);
     return await this.chatCompletion(
       messages,
       prompt,
-      this.get(
-        args,
-        "userInput",
-        `please summary the content in ${this.language}`,
-      ),
+      replaceUserInput,
+      true,
+      this.enableMultimodal,
     );
   }
 
@@ -142,10 +145,8 @@ The links are: ${JSON.stringify(content.links)}`,
   }
 
   private async getScreenshot(): Promise<string> {
-    console.log("get screenshot");
     return new Promise<string>((resolve, reject) => {
       chrome.tabs.captureVisibleTab(null, (dataUrl) => {
-        console.log(dataUrl);
         resolve(dataUrl);
       });
     });

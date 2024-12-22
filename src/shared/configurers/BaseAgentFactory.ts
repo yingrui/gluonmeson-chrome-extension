@@ -22,8 +22,9 @@ class BaseAgentFactory {
     });
 
     const props: ThoughtAgentProps = {
-      modelName: config.defaultModel ?? "gpt-3.5-turbo",
+      modelName: config.defaultModel ?? "glm-4-plus",
       toolsCallModel: config.toolsCallModel ?? null,
+      multimodalModel: config.multimodalModel ?? null,
       client: client,
       language: intl.get(locale(config.language)).d("English"),
       conversation: new Conversation(),

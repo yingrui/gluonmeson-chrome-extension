@@ -66,6 +66,10 @@ class DelegateAgent extends BaseAgent {
     return await this.currentAgent.execute(actions, conversation);
   }
 
+  public onStartInteraction(message: ChatMessage): Promise<void> {
+    return this.currentAgent.onStartInteraction(message);
+  }
+
   public async environment(): Promise<Environment> {
     return await this.currentAgent.environment();
   }

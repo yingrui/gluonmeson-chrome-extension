@@ -35,5 +35,19 @@ class ChatMessage {
   }
 }
 
+export function textContent(content: string): MessageContent[] {
+  return [{ type: "text", text: content }];
+}
+
+export function imageContent(
+  content: string,
+  screenshot: string,
+): MessageContent[] {
+  return [
+    { type: "text", text: content },
+    { type: "image_url", image_url: { url: screenshot } },
+  ];
+}
+
 export default ChatMessage;
 export type { MessageProps, MessageContent };

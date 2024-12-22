@@ -4,7 +4,10 @@ import ThoughtAgent, {
 import { get_html } from "@src/shared/utils";
 import ThinkResult from "@src/shared/agents/core/ThinkResult";
 import intl from "react-intl-universal";
-import ChatMessage from "@src/shared/agents/core/ChatMessage";
+import ChatMessage, {
+  imageContent,
+  textContent,
+} from "@src/shared/agents/core/ChatMessage";
 
 class UiTestAgent extends ThoughtAgent {
   constructor(props: ThoughtAgentProps) {
@@ -51,12 +54,15 @@ Please generate cypress e2e test according to user instruction: ${userInput}
 The webpage html is below:
 ${html}`;
 
+    const screenshot = this.getCurrentEnvironment().screenshot;
+    const instruct = "please generate cypress test:";
+    const content = this.enableMultimodal
+      ? imageContent(instruct, screenshot)
+      : textContent(instruct);
+
     return await this.chatCompletion([
       new ChatMessage({ role: "system", content: prompt }),
-      new ChatMessage({
-        role: "user",
-        content: `please generate cypress test:`,
-      }),
+      new ChatMessage({ role: "user", content: content }),
     ]);
   }
 }

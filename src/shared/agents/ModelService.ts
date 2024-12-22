@@ -39,6 +39,7 @@ interface ModelService {
   chatCompletion(
     messages: ChatMessage[],
     stream: boolean,
+    useMultimodal: boolean,
   ): Promise<ThinkResult>;
 
   /**

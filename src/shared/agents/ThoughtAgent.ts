@@ -13,6 +13,7 @@ import DefaultModelService from "./DefaultModelService";
 interface ThoughtAgentProps {
   modelName: string;
   toolsCallModel: string;
+  multimodalModel: string;
   client: OpenAI;
   language: string;
   conversation: Conversation;
@@ -22,6 +23,7 @@ interface ThoughtAgentProps {
 
 class ThoughtAgent extends BaseAgent {
   language: string;
+  protected readonly enableMultimodal: boolean;
   private readonly tools: Tool[] = [];
   private readonly name: string;
   private readonly description: string;
@@ -34,7 +36,14 @@ class ThoughtAgent extends BaseAgent {
     description: string = "Guru",
   ) {
     super();
-    const { modelName, toolsCallModel, client, language, conversation } = props;
+    const {
+      modelName,
+      toolsCallModel,
+      multimodalModel,
+      client,
+      language,
+      conversation,
+    } = props;
     this.language = language;
     this.name = name;
     this.description = description;
@@ -43,7 +52,9 @@ class ThoughtAgent extends BaseAgent {
       client,
       modelName,
       toolsCallModel,
+      multimodalModel,
     });
+    this.enableMultimodal = props.enableMultimodal;
   }
 
   getName(): string {
@@ -301,10 +312,6 @@ Choose the best action to execute, or generate new answer, or suggest more quest
     return { name: "reply", arguments: { content } } as Action;
   }
 
-  private chatAction(userInput: string | MessageContent[]): Action {
-    return { name: "chat", arguments: { userInput: userInput } } as Action;
-  }
-
   /**
    * Chat completion
    * @param {ChatMessage[]} messages - Messages
@@ -339,7 +346,15 @@ Choose the best action to execute, or generate new answer, or suggest more quest
       messages = [...messages.slice(0, messages.length - 1), userMessage];
     }
 
-    return await this.modelService.chatCompletion(messages, stream);
+    return await this.modelService.chatCompletion(
+      messages,
+      stream,
+      this.enableMultimodal,
+    );
+  }
+
+  private chatAction(userInput: string | MessageContent[]): Action {
+    return { name: "chat", arguments: { userInput: userInput } } as Action;
   }
 
   /**
