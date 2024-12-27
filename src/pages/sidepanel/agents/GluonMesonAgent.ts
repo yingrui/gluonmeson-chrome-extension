@@ -73,13 +73,7 @@ The links are: ${JSON.stringify(content.links)}`;
     const replaceUserInput = this.enableMultimodal
       ? imageContent(userInput, screenshot)
       : textContent(userInput);
-    return await this.chatCompletion(
-      messages,
-      prompt,
-      replaceUserInput,
-      true,
-      this.enableMultimodal,
-    );
+    return await this.chatCompletion(messages, prompt, replaceUserInput, true);
   }
 
   private get(args: object, key: string, defaultValue: string): string {

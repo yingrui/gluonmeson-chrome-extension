@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Button, Layout, Menu } from "antd";
 import type { MenuProps } from "antd";
+import { Button, Layout, Menu } from "antd";
 
 import {
   MenuFoldOutlined,
@@ -12,8 +12,7 @@ import type { GluonConfigure } from "@src/shared/storages/gluonConfig";
 
 import "./index.css";
 import intl from "react-intl-universal";
-import ElevatorPitch from "@pages/options/architect/components/ElevatorPitch";
-import ArchitectContext from "@pages/options/architect/context/ArchitectContext";
+import ElevatorPitchApp from "@pages/options/architect/components/ElevatorPitchApp";
 
 const { Sider } = Layout;
 
@@ -24,8 +23,6 @@ interface ArchitectAppProps {
 const ArchitectApp: React.FC<ArchitectAppProps> = ({ config }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState<string>("lv1_1_1");
-
-  const context = new ArchitectContext(config);
 
   const menuItems: MenuProps["items"] = [
     {
@@ -84,7 +81,7 @@ const ArchitectApp: React.FC<ArchitectAppProps> = ({ config }) => {
       </Sider>
       <Layout>
         {selectedKey === "lv1_1_1" && (
-          <ElevatorPitch context={context}></ElevatorPitch>
+          <ElevatorPitchApp config={config}></ElevatorPitchApp>
         )}
       </Layout>
     </Layout>
