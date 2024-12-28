@@ -6,7 +6,10 @@ import CompositeAgent from "@src/shared/agents/CompositeAgent";
 import { get_content } from "@src/shared/utils";
 import ThinkResult from "@src/shared/agents/core/ThinkResult";
 import Environment from "@src/shared/agents/core/Environment";
-import ChatMessage, { imageContent } from "@src/shared/agents/core/ChatMessage";
+import ChatMessage, {
+  imageContent,
+  textContent,
+} from "@src/shared/agents/core/ChatMessage";
 
 /**
  * GluonMeson Agent
@@ -52,7 +55,7 @@ Reply sorry and ask user to refresh webpage, so you can get information from web
     if (!content) return this.handleCannotGetContentError();
 
     const maxContentLength = 100 * 1024;
-    const textContent =
+    const text =
       content.text.length > maxContentLength
         ? content.text.slice(0, maxContentLength)
         : content.text;
@@ -61,7 +64,7 @@ Reply sorry and ask user to refresh webpage, so you can get information from web
 Please summarize the content in: ${this.language}, and consider the language of user input.
 The output should be short & clear, and in markdown format, if it need be diagram, please use mermaid format.
 The user is reading an article: ${content.title}.
-The content text is: ${textContent}
+The content text is: ${text}
 The links are: ${JSON.stringify(content.links)}`;
 
     const userInput = this.get(
@@ -119,7 +122,7 @@ Please help user to beautify or complete the text with Markdown format.`;
     const content = await get_content();
     const maxContentLength = 100 * 1024;
     if (content) {
-      const textContent =
+      const text =
         content.text.length > maxContentLength
           ? content.text.slice(0, maxContentLength)
           : content.text;
@@ -129,7 +132,7 @@ You're an assistant and good at data extraction, data analysis, summarization, w
 Please decide to call different tools or directly answer questions in ${this.language}, and consider the language of user input, should not add assistant in answer.
 Output format should be in markdown format, and use mermaid format for diagram generation.
 Current user is viewing the page: ${content.title}, the url is ${content.url}, the content is:
-${textContent}.
+${text}.
 The links are: ${JSON.stringify(content.links)}`,
         screenshot,
       };
