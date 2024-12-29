@@ -29,6 +29,8 @@ function CodeBlock(props: HTMLAttributes<HTMLElement> & { loading?: boolean }) {
           PreTag="div"
           language={match[1]}
           style={coy}
+          wrapLines={true}
+          wrapLongLines={true}
         >
           {text}
         </SyntaxHighlighter>
