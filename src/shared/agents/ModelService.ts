@@ -34,12 +34,15 @@ interface ModelService {
    * Chat completion
    * @param {ChatMessage[]} messages - Messages
    * @param {bool} stream - Stream
+   * @param {bool} useMultimodal - Use multimodal
+   * @param {string} responseType - Response type
    * @returns {Promise<ThinkResult>} ThinkResult
    */
   chatCompletion(
     messages: ChatMessage[],
     stream: boolean,
     useMultimodal: boolean,
+    responseType: "text" | "json_object",
   ): Promise<ThinkResult>;
 
   /**

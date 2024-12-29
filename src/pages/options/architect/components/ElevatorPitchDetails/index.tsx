@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { Button, Form, Input, Layout, message } from "antd";
+import { Button, Form, Input, Layout, message, Modal } from "antd";
 
 import "./index.css";
 import intl from "react-intl-universal";
-import ElevatorPitchContext from "@pages/options/architect/context/ElevatorPitchContext";
+import ElevatorPitchContext, {
+  ElevatorPitchRecord,
+} from "@pages/options/architect/context/ElevatorPitchContext";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
@@ -14,10 +16,12 @@ const remarkPlugins = [remarkGfm];
 
 interface ElevatorPitchDetailsProps {
   context: ElevatorPitchContext;
+  onElevatorPitchChanged: () => void;
 }
 
 const ElevatorPitchDetails: React.FC<ElevatorPitchDetailsProps> = ({
   context,
+  onElevatorPitchChanged,
 }) => {
   const [details, setDetails] = useState<string>(
     context.getElevatorPitch().details,
@@ -31,11 +35,26 @@ const ElevatorPitchDetails: React.FC<ElevatorPitchDetailsProps> = ({
   const [generatedElevatorPitch, setGeneratedElevatorPitch] = useState<string>(
     context.getElevatorPitch().generatedElevatorPitch,
   );
+  const [modal, contextHolder] = Modal.useModal();
 
   const formItemLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 24 },
   };
+
+  function parseGeneratedElevatorPitch() {
+    try {
+      const record = JSON.parse(generatedElevatorPitch) as ElevatorPitchRecord;
+      context.updateElevatorPitch(record);
+    } catch (e) {
+      modal.error({
+        title: intl.get("elevator_pitch_json_error").d("JSON Error"),
+        content: intl
+          .get("elevator_pitch_json_error_message")
+          .d("Cannot parse JSON, please regenerate."),
+      });
+    }
+  }
 
   const handleSave = async () => {
     await context.saveElevatorPitch(
@@ -47,7 +66,11 @@ const ElevatorPitchDetails: React.FC<ElevatorPitchDetailsProps> = ({
   };
 
   const handleUpdate = async () => {
-    // Convert the elevator pitch to json format, and then update the elevator pitch on screen
+    // Parse elevator pitch to json object, and then update the elevator pitch on screen
+    if (generatedElevatorPitch) {
+      parseGeneratedElevatorPitch();
+      onElevatorPitchChanged();
+    }
   };
 
   const handleSubmit = async () => {
@@ -133,10 +156,9 @@ const ElevatorPitchDetails: React.FC<ElevatorPitchDetailsProps> = ({
         <ReactMarkdown
           rehypePlugins={rehypePlugins as any}
           remarkPlugins={remarkPlugins as any}
-        >
-          {generatedElevatorPitch}
-        </ReactMarkdown>
+        >{`\`\`\`json\n${generatedElevatorPitch}\`\`\``}</ReactMarkdown>
       </div>
+      {contextHolder}
     </Layout>
   );
 };

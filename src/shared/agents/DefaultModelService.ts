@@ -6,6 +6,7 @@ import ThinkResult from "./core/ThinkResult";
 import OpenAI from "openai";
 import {
   ChatCompletion,
+  ChatCompletionCreateParams,
   ChatCompletionCreateParamsBase,
 } from "openai/src/resources/chat/completions";
 
@@ -46,6 +47,7 @@ class DefaultModelService implements ModelService {
     messages: ChatMessage[],
     stream: boolean,
     useMultimodal: boolean = false,
+    responseType: "text" | "json_object" = "text",
   ): Promise<ThinkResult> {
     const body: ChatCompletionCreateParamsBase = {
       messages: this.formatMessageContent(
@@ -53,6 +55,9 @@ class DefaultModelService implements ModelService {
       ) as OpenAI.ChatCompletionMessageParam[],
       model: useMultimodal ? this.multimodalModel : this.modelName,
       stream: stream,
+      response_format: {
+        type: responseType,
+      } as ChatCompletionCreateParams.ResponseFormat,
     };
 
     if (!useMultimodal) {

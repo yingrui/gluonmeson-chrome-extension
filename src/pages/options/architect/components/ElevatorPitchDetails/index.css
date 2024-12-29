@@ -19,3 +19,8 @@
   padding: 8px;
   overflow: auto;
 }
+
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}

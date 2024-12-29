@@ -31,6 +31,19 @@ You're solution architect, you're designing a product, and you're thinking the p
 * Unlike: primary competitive alternative
 * Our product: statement of primary differentiation
 
+### JSON Format
+\`\`\`json
+{
+  "customer": "target customer",
+  "problem": "statement of the need, pain point or opportunity",
+  "productName": "product name",
+  "productType": "what kind of product type (platform? tool?)",
+  "functionality": "key benefit, compelling reason to use",
+  "competitors": "primary competitive alternative",
+  "differentiation": "statement of primary differentiation"
+}
+\`\`\`
+
 ## More Instructions or Details about Product
 ${productDetails}
 
@@ -43,15 +56,21 @@ ${elevatorPitch}
 ## User Input, they may provide some feedbacks or requirements
 ${feedback}
 `;
-    return await this.chatCompletion([
-      new ChatMessage({ role: "system", content: prompt }),
-      new ChatMessage({
-        role: "user",
-        content:
-          userInput ??
-          `please generate product elevator pitch in ${this.language}:`,
-      }),
-    ]);
+    return await this.chatCompletion(
+      [
+        new ChatMessage({ role: "system", content: prompt }),
+        new ChatMessage({
+          role: "user",
+          content:
+            userInput ??
+            `please generate product elevator pitch in ${this.language}:`,
+        }),
+      ],
+      "",
+      "",
+      true,
+      "json_object",
+    );
   }
 }
 

@@ -8,18 +8,19 @@ import type { ElevatorPitchRecord } from "@pages/options/architect/entities/Elev
 
 const { TextArea } = Input;
 
-interface ElevatorPitchEditorProps {
+interface ElevatorPitchPreviewProps {
   context: ElevatorPitchContext;
-  elevatorPitchRecord: ElevatorPitchRecord;
-  onElevatorPitchChanged: () => void;
+  onEdit: () => void;
 }
 
-const ElevatorPitchEditor: React.FC<ElevatorPitchEditorProps> = ({
+const ElevatorPitchPreview: React.FC<ElevatorPitchPreviewProps> = ({
   context,
-  elevatorPitchRecord,
-  onElevatorPitchChanged,
+  onEdit,
 }) => {
-  const [elevatorPitch, setElevatorPitch] = useState<ElevatorPitchRecord>(
+  const elevatorPitch = context.getElevatorPitchRecord();
+  console.log("Elevator Pitch Editor Rendering1:", elevatorPitch);
+  console.log(
+    "Elevator Pitch Editor Rendering2:",
     context.getElevatorPitchRecord(),
   );
 
@@ -28,20 +29,8 @@ const ElevatorPitchEditor: React.FC<ElevatorPitchEditorProps> = ({
     wrapperCol: { span: 24 },
   };
 
-  const handleInputChange = async (
-    field: keyof ElevatorPitchRecord,
-    value: string,
-  ) => {
-    setElevatorPitch({ ...elevatorPitch, [field]: value });
-  };
-
-  const handleSubmit = () => {
-    context.updateElevatorPitch(elevatorPitch);
-    onElevatorPitchChanged();
-  };
-
   return (
-    <Layout className={"elevator-pitch-editor"}>
+    <Layout className={"elevator-pitch-preview"}>
       <h2>
         {intl
           .get("options_app_architect_items_elevator_pitch")
@@ -53,7 +42,7 @@ const ElevatorPitchEditor: React.FC<ElevatorPitchEditorProps> = ({
           <TextArea
             rows={2}
             value={elevatorPitch?.customer}
-            onChange={(e) => handleInputChange("customer", e.target.value)}
+            disabled
             placeholder={intl
               .get("elevator_pitch_customer_placeholder")
               .d("target customer")}
@@ -63,7 +52,7 @@ const ElevatorPitchEditor: React.FC<ElevatorPitchEditorProps> = ({
           <TextArea
             rows={2}
             value={elevatorPitch?.problem}
-            onChange={(e) => handleInputChange("problem", e.target.value)}
+            disabled
             placeholder={intl
               .get("elevator_pitch_problem_placeholder")
               .d("statement of the need or opportunity")}
@@ -73,7 +62,7 @@ const ElevatorPitchEditor: React.FC<ElevatorPitchEditorProps> = ({
           <TextArea
             rows={2}
             value={elevatorPitch?.productName}
-            onChange={(e) => handleInputChange("productName", e.target.value)}
+            disabled
             placeholder={intl
               .get("elevator_pitch_product_placeholder")
               .d("product name")}
@@ -83,7 +72,7 @@ const ElevatorPitchEditor: React.FC<ElevatorPitchEditorProps> = ({
           <TextArea
             rows={2}
             value={elevatorPitch?.productType}
-            onChange={(e) => handleInputChange("productType", e.target.value)}
+            disabled
             placeholder={intl
               .get("elevator_pitch_product_type_placeholder")
               .d("product type")}
@@ -93,7 +82,7 @@ const ElevatorPitchEditor: React.FC<ElevatorPitchEditorProps> = ({
           <TextArea
             rows={2}
             value={elevatorPitch?.functionality}
-            onChange={(e) => handleInputChange("functionality", e.target.value)}
+            disabled
             placeholder={intl
               .get("elevator_pitch_functionality_placeholder")
               .d("key benefit, compelling reason to use")}
@@ -103,7 +92,7 @@ const ElevatorPitchEditor: React.FC<ElevatorPitchEditorProps> = ({
           <TextArea
             rows={2}
             value={elevatorPitch?.competitors}
-            onChange={(e) => handleInputChange("competitors", e.target.value)}
+            disabled
             placeholder={intl
               .get("elevator_pitch_competitors_placeholder")
               .d("primary competitive alternative")}
@@ -115,9 +104,7 @@ const ElevatorPitchEditor: React.FC<ElevatorPitchEditorProps> = ({
           <TextArea
             rows={2}
             value={elevatorPitch?.differentiation}
-            onChange={(e) =>
-              handleInputChange("differentiation", e.target.value)
-            }
+            disabled
             placeholder={intl
               .get("elevator_pitch_differentiation_placeholder")
               .d("statement of primary differentiation")}
@@ -125,12 +112,12 @@ const ElevatorPitchEditor: React.FC<ElevatorPitchEditorProps> = ({
         </Form.Item>
       </Form>
       <div className={"form-submit-buttons"}>
-        <Button type="primary" onClick={handleSubmit}>
-          {intl.get("preview").d("Preview")}
+        <Button type="primary" onClick={onEdit}>
+          {intl.get("edit").d("Edit")}
         </Button>
       </div>
     </Layout>
   );
 };
 
-export default ElevatorPitchEditor;
+export default ElevatorPitchPreview;

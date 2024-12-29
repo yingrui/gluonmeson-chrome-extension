@@ -29,7 +29,7 @@ class ElevatorPitchContext {
   }
 
   getElevatorPitchRecord() {
-    return this.elevatorPitch.record;
+    return this.elevatorPitch?.record;
   }
 
   getElevatorPitchAgent() {
@@ -52,7 +52,17 @@ class ElevatorPitchContext {
       feedback: feedback,
       generatedElevatorPitch: generatedElevatorPitch,
     };
+    console.log("Saving elevator pitch:", record);
     await this.elevatorPitchRepository.save(record);
+  }
+
+  updateElevatorPitch(record: ElevatorPitchRecord) {
+    this.elevatorPitch.record = record;
+    console.log("Updating elevator pitch:", this.elevatorPitch.record);
+  }
+
+  async save() {
+    await this.elevatorPitchRepository.save(this.elevatorPitch);
   }
 }
 

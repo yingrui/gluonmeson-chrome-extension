@@ -325,6 +325,7 @@ Choose the best action to execute, or generate new answer, or suggest more quest
     systemPrompt: string = "",
     replaceUserInput: string | MessageContent[] = "",
     stream: boolean = true,
+    responseType: "text" | "json_object" = "text",
   ): Promise<ThinkResult> {
     if (systemPrompt && messages.length > 0 && messages[0].role === "system") {
       const systemMessage = new ChatMessage({
@@ -350,6 +351,7 @@ Choose the best action to execute, or generate new answer, or suggest more quest
       messages,
       stream,
       this.enableMultimodal,
+      responseType,
     );
   }
 
