@@ -33,12 +33,11 @@ const ElevatorPitchApp: React.FC<ElevatorPitchProps> = ({ config }) => {
     return <div>Loading...</div>;
   }
 
-  function onElevatorPitchChanged() {
+  async function onElevatorPitchChanged() {
     const context = contextRef.current;
-    console.log("Elevator Pitch Changed:", context.getElevatorPitchRecord());
     setElevatorPitch(context.getElevatorPitchRecord());
     setEditing(false);
-    context.save();
+    await context.save();
   }
 
   return (
