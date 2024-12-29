@@ -140,3 +140,8 @@
 .markdown tbody tr:last-child td:last-child {
   border-bottom-right-radius: .375rem
 }
+
+.message-content pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
