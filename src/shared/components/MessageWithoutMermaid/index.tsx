@@ -5,11 +5,11 @@ import CodeBlock from "@src/shared/components/MessageWithoutMermaid/MarkDownBloc
 import ReactMarkdown from "react-markdown";
 import copy from "copy-to-clipboard";
 import Interaction from "@src/shared/agents/core/Interaction";
-import { useState } from "react";
+import React, { useState } from "react";
 import ChatMessage from "@src/shared/agents/core/ChatMessage";
 import type { MessageContent } from "@src/shared/agents/core/ChatMessage";
 
-interface Props {
+interface MessageProps {
   index?: number;
   role: ChatMessage["role"];
   content: string | MessageContent[];
@@ -21,7 +21,7 @@ interface Props {
 const rehypePlugins = [];
 const remarkPlugins = [];
 
-const Message = (props: Props) => {
+const Message: React.FC<MessageProps> = React.memo((props: MessageProps) => {
   const { index, role, content, loading, name, interaction } = props;
   const isAssistant = role === "assistant";
   const [statusMessage, setStatusMessage] = useState<string>(
@@ -89,6 +89,8 @@ const Message = (props: Props) => {
       )}
     </div>
   );
-};
+});
+
+Message.displayName = "Message";
 
 export default Message;
