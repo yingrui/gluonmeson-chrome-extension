@@ -8,6 +8,7 @@ import {
   ChatCompletion,
   ChatCompletionCreateParams,
   ChatCompletionCreateParamsBase,
+  ChatCompletionMessageParam,
 } from "openai/src/resources/chat/completions";
 
 interface ModelServiceProps {
@@ -23,12 +24,7 @@ class DefaultModelService implements ModelService {
   toolsCallModel: string;
   multimodalModel: string;
   modelProviders: string[] = ["ZhipuAI", "OpenAI"];
-  supportedModels: string[] = [
-    "glm-4-plus",
-    "glm-4v-plus",
-    "gpt-3.5-turbo",
-    "gpt-4-turbo",
-  ];
+  supportedModels: string[] = ["glm-4-plus", "glm-4v-plus"];
   maxTokens: number = 4096;
 
   constructor(props: ModelServiceProps) {
@@ -49,11 +45,13 @@ class DefaultModelService implements ModelService {
     useMultimodal: boolean = false,
     responseType: "text" | "json_object" = "text",
   ): Promise<ThinkResult> {
+    const model = useMultimodal ? this.multimodalModel : this.modelName;
     const body: ChatCompletionCreateParamsBase = {
       messages: this.formatMessageContent(
         messages,
-      ) as OpenAI.ChatCompletionMessageParam[],
-      model: useMultimodal ? this.multimodalModel : this.modelName,
+        model,
+      ) as ChatCompletionMessageParam[],
+      model: model,
       stream: stream,
       response_format: {
         type: responseType,
@@ -79,8 +77,11 @@ class DefaultModelService implements ModelService {
    * @returns messages
    * @private
    */
-  private formatMessageContent(messages: ChatMessage[]) {
-    if (this.isMultimodalModel(this.multimodalModel)) {
+  private formatMessageContent(
+    messages: ChatMessage[],
+    model: string,
+  ): ChatMessage[] {
+    if (this.isMultimodalModel(model)) {
       if (this.includeStringContent(messages)) {
         return messages.map((msg) => {
           let content = msg.content;
