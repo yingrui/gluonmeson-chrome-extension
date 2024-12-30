@@ -146,7 +146,7 @@ function SidePanel(props: Record<string, unknown>) {
   async function reflection() {
     const actions = await agent.reflection();
     if (actions && actions.length > 0) {
-      generateReply("", () => agent.execute(actions, agent.getConversation()));
+      generateReply("", () => agent.execute(actions));
     }
   }
 

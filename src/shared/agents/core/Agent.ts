@@ -63,10 +63,9 @@ interface Agent {
   /**
    * Execute
    * @param {Action[]} actions - Actions
-   * @param {Conversation} conversation - Conversation
    * @returns {Promise<ThinkResult>} ChatCompletion
    */
-  execute(actions: Action[], conversation: Conversation): Promise<ThinkResult>;
+  execute(actions: Action[]): Promise<ThinkResult>;
 
   /**
    * Execute command

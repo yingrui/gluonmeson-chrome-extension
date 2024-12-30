@@ -106,9 +106,9 @@ class ThoughtAgent extends BaseAgent {
     await this.onStartInteraction(message);
     const plan = await this.plan();
     if (plan.type === "actions") {
-      return this.execute(plan.actions, this.conversation);
+      return this.execute(plan.actions);
     } else if (plan.type === "message") {
-      return this.execute([this.replyAction(plan.message)], this.conversation);
+      return this.execute([this.replyAction(plan.message)]);
     } else if (plan.type === "stream") {
       return plan;
     }
@@ -223,13 +223,9 @@ Choose the best action to execute, or generate new answer, or suggest more quest
   /**
    * Execute
    * @param {Action[]} actions - Actions
-   * @param {Conversation} conversation - Conversation
    * @returns {Promise<ThinkResult>} ChatCompletion
    */
-  async execute(
-    actions: Action[],
-    conversation: Conversation,
-  ): Promise<ThinkResult> {
+  async execute(actions: Action[]): Promise<ThinkResult> {
     const refinedActions = this.trackingDialogueState(actions);
 
     const interaction = this.conversation.getCurrentInteraction();
@@ -247,7 +243,7 @@ Choose the best action to execute, or generate new answer, or suggest more quest
     if (action === "chat") {
       const env = await this.environment();
       return this.chatCompletion(
-        conversation.getMessages(),
+        this.conversation.getMessages(),
         env.systemPrompt,
         args["userInput"],
       );
@@ -263,13 +259,16 @@ Choose the best action to execute, or generate new answer, or suggest more quest
     for (const member of this.getMemberOfSelf()) {
       if (member === action && typeof this[member] === "function") {
         // TODO: need to verify if arguments of function are correct
-        return this[member].apply(this, [args, conversation.getMessages()]);
+        return this[member].apply(this, [
+          args,
+          this.conversation.getMessages(),
+        ]);
       }
     }
 
     // If could not find the action by function name,
     // then agent should implement executeAction method.
-    return this.executeAction(action, args, conversation);
+    return this.executeAction(action, args, this.conversation);
   }
 
   private getMemberOfSelf(): string[] {

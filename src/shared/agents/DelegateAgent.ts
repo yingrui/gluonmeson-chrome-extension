@@ -66,11 +66,8 @@ class DelegateAgent extends BaseAgent {
     return this.currentAgent.executeCommand(actions, message);
   }
 
-  public async execute(
-    actions: Action[],
-    conversation: Conversation,
-  ): Promise<ThinkResult> {
-    return await this.currentAgent.execute(actions, conversation);
+  public async execute(actions: Action[]): Promise<ThinkResult> {
+    return await this.currentAgent.execute(actions);
   }
 
   public async environment(): Promise<Environment> {

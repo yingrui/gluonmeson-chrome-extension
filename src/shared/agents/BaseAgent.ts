@@ -136,10 +136,7 @@ abstract class BaseAgent implements Agent {
    * @param {Conversation} conversation - Conversation
    * @returns {Promise<ThinkResult>} ChatCompletion
    */
-  abstract execute(
-    actions: Action[],
-    conversation: Conversation,
-  ): Promise<ThinkResult>;
+  abstract execute(actions: Action[]): Promise<ThinkResult>;
 
   /**
    * Execute
@@ -152,7 +149,7 @@ abstract class BaseAgent implements Agent {
     message: ChatMessage,
   ): Promise<ThinkResult> {
     await this.onStartInteraction(message);
-    return await this.execute(actions, this.getConversation());
+    return await this.execute(actions);
   }
 
   /**

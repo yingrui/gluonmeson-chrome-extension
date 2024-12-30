@@ -60,13 +60,13 @@ class WriterAgent extends ThoughtAgent {
     for (const tool of this.getTools()) {
       if (tool.name === command) {
         args["userInput"] = userInput;
-        return this.execute(
+        return this.executeCommand(
           [{ name: command, arguments: args }],
-          this.getConversation(),
+          new ChatMessage({ role: "user", content: userInput }),
         );
       }
     }
-    return this.execute([], this.getConversation());
+    return this.execute([]);
   }
 
   public getCommandOptions(): CommandOption[] {
