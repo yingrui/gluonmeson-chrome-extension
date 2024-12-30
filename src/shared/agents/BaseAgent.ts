@@ -17,9 +17,13 @@ abstract class BaseAgent implements Agent {
    * On start interaction:
    *  1. append user message
    *  2. perception environment
+   *
+   * There are two ways to call this method:
+   *  1. When calling the chat method
+   *  2. When calling the executeCommand method
    * @returns {void}
    */
-  async onStartInteraction(message: ChatMessage): Promise<void> {
+  protected async onStartInteraction(message: ChatMessage): Promise<void> {
     this.getConversation().appendMessage(message);
     const env = await this.environment(); // Perception
     this.getConversation().getCurrentInteraction().environment = env;
@@ -136,6 +140,20 @@ abstract class BaseAgent implements Agent {
     actions: Action[],
     conversation: Conversation,
   ): Promise<ThinkResult>;
+
+  /**
+   * Execute
+   * @param {Action[]} actions - Actions
+   * @param {Conversation} conversation - Conversation
+   * @returns {Promise<ThinkResult>} ChatCompletion
+   */
+  async executeCommand(
+    actions: Action[],
+    message: ChatMessage,
+  ): Promise<ThinkResult> {
+    await this.onStartInteraction(message);
+    return await this.execute(actions, this.getConversation());
+  }
 
   /**
    * Chat with user

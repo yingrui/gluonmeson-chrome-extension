@@ -30,12 +30,6 @@ interface Agent {
   getConversation(): Conversation;
 
   /**
-   * Starting interaction
-   * @returns {Promise<void>} void
-   */
-  onStartInteraction(message: ChatMessage): Promise<void>;
-
-  /**
    * Receive message
    * @param result
    */
@@ -73,6 +67,14 @@ interface Agent {
    * @returns {Promise<ThinkResult>} ChatCompletion
    */
   execute(actions: Action[], conversation: Conversation): Promise<ThinkResult>;
+
+  /**
+   * Execute command
+   * @param {Action[]} actions - Actions
+   * @param {Conversation} conversation - Conversation
+   * @returns {Promise<ThinkResult>} ChatCompletion
+   */
+  executeCommand(actions: Action[], message: ChatMessage): Promise<ThinkResult>;
 
   /**
    * Chat with user

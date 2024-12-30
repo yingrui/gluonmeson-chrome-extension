@@ -59,15 +59,18 @@ class DelegateAgent extends BaseAgent {
     return this.currentAgent.trackingDialogueState(actions);
   }
 
+  public async executeCommand(
+    actions: Action[],
+    message: ChatMessage,
+  ): Promise<ThinkResult> {
+    return this.currentAgent.executeCommand(actions, message);
+  }
+
   public async execute(
     actions: Action[],
     conversation: Conversation,
   ): Promise<ThinkResult> {
     return await this.currentAgent.execute(actions, conversation);
-  }
-
-  public onStartInteraction(message: ChatMessage): Promise<void> {
-    return this.currentAgent.onStartInteraction(message);
   }
 
   public async environment(): Promise<Environment> {
@@ -116,9 +119,9 @@ class DelegateAgent extends BaseAgent {
     for (const tool of this.getTools()) {
       if (tool.name === command) {
         args["userInput"] = userInput;
-        return this.execute(
+        return this.executeCommand(
           [{ name: command, arguments: args }],
-          this.getConversation(),
+          new ChatMessage({ role: "user", content: userInput }),
         );
       }
     }
@@ -147,7 +150,6 @@ class DelegateAgent extends BaseAgent {
     if (this.commands.find((c) => c.value === command)) {
       // TODO: need to consider change commands according to current agent
       this.currentAgent = this.initAgent; // reset to init agent
-      await this.onStartInteraction(message);
       return this.executeCommandWithUserInput(command, userInput);
     } else {
       return this.currentAgent.chat(message);

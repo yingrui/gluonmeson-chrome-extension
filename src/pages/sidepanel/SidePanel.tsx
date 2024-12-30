@@ -71,15 +71,13 @@ function SidePanel(props: Record<string, unknown>) {
       return;
     }
     const result = await generateReply(userInput, async () => {
-      await agent.onStartInteraction(
-        new ChatMessage({ role: "user", content: userInput }),
-      );
-      return agent.execute(
+      return agent.executeCommand(
         [{ name: action, arguments: args }],
-        agent.getConversation(),
+        new ChatMessage({ role: "user", content: userInput }),
       );
     });
     // TODO: post process the result by action
+    // If the action returns JSON string, you need to parse it before use it.
   }
 
   installContentScriptCommandListener(handleCommandFromContentScript);
