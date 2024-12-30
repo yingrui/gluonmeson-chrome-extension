@@ -1,6 +1,6 @@
 import { ChatCompletionTool } from "openai/resources";
-import type { MessageContent } from "./core/ChatMessage";
 import ChatMessage from "./core/ChatMessage";
+import type { MessageContent } from "./core/ChatMessage";
 import ModelService, { ModelProvider } from "./ModelService";
 import ThinkResult from "./core/ThinkResult";
 import OpenAI from "openai";
@@ -18,13 +18,19 @@ interface ModelServiceProps {
   multimodalModel: string;
 }
 
-class DefaultModelService implements ModelService {
+/**
+ * GPT Model Service
+ * NOTE: It's hard to maintain this, due to "Country, region, or territory not supported" error
+ * @implements {ModelService}
+ * @class
+ */
+class GPTModelService implements ModelService {
   client: OpenAI;
   modelName: string;
   toolsCallModel: string;
   multimodalModel: string;
-  modelProviders: ModelProvider[] = ["zhipu.ai", "custom"];
-  supportedModels: string[] = ["glm-4-plus", "glm-4v-plus"];
+  modelProviders: ModelProvider[] = ["openai.com", "custom"];
+  supportedModels: string[] = ["gpt-4-turbo", "gpt-4o-mini"];
   maxTokens: number = 4096;
 
   constructor(props: ModelServiceProps) {
@@ -208,4 +214,4 @@ class DefaultModelService implements ModelService {
   }
 }
 
-export default DefaultModelService;
+export default GPTModelService;

@@ -8,17 +8,13 @@ import Environment from "./core/Environment";
 import type { MessageContent } from "./core/ChatMessage";
 import ChatMessage from "./core/ChatMessage";
 import ModelService from "./ModelService";
-import DefaultModelService from "./DefaultModelService";
 
 interface ThoughtAgentProps {
-  modelName: string;
-  toolsCallModel: string;
-  multimodalModel: string;
-  client: OpenAI;
   language: string;
   conversation: Conversation;
   enableMultimodal: boolean;
   enableReflection: boolean;
+  modelService: ModelService;
 }
 
 class ThoughtAgent extends BaseAgent {
@@ -36,25 +32,12 @@ class ThoughtAgent extends BaseAgent {
     description: string = "Guru",
   ) {
     super();
-    const {
-      modelName,
-      toolsCallModel,
-      multimodalModel,
-      client,
-      language,
-      conversation,
-    } = props;
-    this.language = language;
+    this.language = props.language;
+    this.conversation = props.conversation;
+    this.modelService = props.modelService;
+    this.enableMultimodal = props.enableMultimodal;
     this.name = name;
     this.description = description;
-    this.conversation = conversation;
-    this.modelService = new DefaultModelService({
-      client,
-      modelName,
-      toolsCallModel,
-      multimodalModel,
-    });
-    this.enableMultimodal = props.enableMultimodal;
   }
 
   getName(): string {

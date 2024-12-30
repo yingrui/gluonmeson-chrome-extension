@@ -2,6 +2,8 @@ import ChatMessage from "./core/ChatMessage";
 import ThinkResult from "./core/ThinkResult";
 import OpenAI from "openai";
 
+type ModelProvider = "zhipu.ai" | "openai.com" | "custom";
+
 interface ModelService {
   /**
    * Model name
@@ -16,7 +18,7 @@ interface ModelService {
   /**
    * Model providers
    */
-  modelProviders: string[];
+  modelProviders: ModelProvider[];
 
   /**
    * Supported models
@@ -60,3 +62,4 @@ interface ModelService {
 }
 
 export default ModelService;
+export type { ModelProvider };

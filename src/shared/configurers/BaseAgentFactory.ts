@@ -8,12 +8,25 @@ import ChatMessage from "@src/shared/agents/core/ChatMessage";
 import { locale } from "@src/shared/utils/i18n";
 import BaseAgent from "@src/shared/agents/BaseAgent";
 import type { GluonConfigure } from "@src/shared/storages/gluonConfig";
+import type { ModelProvider } from "@src/shared/agents/ModelService";
+import DefaultModelService from "@src/shared/agents/DefaultModelService";
+import GPTModelService from "@src/shared/agents/GPTModelService";
 
 class BaseAgentFactory {
   private repository: ConversationRepository;
   private initMessages: ChatMessage[];
 
   thoughtAgentProps(config: GluonConfigure): ThoughtAgentProps {
+    return {
+      language: intl.get(locale(config.language)).d("English"),
+      conversation: new Conversation(),
+      enableMultimodal: config.enableMultimodal ?? false,
+      enableReflection: config.enableReflection ?? false,
+      modelService: this.createModelService(config),
+    };
+  }
+
+  private createModelService(config: GluonConfigure) {
     const client = new OpenAI({
       apiKey: config.apiKey,
       baseURL: config.baseURL,
@@ -21,18 +34,25 @@ class BaseAgentFactory {
       dangerouslyAllowBrowser: true,
     });
 
-    const props: ThoughtAgentProps = {
-      modelName: config.defaultModel ?? "glm-4-plus",
-      toolsCallModel: config.toolsCallModel ?? null,
-      multimodalModel: config.multimodalModel ?? null,
-      client: client,
-      language: intl.get(locale(config.language)).d("English"),
-      conversation: new Conversation(),
-      enableMultimodal: config.enableMultimodal ?? false,
-      enableReflection: config.enableReflection ?? false,
-    };
+    const modelName: string = config.defaultModel ?? "glm-4-plus";
+    const toolsCallModel: string = config.toolsCallModel ?? null;
+    const multimodalModel: string = config.multimodalModel ?? null;
 
-    return props;
+    if (this.getModelProvider(config.baseURL) === "openai.com") {
+      return new GPTModelService({
+        client,
+        modelName,
+        toolsCallModel,
+        multimodalModel,
+      });
+    }
+
+    return new DefaultModelService({
+      client,
+      modelName,
+      toolsCallModel,
+      multimodalModel,
+    });
   }
 
   postCreateAgent(agent: Agent): Agent {
@@ -52,6 +72,15 @@ class BaseAgentFactory {
 
   public setInitMessages(initMessages: ChatMessage[]) {
     this.initMessages = initMessages;
+  }
+
+  private getModelProvider(baseURL: string): ModelProvider {
+    if (baseURL.startsWith("https://api.openai.com/v1")) {
+      return "openai.com";
+    } else if (baseURL.startsWith("https://open.bigmodel.cn/api/paas/v4")) {
+      return "zhipu.ai";
+    }
+    return "custom";
   }
 }
 
