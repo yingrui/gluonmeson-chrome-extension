@@ -36,7 +36,7 @@ class DefaultModelService implements ModelService {
   }
 
   isMultimodalModel(modelName: string): boolean {
-    return modelName === "glm-4v-plus" || modelName === "gpt-4o-mini";
+    return ["glm-4v", "glm-4v-plus", "gpt-4o-mini"].includes(modelName);
   }
 
   async chatCompletion(
