@@ -5,6 +5,7 @@ import ThinkResult from "./core/ThinkResult";
 import BaseAgent from "./BaseAgent";
 import Environment from "./core/Environment";
 import ChatMessage from "./core/ChatMessage";
+import _ from "lodash";
 
 /**
  * Delegation Agent
@@ -16,12 +17,14 @@ class DelegateAgent extends BaseAgent {
   commands: CommandOption[];
   agents: Agent[];
   conversation: Conversation;
+  chitchatWhenToolNotFound: boolean;
 
   constructor(
     agent: Agent,
     agents: Agent[] = [],
     commands: CommandOption[] = [],
     conversation: Conversation = new Conversation(),
+    chitchatWhenToolNotFound: boolean = false,
   ) {
     super();
     this.initAgent = agent;
@@ -29,6 +32,7 @@ class DelegateAgent extends BaseAgent {
     this.agents = agents;
     this.commands = commands;
     this.conversation = conversation;
+    this.chitchatWhenToolNotFound = chitchatWhenToolNotFound;
   }
 
   public getName(): string {
@@ -122,7 +126,18 @@ class DelegateAgent extends BaseAgent {
         );
       }
     }
-    throw new Error("Unexpected tool call: " + command);
+
+    if (this.chitchatWhenToolNotFound) {
+      return this.executeCommand(
+        [], // empty actions, depends on the behavior of the agent
+        new ChatMessage({ role: "user", content: `/${command} ${userInput}` }),
+      );
+    }
+
+    return {
+      type: "error",
+      error: new Error("Unexpected tool call: " + command),
+    };
   }
 
   /**

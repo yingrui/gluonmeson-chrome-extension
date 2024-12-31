@@ -1,17 +1,13 @@
-export const parseCommand = (
-  userInput: string,
-  commands: CommandOption[],
-): [string, string] => {
-  const matchedCommand = commands.find((command) =>
-    userInput.match(new RegExp(`(?:^|\\s)/${command.value}\\s+`)),
+export async function withTimeout<T>(
+  promise: Promise<T>,
+  errorMsg?: string,
+  timeoutMs?: number,
+): Promise<T> {
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(
+      () => reject(new Error(errorMsg ?? "Operation timed out")),
+      timeoutMs ?? 30000,
+    ),
   );
-
-  if (matchedCommand) {
-    // Use regex group match to extract the input after the command
-    const input = userInput.match(
-      new RegExp(`(?:^|\\s)/${matchedCommand.value}\\s+(.*)`),
-    )[1];
-    return [matchedCommand.value, input];
-  }
-  return ["chat", userInput];
-};
+  return Promise.race([promise, timeout]);
+}

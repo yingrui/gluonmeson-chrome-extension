@@ -10,6 +10,7 @@ import {
   ChatCompletionCreateParamsBase,
   ChatCompletionMessageParam,
 } from "openai/src/resources/chat/completions";
+import { withTimeout } from "./AgentUtils";
 
 interface ModelServiceProps {
   client: OpenAI;
@@ -62,12 +63,20 @@ class DefaultModelService implements ModelService {
       body.max_tokens = this.maxTokens; // max tokens for non multimodal models
     }
 
-    const result = await this.client.chat.completions.create(body);
-    if (stream) {
-      return new ThinkResult({ type: "stream", stream: result });
+    try {
+      const result = await withTimeout(
+        this.client.chat.completions.create(body),
+        "Chat completion timed out",
+        30000,
+      );
+      if (stream) {
+        return new ThinkResult({ type: "stream", stream: result });
+      }
+      const message = (result as ChatCompletion).choices[0].message.content;
+      return new ThinkResult({ type: "message", message: message });
+    } catch (error) {
+      return new ThinkResult({ type: "error", error: error });
     }
-    const message = (result as ChatCompletion).choices[0].message.content;
-    return new ThinkResult({ type: "message", message: message });
   }
 
   /**

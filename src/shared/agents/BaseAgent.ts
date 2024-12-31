@@ -41,6 +41,10 @@ abstract class BaseAgent implements Agent {
    * @param result
    */
   async onCompleted(result: ThinkResult): Promise<string> {
+    if (result.type === "error") {
+      return result.error.message;
+    }
+
     this.result = result;
     let message = "";
 

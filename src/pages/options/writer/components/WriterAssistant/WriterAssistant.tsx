@@ -17,16 +17,19 @@ import Message from "@src/shared/components/Message";
 import { delay } from "@src/shared/utils";
 import intl from "react-intl-universal";
 import ChatMessage from "@src/shared/agents/core/ChatMessage";
+import DelegateAgent from "@src/shared/agents/DelegateAgent";
 
 const { Sider } = Layout;
 
 interface WriterAssistantProps {
   context: WriterContext;
-  agent: WriterAgent;
+  initMessages: ChatMessage[];
+  agent: DelegateAgent;
 }
 
 const WriterAssistant: React.FC<WriterAssistantProps> = ({
   context,
+  initMessages,
   agent,
 }) => {
   const [chatCollapsed, setChatCollapsed] = useState(true);
@@ -36,9 +39,7 @@ const WriterAssistant: React.FC<WriterAssistantProps> = ({
   const [text, setText] = useState<string>();
   const [generating, setGenerating] = useState<boolean>();
   const [currentText, setCurrentText] = useState<string>();
-  const [messages, setList] = useState<ChatMessage[]>(
-    agent.getInitialMessages(),
-  );
+  const [messages, setList] = useState<ChatMessage[]>(initMessages);
   const { scrollRef, scrollToBottom, messagesRef } = useScrollAnchor();
 
   const handleOnSelect = async () => {
@@ -108,10 +109,10 @@ const WriterAssistant: React.FC<WriterAssistantProps> = ({
   }
 
   function clearMessages() {
-    const messages = agent.getInitialMessages();
-    setList(messages);
+    const cloneInitMessages = [...initMessages];
+    agent.getConversation().set(cloneInitMessages);
+    setList(cloneInitMessages);
     setText("");
-    agent.getConversation().set(messages);
   }
 
   return (
