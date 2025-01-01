@@ -5,6 +5,7 @@ import ThinkResult from "./core/ThinkResult";
 import ConversationRepository from "./ConversationRepository";
 import Environment from "./core/Environment";
 import ChatMessage from "./core/ChatMessage";
+import SensitiveTopicError from "@src/shared/agents/errors/SensitiveTopicError";
 
 abstract class BaseAgent implements Agent {
   private result: ThinkResult;
@@ -52,6 +53,9 @@ abstract class BaseAgent implements Agent {
     for await (const chunk of stream) {
       if (chunk.choices) {
         const finishReason = chunk.choices[0]?.finish_reason;
+        if (finishReason === "sensitive") {
+          throw new SensitiveTopicError();
+        }
         const content = chunk.choices[0]?.delta?.content ?? "";
         message = message + content;
       } else {

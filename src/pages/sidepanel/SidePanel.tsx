@@ -19,6 +19,7 @@ import type { MentionsRef } from "antd/lib/mentions";
 import type { MentionProps } from "antd";
 import intl from "react-intl-universal";
 import ChatMessage from "@src/shared/agents/core/ChatMessage";
+import SensitiveTopicError from "@src/shared/agents/errors/SensitiveTopicError";
 
 const { Text } = Typography;
 
@@ -110,6 +111,14 @@ function SidePanel(props: Record<string, unknown>) {
     }
   }
 
+  function handleError(e) {
+    if (e instanceof SensitiveTopicError) {
+      return intl.get("sensitive_topic").d("Sensitive topic detected.");
+    } else {
+      return e.message;
+    }
+  }
+
   async function generateReply(
     userInput: string,
     generate_func: () => Promise<any>,
@@ -122,14 +131,18 @@ function SidePanel(props: Record<string, unknown>) {
         appendMessage("user", userInput);
       }
 
-      message = await agent
-        .onReceiveStreamMessage((msg) => {
-          setCurrentText(msg);
-          setTimeout(() => {
-            scrollToBottom();
-          });
-        })
-        .onCompleted(await generate_func());
+      try {
+        message = await agent
+          .onReceiveStreamMessage((msg) => {
+            setCurrentText(msg);
+            setTimeout(() => {
+              scrollToBottom();
+            });
+          })
+          .onCompleted(await generate_func());
+      } catch (e) {
+        message = handleError(e);
+      }
 
       appendMessage("assistant", message);
       setCurrentText("");
