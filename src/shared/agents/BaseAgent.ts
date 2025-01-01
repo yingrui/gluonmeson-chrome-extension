@@ -59,23 +59,29 @@ abstract class BaseAgent implements Agent {
         const content = chunk.choices[0]?.delta?.content ?? "";
         message = message + content;
       } else {
+        // When stream is not from openai chat completion, but an AsyncIterator
         message = message + chunk.data;
       }
 
-      if (this.receiveStreamMessageListener) {
-        this.receiveStreamMessageListener(message);
-      }
+      this.notifyMessageChanged(message);
     }
     this.result = null; // reset result
 
-    const chatMessage = new ChatMessage({
-      role: "assistant",
-      content: message,
-      name: this.getName(),
-    });
-    this.getConversation().appendMessage(chatMessage);
+    this.getConversation().appendMessage(
+      new ChatMessage({
+        role: "assistant",
+        content: message,
+        name: this.getName(),
+      }),
+    );
     await this.record();
     return message;
+  }
+
+  protected notifyMessageChanged(message: string) {
+    if (this.receiveStreamMessageListener) {
+      this.receiveStreamMessageListener(message);
+    }
   }
 
   onMessageChange(listener: (msg: string) => void): Agent {
