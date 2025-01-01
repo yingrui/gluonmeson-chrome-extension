@@ -83,7 +83,6 @@ const Options: React.FC<OptionsProps> = ({ config }) => {
         </div>
         <div className="nav-menus">
           <Menu
-            theme="light"
             mode="horizontal"
             defaultSelectedKeys={[defaultSelectedItem]}
             selectedKeys={[selectedItem]}

@@ -118,7 +118,10 @@ const ElevatorPitchDetails: React.FC<ElevatorPitchDetailsProps> = ({
               .d("product details")}
           />
         </Form.Item>
-        <Form.Item label={intl.get("elevator_pitch_board_url").d("Board URL")}>
+        <Form.Item
+          label={intl.get("elevator_pitch_board_url").d("Board URL")}
+          tooltip={"Not implemented"}
+        >
           <TextArea
             rows={1}
             autoSize={{ minRows: 1, maxRows: 3 }}
