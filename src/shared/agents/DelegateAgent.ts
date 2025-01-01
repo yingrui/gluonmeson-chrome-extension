@@ -122,15 +122,21 @@ class DelegateAgent extends BaseAgent {
         args["userInput"] = userInput;
         return this.executeCommand(
           [{ name: command, arguments: args }],
-          new ChatMessage({ role: "user", content: userInput }),
+          new ChatMessage({
+            role: "user",
+            content: `/${command} ${userInput}`.trim(),
+          }),
         );
       }
     }
 
     if (this.chitchatWhenToolNotFound) {
       return this.executeCommand(
-        [], // empty actions, depends on the behavior of the agent
-        new ChatMessage({ role: "user", content: `/${command} ${userInput}` }),
+        [], // Empty action means chitchat by default, also depends on the behavior of the agent
+        new ChatMessage({
+          role: "user",
+          content: `/${command} ${userInput}`.trim(),
+        }),
       );
     }
 

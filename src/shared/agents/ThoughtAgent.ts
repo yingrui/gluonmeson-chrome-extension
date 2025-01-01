@@ -107,10 +107,8 @@ class ThoughtAgent extends BaseAgent {
     const thought = await this.plan();
     if (thought.type === "actions") {
       return this.execute(thought.actions);
-    } else if (thought.type === "message") {
-      return this.execute([this.replyAction(thought.message)]);
-    } else if (thought.type === "stream") {
-      return thought;
+    } else if (thought.type in ["message", "error"]) {
+      return this.execute([this.replyAction(thought)]);
     }
     throw new Error("Unknown plan type");
   }
@@ -250,10 +248,7 @@ Choose the best action to execute, or generate new answer, or suggest more quest
     }
 
     if (action === "reply") {
-      return new Thought({
-        type: "stream",
-        stream: stringToAsyncIterator(args["content"]),
-      });
+      return args["thought"] as Thought;
     }
 
     for (const member of this.getMemberOfSelf()) {
@@ -290,8 +285,8 @@ Choose the best action to execute, or generate new answer, or suggest more quest
     throw new Error("Unimplemented action: " + action);
   }
 
-  private replyAction(content: string): Action {
-    return { name: "reply", arguments: { content } } as Action;
+  private replyAction(thought: Thought): Action {
+    return { name: "reply", arguments: { thought: thought } } as Action;
   }
 
   /**
