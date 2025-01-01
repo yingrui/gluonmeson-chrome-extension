@@ -36,7 +36,6 @@ function SidePanel(props: Record<string, unknown>) {
   const commandRef = useRef<boolean>();
   const inputMethodRef = useRef<boolean>(false);
   const agent = props.agent as DelegateAgent;
-  const enableReflection = props.enableReflection as boolean;
   const initMessages = props.initMessages as ChatMessage[];
   const [messages, setList] = useState<ChatMessage[]>([...initMessages]);
 
@@ -106,9 +105,6 @@ function SidePanel(props: Record<string, unknown>) {
     const message = await generateReply(text, () =>
       agent.chat(messages[messages.length - 1]),
     );
-    if (enableReflection) {
-      await reflection();
-    }
   }
 
   function handleError(e) {
@@ -154,13 +150,6 @@ function SidePanel(props: Record<string, unknown>) {
       scrollToBottom();
     }, 100);
     return message;
-  }
-
-  async function reflection() {
-    const actions = await agent.reflection();
-    if (actions && actions.length > 0) {
-      generateReply("", () => agent.execute(actions));
-    }
   }
 
   function appendMessage(role: ChatMessage["role"], content: string) {

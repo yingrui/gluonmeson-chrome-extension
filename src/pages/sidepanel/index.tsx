@@ -45,14 +45,7 @@ function init() {
       const language = intl.get(locale(config.language)).d("English");
       const initMessages = getInitialMessages(language);
       const agent = new AgentFactory().create(config, initMessages);
-      const enableReflection = config.enableReflection ?? false;
-      root.render(
-        <SidePanel
-          agent={agent}
-          initMessages={initMessages}
-          enableReflection={enableReflection}
-        />,
-      );
+      root.render(<SidePanel agent={agent} initMessages={initMessages} />);
     });
   });
 }
