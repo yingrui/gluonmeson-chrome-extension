@@ -8,7 +8,6 @@ import ChatMessage from "./core/ChatMessage";
 import SensitiveTopicError from "@src/shared/agents/errors/SensitiveTopicError";
 
 abstract class BaseAgent implements Agent {
-  private result: ThinkResult;
   private receiveStreamMessageListener: (msg: string) => void;
   private repo: ConversationRepository;
 
@@ -46,10 +45,26 @@ abstract class BaseAgent implements Agent {
       return result.error.message;
     }
 
-    this.result = result;
     let message = "";
+    if (result.type === "stream") {
+      message = await this.readMessageFromStream(result.stream);
+    } else if (result.type === "message") {
+      message = result.message;
+    }
 
-    const stream = this.result.stream;
+    this.getConversation().appendMessage(
+      new ChatMessage({
+        role: "assistant",
+        content: message,
+        name: this.getName(),
+      }),
+    );
+    await this.record();
+    return message;
+  }
+
+  private async readMessageFromStream(stream: any): Promise<string> {
+    let message = "";
     for await (const chunk of stream) {
       if (chunk.choices) {
         const finishReason = chunk.choices[0]?.finish_reason;
@@ -65,16 +80,6 @@ abstract class BaseAgent implements Agent {
 
       this.notifyMessageChanged(message);
     }
-    this.result = null; // reset result
-
-    this.getConversation().appendMessage(
-      new ChatMessage({
-        role: "assistant",
-        content: message,
-        name: this.getName(),
-      }),
-    );
-    await this.record();
     return message;
   }
 
