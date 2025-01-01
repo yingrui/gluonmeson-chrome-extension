@@ -74,7 +74,7 @@ const WriterAssistant: React.FC<WriterAssistantProps> = ({
     }
     const result = await agent.chat(messages[messages.length - 1]);
     const message = await agent
-      .onReceiveStreamMessage((msg) => {
+      .onMessageChange((msg) => {
         setCurrentText(msg);
         setTimeout(() => {
           scrollToBottom();

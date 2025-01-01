@@ -40,7 +40,7 @@ const SearchPage: React.FC<SearchPageProps> = ({ query, agent }) => {
       // Show summary
       setGenerating(true);
       const message = await agent
-        .onReceiveStreamMessage((msg) => {
+        .onMessageChange((msg) => {
           setCurrentText(msg);
         })
         .onCompleted(thinkResult);

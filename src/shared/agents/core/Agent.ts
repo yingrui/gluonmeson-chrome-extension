@@ -39,7 +39,7 @@ interface Agent {
    * Add listener for receiving stream message
    * @param listener
    */
-  onReceiveStreamMessage(listener: (msg: string) => void): Agent;
+  onMessageChange(listener: (msg: string) => void): Agent;
 
   /**
    * Think

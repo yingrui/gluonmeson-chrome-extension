@@ -78,7 +78,7 @@ abstract class BaseAgent implements Agent {
     return message;
   }
 
-  onReceiveStreamMessage(listener: (msg: string) => void): Agent {
+  onMessageChange(listener: (msg: string) => void): Agent {
     this.receiveStreamMessageListener = listener;
     return this;
   }

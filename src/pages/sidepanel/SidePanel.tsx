@@ -129,7 +129,7 @@ function SidePanel(props: Record<string, unknown>) {
 
       try {
         message = await agent
-          .onReceiveStreamMessage((msg) => {
+          .onMessageChange((msg) => {
             setCurrentText(msg);
             setTimeout(() => {
               scrollToBottom();

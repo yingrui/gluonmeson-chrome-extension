@@ -91,7 +91,7 @@ const ElevatorPitchDetails: React.FC<ElevatorPitchDetailsProps> = ({
     };
     // Add logic to handle the submitted pitch
     const elevatorPitchAgent = context.getElevatorPitchAgent();
-    elevatorPitchAgent.onReceiveStreamMessage((msg) => {
+    elevatorPitchAgent.onMessageChange((msg) => {
       setGeneratedElevatorPitch(msg);
     });
     const result = await elevatorPitchAgent.elevatorPitch(props);
