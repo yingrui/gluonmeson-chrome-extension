@@ -2,7 +2,7 @@ import { ChatCompletionTool } from "openai/resources";
 import type { MessageContent } from "./core/ChatMessage";
 import ChatMessage from "./core/ChatMessage";
 import ModelService, { ModelProvider } from "./ModelService";
-import ThinkResult from "./core/ThinkResult";
+import Thought from "./core/Thought";
 import OpenAI from "openai";
 import {
   ChatCompletion,
@@ -47,7 +47,7 @@ class DefaultModelService implements ModelService {
     stream: boolean,
     useMultimodal: boolean = false,
     responseType: "text" | "json_object" = "text",
-  ): Promise<ThinkResult> {
+  ): Promise<Thought> {
     const model = useMultimodal ? this.multimodalModel : this.modelName;
     const body: ChatCompletionCreateParamsBase = {
       messages: this.formatMessageContent(
@@ -72,12 +72,12 @@ class DefaultModelService implements ModelService {
         30000,
       );
       if (stream) {
-        return new ThinkResult({ type: "stream", stream: result });
+        return new Thought({ type: "stream", stream: result });
       }
       const message = (result as ChatCompletion).choices[0].message.content;
-      return new ThinkResult({ type: "message", message: message });
+      return new Thought({ type: "message", message: message });
     } catch (error) {
-      return new ThinkResult({ type: "error", error: error });
+      return new Thought({ type: "error", error: error });
     }
   }
 
@@ -132,7 +132,7 @@ class DefaultModelService implements ModelService {
     messages: ChatMessage[],
     tools: ChatCompletionTool[],
     stream: boolean,
-  ): Promise<ThinkResult> {
+  ): Promise<Thought> {
     if (stream) {
       return await this.streamToolsCall(messages, tools);
     }
@@ -160,13 +160,13 @@ class DefaultModelService implements ModelService {
           actions = tools.map((t) => this.toAction(t as ToolCall));
         }
       } else if (choice.finish_reason === "stop" && choice.message.content) {
-        return new ThinkResult({
+        return new Thought({
           type: "message",
           message: choice.message.content,
         });
       }
     }
-    return new ThinkResult({ type: "actions", actions: actions });
+    return new Thought({ type: "actions", actions: actions });
   }
 
   private async streamToolsCall(
@@ -193,7 +193,7 @@ class DefaultModelService implements ModelService {
             actions = tools.map((t) => this.toAction(t as ToolCall));
           }
         } else {
-          return new ThinkResult({
+          return new Thought({
             type: "stream",
             stream: second,
             firstChunk: chunk,
@@ -202,7 +202,7 @@ class DefaultModelService implements ModelService {
       }
     }
 
-    return new ThinkResult({ type: "actions", actions });
+    return new Thought({ type: "actions", actions });
   }
 
   private toAction(tool: ToolCall): Action {

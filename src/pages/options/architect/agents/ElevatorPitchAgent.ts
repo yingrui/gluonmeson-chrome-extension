@@ -1,7 +1,7 @@
 import ThoughtAgent, {
   ThoughtAgentProps,
 } from "@src/shared/agents/ThoughtAgent";
-import ThinkResult from "@src/shared/agents/core/ThinkResult";
+import Thought from "@src/shared/agents/core/Thought";
 import ChatMessage from "@src/shared/agents/core/ChatMessage";
 
 class ElevatorPitchAgent extends ThoughtAgent {
@@ -12,7 +12,7 @@ class ElevatorPitchAgent extends ThoughtAgent {
   async elevatorPitch(
     args: object,
     messages: ChatMessage[] = [],
-  ): Promise<ThinkResult> {
+  ): Promise<Thought> {
     const userInput = args["userInput"] ?? "";
     const feedback = args["feedback"] ?? "";
     const productDetails = args["productDetails"] ?? "";

@@ -1,7 +1,7 @@
 import ThoughtAgent, {
   ThoughtAgentProps,
 } from "@src/shared/agents/ThoughtAgent";
-import ThinkResult from "@src/shared/agents/core/ThinkResult";
+import Thought from "@src/shared/agents/core/Thought";
 import intl from "react-intl-universal";
 import ChatMessage from "@src/shared/agents/core/ChatMessage";
 
@@ -21,7 +21,7 @@ class TranslateAgent extends ThoughtAgent {
     );
   }
 
-  async translate(args: object, messages: ChatMessage[]): Promise<ThinkResult> {
+  async translate(args: object, messages: ChatMessage[]): Promise<Thought> {
     const userInput = args["userInput"];
     const targetLanguage =
       args["targetLanguage"] || "opposite language according to user input";

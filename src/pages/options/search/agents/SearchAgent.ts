@@ -1,7 +1,7 @@
 import ThoughtAgent, {
   ThoughtAgentProps,
 } from "@src/shared/agents/ThoughtAgent";
-import ThinkResult from "@src/shared/agents/core/ThinkResult";
+import Thought from "@src/shared/agents/core/Thought";
 import ChatMessage from "@src/shared/agents/core/ChatMessage";
 
 class SearchAgent extends ThoughtAgent {
@@ -15,7 +15,7 @@ class SearchAgent extends ThoughtAgent {
     this.searchResults = results;
   }
 
-  async summary(args: object, messages: ChatMessage[]): Promise<ThinkResult> {
+  async summary(args: object, messages: ChatMessage[]): Promise<Thought> {
     const userInput = args["userInput"];
     const results = this.searchResults;
     const prompt = `## Role

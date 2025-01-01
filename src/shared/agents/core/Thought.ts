@@ -1,7 +1,7 @@
-declare type ThinkResultType = "actions" | "message" | "stream" | "error";
+declare type ThoughtType = "actions" | "message" | "stream" | "error";
 
-declare interface ThinkResultProps {
-  type: ThinkResultType;
+declare interface ThoughtProps {
+  type: ThoughtType;
   actions?: Action[];
   stream?: any;
   firstChunk?: any;
@@ -9,15 +9,15 @@ declare interface ThinkResultProps {
   error?: Error;
 }
 
-class ThinkResult {
-  public readonly type: ThinkResultType;
+class Thought {
+  public readonly type: ThoughtType;
   public readonly actions?: Action[];
-  public readonly stream?: any;
+  public readonly stream?: AsyncIterator<any>;
   public readonly firstChunk?: any;
   public readonly message?: string;
   public readonly error?: Error;
 
-  constructor(props: ThinkResultProps) {
+  constructor(props: ThoughtProps) {
     const { type, actions, stream, firstChunk, message, error } = props;
     this.type = type;
     this.actions = actions;
@@ -28,4 +28,4 @@ class ThinkResult {
   }
 }
 
-export default ThinkResult;
+export default Thought;

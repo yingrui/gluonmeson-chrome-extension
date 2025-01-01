@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import Tool from "./core/Tool";
 import Conversation from "./core/Conversation";
-import ThinkResult from "./core/ThinkResult";
+import Thought from "./core/Thought";
 import { stringToAsyncIterator } from "../utils/streaming";
 import BaseAgent from "./BaseAgent";
 import Environment from "./core/Environment";
@@ -99,18 +99,18 @@ class ThoughtAgent extends BaseAgent {
   /**
    * Choose the tool agent to execute the tool
    * @param {ChatMessage} message - Chat message
-   * @returns {Promise<ThinkResult>} ChatCompletion
+   * @returns {Promise<Thought>} ChatCompletion
    * @async
    */
-  async chat(message: ChatMessage): Promise<ThinkResult> {
+  async chat(message: ChatMessage): Promise<Thought> {
     await this.onStartInteraction(message);
-    const plan = await this.plan();
-    if (plan.type === "actions") {
-      return this.execute(plan.actions);
-    } else if (plan.type === "message") {
-      return this.execute([this.replyAction(plan.message)]);
-    } else if (plan.type === "stream") {
-      return plan;
+    const thought = await this.plan();
+    if (thought.type === "actions") {
+      return this.execute(thought.actions);
+    } else if (thought.type === "message") {
+      return this.execute([this.replyAction(thought.message)]);
+    } else if (thought.type === "stream") {
+      return thought;
     }
     throw new Error("Unknown plan type");
   }
@@ -127,9 +127,9 @@ class ThoughtAgent extends BaseAgent {
 
   /**
    * Think
-   * @returns {Promise<ThinkResult>} ThinkResult
+   * @returns {Promise<Thought>} ThinkResult
    */
-  async plan(): Promise<ThinkResult> {
+  async plan(): Promise<Thought> {
     const messages = this.conversation.getMessages();
     const interaction = this.conversation.getCurrentInteraction();
     const env = this.getCurrentEnvironment();
@@ -144,7 +144,7 @@ class ThoughtAgent extends BaseAgent {
     interaction.setStatus("Planning", `${this.getName()} is thinking...`);
     const toolCalls = this.getToolCalls();
     if (toolCalls.length === 0) {
-      return new ThinkResult({ type: "actions", actions: [] });
+      return new Thought({ type: "actions", actions: [] });
     }
     return await this.toolsCall(messagesWithEnv, toolCalls, true);
   }
@@ -223,9 +223,9 @@ Choose the best action to execute, or generate new answer, or suggest more quest
   /**
    * Execute
    * @param {Action[]} actions - Actions
-   * @returns {Promise<ThinkResult>} ChatCompletion
+   * @returns {Promise<Thought>} ChatCompletion
    */
-  async execute(actions: Action[]): Promise<ThinkResult> {
+  async execute(actions: Action[]): Promise<Thought> {
     const refinedActions = this.trackingDialogueState(actions);
 
     const interaction = this.conversation.getCurrentInteraction();
@@ -250,7 +250,7 @@ Choose the best action to execute, or generate new answer, or suggest more quest
     }
 
     if (action === "reply") {
-      return new ThinkResult({
+      return new Thought({
         type: "stream",
         stream: stringToAsyncIterator(args["content"]),
       });
@@ -280,13 +280,13 @@ Choose the best action to execute, or generate new answer, or suggest more quest
    * @param {string} action - Action
    * @param {object} args - Pojo object as Arguments
    * @param {Conversation} conversation - Conversation
-   * @returns {Promise<ThinkResult>} ChatCompletion
+   * @returns {Promise<Thought>} ChatCompletion
    */
   async executeAction(
     action: string,
     args: object,
     conversation: Conversation,
-  ): Promise<ThinkResult> {
+  ): Promise<Thought> {
     throw new Error("Unimplemented action: " + action);
   }
 
@@ -300,7 +300,7 @@ Choose the best action to execute, or generate new answer, or suggest more quest
    * @param {string} systemPrompt - System prompt
    * @param {string} replaceUserInput - Replace user input
    * @param {bool} stream - Stream
-   * @returns {Promise<ThinkResult>} ThinkResult
+   * @returns {Promise<Thought>} ThinkResult
    */
   async chatCompletion(
     messages: ChatMessage[],
@@ -308,7 +308,7 @@ Choose the best action to execute, or generate new answer, or suggest more quest
     replaceUserInput: string | MessageContent[] = "",
     stream: boolean = true,
     responseType: "text" | "json_object" = "text",
-  ): Promise<ThinkResult> {
+  ): Promise<Thought> {
     if (systemPrompt && messages.length > 0 && messages[0].role === "system") {
       const systemMessage = new ChatMessage({
         role: "system",
@@ -352,7 +352,7 @@ Choose the best action to execute, or generate new answer, or suggest more quest
     messages: ChatMessage[],
     tools: OpenAI.Chat.Completions.ChatCompletionTool[],
     stream: boolean = false,
-  ): Promise<ThinkResult> {
+  ): Promise<Thought> {
     return await this.modelService.toolsCall(messages, tools, stream);
   }
 }

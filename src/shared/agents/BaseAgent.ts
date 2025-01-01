@@ -1,7 +1,7 @@
 import Tool from "./core/Tool";
 import Agent from "./core/Agent";
 import Conversation from "./core/Conversation";
-import ThinkResult from "./core/ThinkResult";
+import Thought from "./core/Thought";
 import ConversationRepository from "./ConversationRepository";
 import Environment from "./core/Environment";
 import ChatMessage from "./core/ChatMessage";
@@ -40,7 +40,7 @@ abstract class BaseAgent implements Agent {
    * Receive message
    * @param result
    */
-  async onCompleted(result: ThinkResult): Promise<string> {
+  async onCompleted(result: Thought): Promise<string> {
     if (result.type === "error") {
       return result.error.message;
     }
@@ -132,9 +132,9 @@ abstract class BaseAgent implements Agent {
 
   /**
    * Think
-   * @returns {Promise<ThinkResult>} PlanResult
+   * @returns {Promise<Thought>} PlanResult
    */
-  abstract plan(): Promise<ThinkResult>;
+  abstract plan(): Promise<Thought>;
 
   /**
    * Reflection
@@ -153,20 +153,20 @@ abstract class BaseAgent implements Agent {
    * Execute
    * @param {Action[]} actions - Actions
    * @param {Conversation} conversation - Conversation
-   * @returns {Promise<ThinkResult>} ChatCompletion
+   * @returns {Promise<Thought>} ChatCompletion
    */
-  abstract execute(actions: Action[]): Promise<ThinkResult>;
+  abstract execute(actions: Action[]): Promise<Thought>;
 
   /**
    * Execute
    * @param {Action[]} actions - Actions
    * @param {Conversation} conversation - Conversation
-   * @returns {Promise<ThinkResult>} ChatCompletion
+   * @returns {Promise<Thought>} ChatCompletion
    */
   async executeCommand(
     actions: Action[],
     message: ChatMessage,
-  ): Promise<ThinkResult> {
+  ): Promise<Thought> {
     await this.onStartInteraction(message);
     return await this.execute(actions);
   }
@@ -174,10 +174,10 @@ abstract class BaseAgent implements Agent {
   /**
    * Chat with user
    * @param {ChatMessage} message - Chat message
-   * @returns {Promise<ThinkResult>} ChatCompletion
+   * @returns {Promise<Thought>} ChatCompletion
    * @async
    */
-  abstract chat(message: ChatMessage): Promise<ThinkResult>;
+  abstract chat(message: ChatMessage): Promise<Thought>;
 
   /**
    * Describe the current environment

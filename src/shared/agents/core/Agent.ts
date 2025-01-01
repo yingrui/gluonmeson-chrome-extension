@@ -1,6 +1,6 @@
 import Tool from "./Tool";
 import Conversation from "./Conversation";
-import ThinkResult from "./ThinkResult";
+import Thought from "./Thought";
 import Environment from "./Environment";
 import ChatMessage from "./ChatMessage";
 
@@ -33,7 +33,7 @@ interface Agent {
    * Receive message
    * @param result
    */
-  onCompleted(result: ThinkResult): Promise<string>;
+  onCompleted(result: Thought): Promise<string>;
 
   /**
    * Add listener for receiving stream message
@@ -43,9 +43,9 @@ interface Agent {
 
   /**
    * Think
-   * @returns {Promise<ThinkResult>} PlanResult
+   * @returns {Promise<Thought>} PlanResult
    */
-  plan(): Promise<ThinkResult>;
+  plan(): Promise<Thought>;
 
   /**
    * Reflection
@@ -63,25 +63,25 @@ interface Agent {
   /**
    * Execute
    * @param {Action[]} actions - Actions
-   * @returns {Promise<ThinkResult>} ChatCompletion
+   * @returns {Promise<Thought>} ChatCompletion
    */
-  execute(actions: Action[]): Promise<ThinkResult>;
+  execute(actions: Action[]): Promise<Thought>;
 
   /**
    * Execute command
    * @param {Action[]} actions - Actions
    * @param {Conversation} conversation - Conversation
-   * @returns {Promise<ThinkResult>} ChatCompletion
+   * @returns {Promise<Thought>} ChatCompletion
    */
-  executeCommand(actions: Action[], message: ChatMessage): Promise<ThinkResult>;
+  executeCommand(actions: Action[], message: ChatMessage): Promise<Thought>;
 
   /**
    * Chat with user
    * @param {ChatMessage} message - Chat message
-   * @returns {Promise<ThinkResult>} ChatCompletion
+   * @returns {Promise<Thought>} ChatCompletion
    * @async
    */
-  chat(message: ChatMessage): Promise<ThinkResult>;
+  chat(message: ChatMessage): Promise<Thought>;
 
   /**
    * Describe the current environment

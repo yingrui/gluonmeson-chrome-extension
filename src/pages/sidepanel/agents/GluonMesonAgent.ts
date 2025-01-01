@@ -4,7 +4,7 @@ import ThoughtAgent, {
 import CompositeAgent from "@src/shared/agents/CompositeAgent";
 
 import { get_content } from "@src/shared/utils";
-import ThinkResult from "@src/shared/agents/core/ThinkResult";
+import Thought from "@src/shared/agents/core/Thought";
 import Environment from "@src/shared/agents/core/Environment";
 import ChatMessage, {
   imageContent,
@@ -37,7 +37,7 @@ class GluonMesonAgent extends CompositeAgent {
     );
   }
 
-  private async handleCannotGetContentError(): Promise<ThinkResult> {
+  private async handleCannotGetContentError(): Promise<Thought> {
     const prompt = `You're an assistant or chrome copilot provided by GluonMeson, Guru Mason is your name.
 The user is viewing the page, but you cannot get any information, it's possible because the you're detached from the webpage.
 Reply sorry and ask user to refresh webpage, so you can get information from webpage.`;
@@ -50,7 +50,7 @@ Reply sorry and ask user to refresh webpage, so you can get information from web
     ]);
   }
 
-  async summary(args: object, messages: ChatMessage[]): Promise<ThinkResult> {
+  async summary(args: object, messages: ChatMessage[]): Promise<Thought> {
     const content = await get_content();
     if (!content) return this.handleCannotGetContentError();
 
@@ -91,10 +91,7 @@ The links are: ${JSON.stringify(content.links)}`;
    * @param {ChatMessage[]} messages - Messages
    * @returns {Promise<any>} ChatCompletion
    */
-  async generate_text(
-    args: object,
-    messages: ChatMessage[],
-  ): Promise<ThinkResult> {
+  async generate_text(args: object, messages: ChatMessage[]): Promise<Thought> {
     const userInput = args["userInput"];
     const content = await get_content();
     const prompt = `You're a good writer provided by GluonMeson,

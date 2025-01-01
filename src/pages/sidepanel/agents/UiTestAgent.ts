@@ -2,7 +2,7 @@ import ThoughtAgent, {
   ThoughtAgentProps,
 } from "@src/shared/agents/ThoughtAgent";
 import { get_html } from "@src/shared/utils";
-import ThinkResult from "@src/shared/agents/core/ThinkResult";
+import Thought from "@src/shared/agents/core/Thought";
 import intl from "react-intl-universal";
 import ChatMessage, {
   imageContent,
@@ -25,7 +25,7 @@ class UiTestAgent extends ThoughtAgent {
     );
   }
 
-  async handleCannotGetHtmlError(): Promise<ThinkResult> {
+  async handleCannotGetHtmlError(): Promise<Thought> {
     const prompt = `You're an assistant or chrome copilot provided by GluonMeson, Guru Mason is your name.
 The user is viewing the page, but you cannot get any information, it's possible because the you're detached from the webpage.
 Reply sorry and ask user to refresh webpage, so you can get information from webpage.`;
@@ -38,7 +38,7 @@ Reply sorry and ask user to refresh webpage, so you can get information from web
     ]);
   }
 
-  async ui_test(args: object, messages: ChatMessage[]): Promise<ThinkResult> {
+  async ui_test(args: object, messages: ChatMessage[]): Promise<Thought> {
     const userInput = args["userInput"];
     const page = await get_html();
     if (!page) return this.handleCannotGetHtmlError();

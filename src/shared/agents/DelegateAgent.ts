@@ -1,7 +1,7 @@
 import Tool from "./core/Tool";
 import Agent from "./core/Agent";
 import Conversation from "./core/Conversation";
-import ThinkResult from "./core/ThinkResult";
+import Thought from "./core/Thought";
 import BaseAgent from "./BaseAgent";
 import Environment from "./core/Environment";
 import ChatMessage from "./core/ChatMessage";
@@ -51,7 +51,7 @@ class DelegateAgent extends BaseAgent {
     return this.conversation;
   }
 
-  public plan(): Promise<ThinkResult> {
+  public plan(): Promise<Thought> {
     return this.currentAgent.plan();
   }
 
@@ -66,11 +66,11 @@ class DelegateAgent extends BaseAgent {
   public async executeCommand(
     actions: Action[],
     message: ChatMessage,
-  ): Promise<ThinkResult> {
+  ): Promise<Thought> {
     return this.currentAgent.executeCommand(actions, message);
   }
 
-  public async execute(actions: Action[]): Promise<ThinkResult> {
+  public async execute(actions: Action[]): Promise<Thought> {
     return await this.currentAgent.execute(actions);
   }
 
@@ -108,13 +108,13 @@ class DelegateAgent extends BaseAgent {
    * The user input should be set to object args, need to figure out which parameter is the user input.
    * @param {string} command - Command
    * @param {string} userInput - User input
-   * @returns {Promise<ThinkResult>} ChatCompletion
+   * @returns {Promise<Thought>} ChatCompletion
    * @throws {Error} Unexpected tool call
    */
   async executeCommandWithUserInput(
     command: string,
     userInput: string,
-  ): Promise<ThinkResult> {
+  ): Promise<Thought> {
     const args = {};
     // Find the tool with the given command
     for (const tool of this.getTools()) {
@@ -148,10 +148,10 @@ class DelegateAgent extends BaseAgent {
    * 4. If the command is not found and tools call model is specified, call the tool
    * 5. If the tool call model is not specified, return the chat completion
    * @param {ChatMessage} message - Chat message
-   * @returns {Promise<ThinkResult>} ChatCompletion
+   * @returns {Promise<Thought>} ChatCompletion
    * @async
    */
-  async chat(message: ChatMessage): Promise<ThinkResult> {
+  async chat(message: ChatMessage): Promise<Thought> {
     const [command, agent, userInput] = this.parseCommand(
       message.getContentText(),
     );
