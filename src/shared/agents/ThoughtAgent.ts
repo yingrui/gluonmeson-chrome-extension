@@ -109,8 +109,10 @@ class ThoughtAgent extends BaseAgent {
     const thought = await this.plan();
     if (thought.type === "actions") {
       return this.execute(thought.actions);
-    } else if (thought.type in ["message", "error"]) {
+    } else if (thought.type in ["message", "stream"]) {
       return this.execute([this.replyAction(thought)]);
+    } else if (thought.type === "error") {
+      return thought;
     }
     throw new Error("Unknown plan type");
   }
