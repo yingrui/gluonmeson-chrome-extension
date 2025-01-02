@@ -1,4 +1,4 @@
-import SensitiveTopicError from "../errors/SensitiveTopicError";
+import SensitiveTopicError from "./errors/SensitiveTopicError";
 
 declare type ThoughtType = "actions" | "message" | "stream" | "error";
 

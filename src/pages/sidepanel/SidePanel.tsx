@@ -19,7 +19,7 @@ import type { MentionsRef } from "antd/lib/mentions";
 import type { MentionProps } from "antd";
 import intl from "react-intl-universal";
 import ChatMessage from "@src/shared/agents/core/ChatMessage";
-import SensitiveTopicError from "@src/shared/agents/errors/SensitiveTopicError";
+import SensitiveTopicError from "@src/shared/agents/core/errors/SensitiveTopicError";
 
 const { Text } = Typography;
 
