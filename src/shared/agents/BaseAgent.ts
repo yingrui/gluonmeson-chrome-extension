@@ -5,7 +5,6 @@ import Thought from "./core/Thought";
 import ConversationRepository from "./ConversationRepository";
 import Environment from "./core/Environment";
 import ChatMessage from "./core/ChatMessage";
-import SensitiveTopicError from "@src/shared/agents/errors/SensitiveTopicError";
 
 abstract class BaseAgent implements Agent {
   private receiveStreamMessageListener: (msg: string) => void;
@@ -45,7 +44,9 @@ abstract class BaseAgent implements Agent {
       return result.error.message;
     }
 
-    let message = await this.getMessageFromThought(result);
+    let message = await result.getMessage((msg) => {
+      this.notifyMessageChanged(msg);
+    });
 
     this.getConversation().appendMessage(
       new ChatMessage({
@@ -63,41 +64,11 @@ abstract class BaseAgent implements Agent {
     }
     if (thought.type === "stream" || thought.type === "message") {
       this.notifyMessageChanged("");
-      message = await this.getMessageFromThought(thought);
+      message = await thought.getMessage((msg) => {
+        this.notifyMessageChanged(msg);
+      });
     }
 
-    return message;
-  }
-
-  private async getMessageFromThought(
-    result: Thought,
-    defaultMessage: string = "",
-  ) {
-    if (result.type === "stream") {
-      return await this.readMessageFromStream(result.stream);
-    } else if (result.type === "message") {
-      return result.message;
-    }
-    return defaultMessage;
-  }
-
-  private async readMessageFromStream(stream: any): Promise<string> {
-    let message = "";
-    for await (const chunk of stream) {
-      if (chunk.choices) {
-        const finishReason = chunk.choices[0]?.finish_reason;
-        if (finishReason === "sensitive") {
-          throw new SensitiveTopicError();
-        }
-        const content = chunk.choices[0]?.delta?.content ?? "";
-        message = message + content;
-      } else {
-        // When stream is not from openai chat completion, but an AsyncIterator
-        message = message + chunk.data;
-      }
-
-      this.notifyMessageChanged(message);
-    }
     return message;
   }
 

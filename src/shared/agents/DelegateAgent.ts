@@ -106,6 +106,7 @@ class DelegateAgent extends BaseAgent {
   /**
    * Execute command with user input.
    * The user input should be set to object args, need to figure out which parameter is the user input.
+   * There is a switch to control if chitchat when tool not found.
    * @param {string} command - Command
    * @param {string} userInput - User input
    * @returns {Promise<Thought>} ChatCompletion
@@ -140,10 +141,10 @@ class DelegateAgent extends BaseAgent {
       );
     }
 
-    return {
+    return new Thought({
       type: "error",
       error: new Error("Unexpected tool call: " + command),
-    };
+    });
   }
 
   /**

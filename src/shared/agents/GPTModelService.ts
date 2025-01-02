@@ -191,7 +191,6 @@ class GPTModelService implements ModelService {
           return new Thought({
             type: "stream",
             stream: second,
-            firstChunk: chunk,
           });
         }
       }
