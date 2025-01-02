@@ -132,23 +132,28 @@ class DefaultModelService implements ModelService {
     messages: ChatMessage[],
     tools: ChatCompletionTool[],
     stream: boolean,
+    responseType: "text" | "json_object" = "text",
   ): Promise<Thought> {
     if (stream) {
-      return await this.streamToolsCall(messages, tools);
+      return await this.streamToolsCall(messages, tools, responseType);
     }
 
-    return await this.nonStreamToolsCall(messages, tools);
+    return await this.nonStreamToolsCall(messages, tools, responseType);
   }
 
   private async nonStreamToolsCall(
     messages: ChatMessage[],
     tools: ChatCompletionTool[],
+    responseType: "text" | "json_object" = "text",
   ) {
     const result = await this.client.chat.completions.create({
       model: this.toolsCallModel,
       messages: messages as OpenAI.ChatCompletionMessageParam[],
       stream: false,
       tools: tools,
+      response_format: {
+        type: responseType,
+      } as ChatCompletionCreateParams.ResponseFormat,
     });
     let actions = [];
     const choices = result.choices;
@@ -172,12 +177,16 @@ class DefaultModelService implements ModelService {
   private async streamToolsCall(
     messages: ChatMessage[],
     tools: ChatCompletionTool[],
+    responseType: "text" | "json_object" = "text",
   ) {
     const result = await this.client.chat.completions.create({
       model: this.toolsCallModel,
       messages: messages as OpenAI.ChatCompletionMessageParam[],
       stream: true,
       tools: tools,
+      response_format: {
+        type: responseType,
+      } as ChatCompletionCreateParams.ResponseFormat,
     });
     const [first, second] = result.tee();
     let actions = [];

@@ -52,12 +52,14 @@ interface ModelService {
    * @param {ChatMessage[]} messages - Messages
    * @param {OpenAI.Chat.Completions.ChatCompletionTool[]} tools - Tools
    * @param {bool} stream - Stream
+   * @param {string} responseType - Response type
    * @returns {Promise<Thought>} ThinkResult
    */
   toolsCall(
     messages: ChatMessage[],
     tools: OpenAI.Chat.Completions.ChatCompletionTool[],
     stream: boolean,
+    responseType: "text" | "json_object",
   ): Promise<Thought>;
 }
 

@@ -49,9 +49,9 @@ interface Agent {
 
   /**
    * Reflection
-   * @returns {Promise<Action[]>} Actions
+   * @returns {Promise<Thought>} Actions
    */
-  reflection(): Promise<Action[]>;
+  reflection(): Promise<Thought>;
 
   /**
    * Tracking dialogue state, should be invoked in execute method, before actions are executed

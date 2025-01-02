@@ -20,6 +20,7 @@ interface ThoughtAgentProps {
 class ThoughtAgent extends BaseAgent {
   language: string;
   protected readonly enableMultimodal: boolean;
+  protected readonly enableReflection: boolean;
   private readonly tools: Tool[] = [];
   private readonly name: string;
   private readonly description: string;
@@ -36,6 +37,7 @@ class ThoughtAgent extends BaseAgent {
     this.conversation = props.conversation;
     this.modelService = props.modelService;
     this.enableMultimodal = props.enableMultimodal;
+    this.enableReflection = props.enableReflection;
     this.name = name;
     this.description = description;
   }
@@ -149,21 +151,56 @@ class ThoughtAgent extends BaseAgent {
 
   /**
    * Reflection
-   * @returns {Promise<Action[]>} Actions
+   * @returns {Promise<Thought>} Actions
    */
-  async reflection(): Promise<Action[]> {
+  async reflection(): Promise<Thought> {
+    if (!this.enableReflection) {
+      return new Thought({
+        type: "error",
+        error: new Error("Reflection is disabled"),
+      });
+    }
     const systemMessage = new ChatMessage({
       role: "system",
       content: this.getReflectionPrompt(),
     });
     const userMessage = new ChatMessage({
       role: "user",
-      content: "Based on reflection gives action, answer or suggestions",
+      content: `Please follow the reflection prompt, and answer in ${this.language}`,
     });
     const messagesWithEnv = [systemMessage, userMessage];
     const toolCalls = this.getToolCalls();
-    const result = await this.toolsCall(messagesWithEnv, toolCalls, false);
-    return result.actions;
+    const result = await this.toolsCall(
+      messagesWithEnv,
+      toolCalls,
+      false,
+      "json_object",
+    );
+    if (result.type === "message") {
+      const jsonString = result.message;
+      try {
+        const json = JSON.parse(jsonString);
+        const evaluation: string = json["evaluation"] || "good";
+        const previousMessage = this.getConversation()
+          .getCurrentInteraction()
+          .outputMessage.getContentText();
+        if (evaluation === "good") {
+          return new Thought({ type: "message", message: previousMessage });
+        }
+        if (evaluation === "bad") {
+          return new Thought({
+            type: "message",
+            message: json["message"] ?? previousMessage,
+          });
+        }
+      } catch (e) {
+        return new Thought({
+          type: "error",
+          error: new Error("Invalid JSON format"),
+        });
+      }
+    }
+    return result;
   }
 
   private getReflectionPrompt(): string {
@@ -173,27 +210,56 @@ class ThoughtAgent extends BaseAgent {
       .join("\n");
     return `## Role: Assistant
 ## Task
-Analysis the conversation messages, and reflect on the assistant answers, think about:
+Think whether the current result meet the goals, return the actions or corrected answer if not.
 - What is user intention?
 - Whether the answer is correct and satisfied?
-- What should user do next?
-- When opened a webpage, usually could generate summary of this page
-- When asked a question, could generate more questions for current topic
-- When search a topic, could open the most related webpage for user to read
+
+It tools call request, the result have 3 types:
+1. If the answer is good, then return single word: good
+2. If the answer is bad, then return bad and the corrected answer.
+3. If need to take actions, then return the function name and arguments.
+
+## Output JSON Format
+If the initial answer is deemed sufficient and meets the user's needs, simply return:
+\`\`\`json
+{
+  "evaluation": "good",
+}
+\`\`\`
+if not satisfied, but the answer is still useful, then return:
+\`\`\`json
+{
+  "evaluation": "bad",
+  "message": "modified answer...",
+}
+\`\`\`
 
 ## Examples
 ### Example 1
 #### Conversation Messages
-user: ask_page
-assistant: summary current page
+user: When the Hinton won the nobel prize?
+assistant: I don't know, I have the knowledge before 2023.
 #### Output
-suggest some related interesting topics to user
+Should choose search action to find the answer.
 
-## Conversation Messages
+### Example 2
+#### Conversation Messages
+user: /summary
+assistant: the summary is ...
+#### Output
+{"evaluation": "good"}
+
+### Example 3
+#### Conversation Messages
+user: which number is bigger, the 1.11 or 1.2?
+assistant: 1.11 is greater than 1.2
+#### Output
+{"evaluation": "bad", "message": "1.2 is greater than 1.11"}
+
+#### Conversation Messages
 ${conversationContent}
 
-## Output
-Choose the best action to execute, or generate new answer, or suggest more question to deep dive current topic.
+#### Output
 `;
   }
 
@@ -347,8 +413,14 @@ Choose the best action to execute, or generate new answer, or suggest more quest
     messages: ChatMessage[],
     tools: OpenAI.Chat.Completions.ChatCompletionTool[],
     stream: boolean = false,
+    responseType: "text" | "json_object" = "text",
   ): Promise<Thought> {
-    return await this.modelService.toolsCall(messages, tools, stream);
+    return await this.modelService.toolsCall(
+      messages,
+      tools,
+      stream,
+      responseType,
+    );
   }
 }
 

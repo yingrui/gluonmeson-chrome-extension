@@ -45,12 +45,7 @@ abstract class BaseAgent implements Agent {
       return result.error.message;
     }
 
-    let message = "";
-    if (result.type === "stream") {
-      message = await this.readMessageFromStream(result.stream);
-    } else if (result.type === "message") {
-      message = result.message;
-    }
+    let message = await this.getMessageFromThought(result);
 
     this.getConversation().appendMessage(
       new ChatMessage({
@@ -60,7 +55,30 @@ abstract class BaseAgent implements Agent {
       }),
     );
     await this.record();
+
+    let thought = await this.reflection();
+    while (thought.type === "actions") {
+      await this.execute(thought.actions);
+      thought = await this.reflection();
+    }
+    if (thought.type === "stream" || thought.type === "message") {
+      this.notifyMessageChanged("");
+      message = await this.getMessageFromThought(thought);
+    }
+
     return message;
+  }
+
+  private async getMessageFromThought(
+    result: Thought,
+    defaultMessage: string = "",
+  ) {
+    if (result.type === "stream") {
+      return await this.readMessageFromStream(result.stream);
+    } else if (result.type === "message") {
+      return result.message;
+    }
+    return defaultMessage;
   }
 
   private async readMessageFromStream(stream: any): Promise<string> {
@@ -138,9 +156,9 @@ abstract class BaseAgent implements Agent {
 
   /**
    * Reflection
-   * @returns {Promise<Action[]>} Actions
+   * @returns {Promise<Thought>} Actions
    */
-  abstract reflection(): Promise<Action[]>;
+  abstract reflection(): Promise<Thought>;
 
   /**
    * Tracking dialogue state, should be invoked in execute method, before actions are executed

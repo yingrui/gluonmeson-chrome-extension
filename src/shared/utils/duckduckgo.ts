@@ -18,7 +18,7 @@ function getBriefOfSearchContent(search_html: string) {
 
 function getSearchResults(search_result: string) {
   const group = search_result.match(
-    /DDG\.pageLayout\.load\('d',(\[[^]*?\])\);DDG\.duckbar\.load\('images'/,
+    /DDG\.pageLayout\.load\('d',(\[[^]*?\])\);DDG\.duckbar\.load/,
   );
   if (group && group.length > 1) {
     return JSON.parse(group[1]);
