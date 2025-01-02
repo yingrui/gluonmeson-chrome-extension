@@ -8,9 +8,9 @@ import ChatMessage from "@src/shared/agents/core/ChatMessage";
 import { locale } from "@src/shared/utils/i18n";
 import BaseAgent from "@src/shared/agents/BaseAgent";
 import type { GluonConfigure } from "@src/shared/storages/gluonConfig";
-import type { ModelProvider } from "@src/shared/agents/ModelService";
-import DefaultModelService from "@src/shared/agents/DefaultModelService";
-import GPTModelService from "@src/shared/agents/GPTModelService";
+import type { ModelProvider } from "@src/shared/agents/services/ModelService";
+import DefaultModelService from "@src/shared/agents/services/DefaultModelService";
+import GPTModelService from "@src/shared/agents/services/GPTModelService";
 
 class BaseAgentFactory {
   private repository: ConversationRepository;

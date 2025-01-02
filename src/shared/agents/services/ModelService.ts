@@ -1,5 +1,5 @@
-import ChatMessage from "./core/ChatMessage";
-import Thought from "./core/Thought";
+import ChatMessage from "../core/ChatMessage";
+import Thought from "../core/Thought";
 import OpenAI from "openai";
 
 type ModelProvider = "zhipu.ai" | "openai.com" | "custom";

@@ -7,7 +7,7 @@ import BaseAgent from "./BaseAgent";
 import Environment from "./core/Environment";
 import type { MessageContent } from "./core/ChatMessage";
 import ChatMessage from "./core/ChatMessage";
-import ModelService from "./ModelService";
+import ModelService from "./services/ModelService";
 
 interface ThoughtAgentProps {
   language: string;

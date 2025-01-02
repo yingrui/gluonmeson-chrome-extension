@@ -1,8 +1,8 @@
 import { ChatCompletionTool } from "openai/resources";
-import ChatMessage from "./core/ChatMessage";
-import type { MessageContent } from "./core/ChatMessage";
+import ChatMessage from "../core/ChatMessage";
+import type { MessageContent } from "../core/ChatMessage";
 import ModelService, { ModelProvider } from "./ModelService";
-import Thought from "./core/Thought";
+import Thought from "../core/Thought";
 import OpenAI from "openai";
 import {
   ChatCompletion,
