@@ -8,21 +8,30 @@ import ChatMessage from "@src/shared/agents/core/ChatMessage";
 import { locale } from "@src/shared/utils/i18n";
 import BaseAgent from "@src/shared/agents/BaseAgent";
 import type { GluonConfigure } from "@src/shared/storages/gluonConfig";
+import ModelService from "@src/shared/agents/services/ModelService";
 import type { ModelProvider } from "@src/shared/agents/services/ModelService";
 import DefaultModelService from "@src/shared/agents/services/DefaultModelService";
 import GPTModelService from "@src/shared/agents/services/GPTModelService";
+import ReflectionService from "@src/shared/agents/services/ReflectionService";
+import PromptReflectionService from "@src/shared/agents/services/PromptReflectionService";
 
 class BaseAgentFactory {
   private repository: ConversationRepository;
   private initMessages: ChatMessage[];
 
   thoughtAgentProps(config: GluonConfigure): ThoughtAgentProps {
+    const modelService = this.createModelService(config);
+    const language = intl.get(locale(config.language)).d("English");
+    const reflectionService = config.enableReflection
+      ? this.createReflectionService(modelService, language)
+      : null;
     return {
-      language: intl.get(locale(config.language)).d("English"),
+      language: language,
       conversation: new Conversation(),
       enableMultimodal: config.enableMultimodal ?? false,
       enableReflection: config.enableReflection ?? false,
-      modelService: this.createModelService(config),
+      modelService: modelService,
+      reflectionService: reflectionService,
     };
   }
 
@@ -81,6 +90,13 @@ class BaseAgentFactory {
       return "zhipu.ai";
     }
     return "custom";
+  }
+
+  private createReflectionService(
+    modelService: ModelService,
+    language: string,
+  ): ReflectionService {
+    return new PromptReflectionService(modelService, language);
   }
 }
 

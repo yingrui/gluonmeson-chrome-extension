@@ -78,6 +78,17 @@ class Conversation {
   public getDatetime(): string {
     return this.datetime;
   }
+
+  public toString(): string {
+    return this.interactions
+      .map(
+        (i) => `user goal: ${i.state}
+user: ${i.inputMessage.content}
+assistant: ${i.outputMessage.content}
+`,
+      )
+      .join("\n");
+  }
 }
 
 export default Conversation;

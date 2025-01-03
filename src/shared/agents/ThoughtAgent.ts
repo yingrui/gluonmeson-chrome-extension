@@ -2,12 +2,12 @@ import OpenAI from "openai";
 import Tool from "./core/Tool";
 import Conversation from "./core/Conversation";
 import Thought from "./core/Thought";
-import { stringToAsyncIterator } from "../utils/streaming";
 import BaseAgent from "./BaseAgent";
 import Environment from "./core/Environment";
 import type { MessageContent } from "./core/ChatMessage";
 import ChatMessage from "./core/ChatMessage";
 import ModelService from "./services/ModelService";
+import ReflectionService from "./services/ReflectionService";
 
 interface ThoughtAgentProps {
   language: string;
@@ -15,6 +15,7 @@ interface ThoughtAgentProps {
   enableMultimodal: boolean;
   enableReflection: boolean;
   modelService: ModelService;
+  reflectionService?: ReflectionService;
 }
 
 class ThoughtAgent extends BaseAgent {
@@ -26,6 +27,7 @@ class ThoughtAgent extends BaseAgent {
   private readonly description: string;
   private readonly conversation: Conversation;
   private readonly modelService: ModelService;
+  private readonly reflectionService: ReflectionService;
 
   constructor(
     props: ThoughtAgentProps,
@@ -36,6 +38,7 @@ class ThoughtAgent extends BaseAgent {
     this.language = props.language;
     this.conversation = props.conversation;
     this.modelService = props.modelService;
+    this.reflectionService = props.reflectionService;
     this.enableMultimodal = props.enableMultimodal;
     this.enableReflection = props.enableReflection;
     this.name = name;
@@ -133,7 +136,6 @@ class ThoughtAgent extends BaseAgent {
    */
   async plan(): Promise<Thought> {
     const messages = this.conversation.getMessages();
-    const interaction = this.conversation.getCurrentInteraction();
     const env = this.getCurrentEnvironment();
     const systemMessage = new ChatMessage({
       role: "system",
@@ -143,7 +145,9 @@ class ThoughtAgent extends BaseAgent {
       ? [systemMessage, ...messages.slice(1)]
       : messages;
 
+    const interaction = this.conversation.getCurrentInteraction();
     interaction.setStatus("Planning", `${this.getName()} is thinking...`);
+
     const toolCalls = this.getToolCalls();
     if (toolCalls.length === 0) {
       return new Thought({ type: "actions", actions: [] });
@@ -153,116 +157,21 @@ class ThoughtAgent extends BaseAgent {
 
   /**
    * Reflection
-   * @returns {Promise<Thought>} Actions
+   * @returns {Promise<Thought | null>} Actions
    */
-  async reflection(): Promise<Thought> {
+  async reflection(): Promise<Thought | null> {
     if (!this.enableReflection) {
-      return new Thought({
-        type: "error",
-        error: new Error("Reflection is disabled"),
-      });
+      return null;
     }
-    const systemMessage = new ChatMessage({
-      role: "system",
-      content: this.getReflectionPrompt(),
-    });
-    const userMessage = new ChatMessage({
-      role: "user",
-      content: `Please follow the reflection prompt, and answer in ${this.language}`,
-    });
-    const messagesWithEnv = [systemMessage, userMessage];
-    const toolCalls = this.getToolCalls();
-    const result = await this.toolsCall(
-      messagesWithEnv,
-      toolCalls,
-      false,
-      "json_object",
+
+    const interaction = this.conversation.getCurrentInteraction();
+    interaction.setStatus("Reflecting", `${this.getName()} is reflecting...`);
+
+    return await this.reflectionService.reflection(
+      this.getCurrentEnvironment(),
+      this.conversation,
+      this.getTools(),
     );
-    if (result.type === "message") {
-      const jsonString = result.message;
-      try {
-        const json = JSON.parse(jsonString);
-        const evaluation: string = json["evaluation"] || "good";
-        const previousMessage = this.getConversation()
-          .getCurrentInteraction()
-          .outputMessage.getContentText();
-        if (evaluation === "good") {
-          return new Thought({ type: "message", message: previousMessage });
-        }
-        if (evaluation === "bad") {
-          return new Thought({
-            type: "message",
-            message: json["message"] ?? previousMessage,
-          });
-        }
-      } catch (e) {
-        return new Thought({
-          type: "error",
-          error: new Error("Invalid JSON format"),
-        });
-      }
-    }
-    return result;
-  }
-
-  private getReflectionPrompt(): string {
-    const messages = this.conversation.getMessages();
-    const conversationContent = messages
-      .map((m) => `- ${m.role}: ${m.content}`)
-      .join("\n");
-    return `## Role: Assistant
-## Task
-Think whether the current result meet the goals, return the actions or corrected answer if not.
-- What is user intention?
-- Whether the answer is correct and satisfied?
-
-It tools call request, the result have 3 types:
-1. If the answer is good, then return single word: good
-2. If the answer is bad, then return bad and the corrected answer.
-3. If need to take actions, then return the function name and arguments.
-
-## Output JSON Format
-If the initial answer is deemed sufficient and meets the user's needs, simply return:
-\`\`\`json
-{
-  "evaluation": "good",
-}
-\`\`\`
-if not satisfied, but the answer is still useful, then return:
-\`\`\`json
-{
-  "evaluation": "bad",
-  "message": "modified answer...",
-}
-\`\`\`
-
-## Examples
-### Example 1
-#### Conversation Messages
-user: When the Hinton won the nobel prize?
-assistant: I don't know, I have the knowledge before 2023.
-#### Output
-Should choose search action to find the answer.
-
-### Example 2
-#### Conversation Messages
-user: /summary
-assistant: the summary is ...
-#### Output
-{"evaluation": "good"}
-
-### Example 3
-#### Conversation Messages
-user: which number is bigger, the 1.11 or 1.2?
-assistant: 1.11 is greater than 1.2
-#### Output
-{"evaluation": "bad", "message": "1.2 is greater than 1.11"}
-
-#### Conversation Messages
-${conversationContent}
-
-#### Output
-`;
   }
 
   /**

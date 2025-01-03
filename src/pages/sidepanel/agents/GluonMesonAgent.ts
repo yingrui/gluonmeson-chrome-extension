@@ -131,10 +131,15 @@ Output format should be in markdown format, and use mermaid format for diagram g
 Current user is viewing the page: ${content.title}, the url is ${content.url}, the content is:
 ${text}.
 The links are: ${JSON.stringify(content.links)}`,
+        content,
         screenshot,
       };
     } else {
-      return { systemPrompt: this.getInitialSystemMessage(), screenshot };
+      return {
+        systemPrompt: this.getInitialSystemMessage(),
+        content,
+        screenshot,
+      };
     }
   }
 

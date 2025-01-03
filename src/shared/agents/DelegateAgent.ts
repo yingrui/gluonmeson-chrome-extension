@@ -55,7 +55,7 @@ class DelegateAgent extends BaseAgent {
     return this.currentAgent.plan();
   }
 
-  public async reflection(): Promise<Thought> {
+  public async reflection(): Promise<Thought | null> {
     return await this.currentAgent.reflection();
   }
 

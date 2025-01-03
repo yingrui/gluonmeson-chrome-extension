@@ -58,17 +58,16 @@ abstract class BaseAgent implements Agent {
     await this.record();
 
     let thought = await this.reflection();
-    while (thought.type === "actions") {
+    while (thought && thought.type === "actions") {
       await this.execute(thought.actions);
       thought = await this.reflection();
     }
-    if (thought.type === "stream" || thought.type === "message") {
+    if (thought && ["stream", "message"].includes(thought.type)) {
       this.notifyMessageChanged("");
       message = await thought.getMessage((msg) => {
         this.notifyMessageChanged(msg);
       });
     }
-
     return message;
   }
 
@@ -127,9 +126,9 @@ abstract class BaseAgent implements Agent {
 
   /**
    * Reflection
-   * @returns {Promise<Thought>} Actions
+   * @returns {Promise<Thought | null>} Actions
    */
-  abstract reflection(): Promise<Thought>;
+  abstract reflection(): Promise<Thought | null>;
 
   /**
    * Tracking dialogue state, should be invoked in execute method, before actions are executed

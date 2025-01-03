@@ -52,13 +52,12 @@ class ElevatorPitchContext {
       feedback: feedback,
       generatedElevatorPitch: generatedElevatorPitch,
     };
-    console.log("Saving elevator pitch:", record);
+
     await this.elevatorPitchRepository.save(record);
   }
 
   updateElevatorPitch(record: ElevatorPitchRecord) {
     this.elevatorPitch.record = record;
-    console.log("Updating elevator pitch:", this.elevatorPitch.record);
   }
 
   async save() {
