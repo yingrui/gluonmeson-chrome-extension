@@ -12,8 +12,8 @@
 .logo, .logo-and-name {
   display: flex;
   flex-direction: row;
-  justify-content: center;
   align-items: center;
+  min-width: 180px;
 }
 
 h6 {
