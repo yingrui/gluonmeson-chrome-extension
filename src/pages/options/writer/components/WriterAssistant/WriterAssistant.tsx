@@ -72,15 +72,14 @@ const WriterAssistant: React.FC<WriterAssistantProps> = ({
     if (userInput) {
       appendMessage("user", userInput);
     }
+    agent.onMessageChange((msg) => {
+      setCurrentText(msg);
+      setTimeout(() => {
+        scrollToBottom();
+      });
+    });
     const result = await agent.chat(messages[messages.length - 1]);
-    const message = await agent
-      .onMessageChange((msg) => {
-        setCurrentText(msg);
-        setTimeout(() => {
-          scrollToBottom();
-        });
-      })
-      .onCompleted(result);
+    const message = await result.getMessage();
 
     appendMessage("assistant", message);
     setCurrentText("");

@@ -27,7 +27,7 @@ class Thought {
   }
 
   public async getMessage(
-    notifyMessageChanged: (msg: string) => void,
+    notifyMessageChanged: (msg: string) => void = undefined,
   ): Promise<string> {
     if (this.type === "stream") {
       return await this.readMessageFromStream(
@@ -58,7 +58,9 @@ class Thought {
         message = message + chunk.data;
       }
       // Notify message changed, for rendering in UI
-      notifyMessageChanged(message);
+      if (notifyMessageChanged) {
+        notifyMessageChanged(message);
+      }
     }
     return message;
   }

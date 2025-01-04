@@ -39,11 +39,10 @@ const SearchPage: React.FC<SearchPageProps> = ({ query, agent }) => {
 
       // Show summary
       setGenerating(true);
-      const message = await agent
-        .onMessageChange((msg) => {
-          setCurrentText(msg);
-        })
-        .onCompleted(thinkResult);
+      const message = await thinkResult.getMessage((msg) => {
+        setCurrentText(msg);
+      });
+
       setGenerating(false);
     }
     isSearchCompleted.current = true;

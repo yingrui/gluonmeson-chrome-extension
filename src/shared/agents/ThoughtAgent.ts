@@ -2,12 +2,13 @@ import OpenAI from "openai";
 import Tool from "./core/Tool";
 import Conversation from "./core/Conversation";
 import Thought from "./core/Thought";
-import BaseAgent from "./BaseAgent";
 import Environment from "./core/Environment";
 import type { MessageContent } from "./core/ChatMessage";
 import ChatMessage from "./core/ChatMessage";
 import ModelService from "./services/ModelService";
 import ReflectionService from "./services/ReflectionService";
+import ConversationRepository from "@src/shared/agents/ConversationRepository";
+import Agent from "./core/Agent";
 
 interface ThoughtAgentProps {
   language: string;
@@ -18,7 +19,7 @@ interface ThoughtAgentProps {
   reflectionService?: ReflectionService;
 }
 
-class ThoughtAgent extends BaseAgent {
+class ThoughtAgent implements Agent {
   language: string;
   protected readonly enableMultimodal: boolean;
   protected readonly enableReflection: boolean;
@@ -28,13 +29,14 @@ class ThoughtAgent extends BaseAgent {
   private readonly conversation: Conversation;
   private readonly modelService: ModelService;
   private readonly reflectionService: ReflectionService;
+  private receiveStreamMessageListener: (msg: string) => void;
+  private repo: ConversationRepository;
 
   constructor(
     props: ThoughtAgentProps,
     name: string = "Guru",
     description: string = "Guru",
   ) {
-    super();
     this.language = props.language;
     this.conversation = props.conversation;
     this.modelService = props.modelService;
@@ -43,6 +45,93 @@ class ThoughtAgent extends BaseAgent {
     this.enableReflection = props.enableReflection;
     this.name = name;
     this.description = description;
+  }
+
+  /**
+   * On start interaction:
+   *  1. append user message
+   *  2. perception environment
+   *
+   * There are two ways to call this method:
+   *  1. When calling the chat method
+   *  2. When calling the executeCommand method
+   * @returns {void}
+   */
+  private async onStartInteraction(message: ChatMessage): Promise<void> {
+    this.getConversation().appendMessage(message);
+    const env = await this.environment(); // Perception
+    this.getConversation().getCurrentInteraction().environment = env;
+  }
+
+  /**
+   * Get current environment
+   */
+  protected getCurrentEnvironment(): Environment {
+    return this.getConversation().getCurrentInteraction().environment;
+  }
+
+  /**
+   * When the chat (or executeCommand) is completed, then do the following:
+   * 1. Get the message from the thought
+   * 2. Append the message to the conversation, and then save the conversation
+   * 3. Review the conversation, reflect, and then execute the actions
+   * @param result
+   */
+  private async onCompleted(result: Thought): Promise<string> {
+    if (result.type === "error") {
+      return result.error.message;
+    }
+
+    let message = await result.getMessage((msg) => {
+      this.notifyMessageChanged(msg);
+    });
+
+    this.getConversation().appendMessage(
+      new ChatMessage({
+        role: "assistant",
+        content: message,
+        name: this.getName(),
+      }),
+    );
+    await this.record();
+
+    let thought = await this.reflection();
+    while (thought && thought.type === "actions") {
+      await this.execute(thought.actions);
+      thought = await this.reflection();
+    }
+    if (thought && ["stream", "message"].includes(thought.type)) {
+      this.notifyMessageChanged("");
+      message = await thought.getMessage((msg) => {
+        this.notifyMessageChanged(msg);
+      });
+    }
+    return message;
+  }
+
+  protected notifyMessageChanged(message: string) {
+    if (this.receiveStreamMessageListener) {
+      this.receiveStreamMessageListener(message);
+    }
+  }
+
+  onMessageChange(listener: (msg: string) => void): Agent {
+    this.receiveStreamMessageListener = listener;
+    return this;
+  }
+
+  private async record(): Promise<string> {
+    if (this.repo) {
+      return await this.repo.save(this.getConversation());
+    }
+
+    return null;
+  }
+
+  public setConversationRepository(
+    conversationRepository: ConversationRepository,
+  ) {
+    this.repo = conversationRepository;
   }
 
   getName(): string {
@@ -110,14 +199,37 @@ class ThoughtAgent extends BaseAgent {
   async chat(message: ChatMessage): Promise<Thought> {
     await this.onStartInteraction(message);
     const thought = await this.plan();
+    const result = await this.process(thought);
+    const output = await this.onCompleted(result);
+    return new Thought({ type: "message", message: output });
+  }
+
+  private async process(thought: Thought): Promise<Thought> {
     if (thought.type === "actions") {
-      return this.execute(thought.actions);
+      return await this.execute(thought.actions);
     } else if (["message", "stream"].includes(thought.type)) {
-      return this.execute([this.replyAction(thought)]);
+      return await this.execute([this.replyAction(thought)]);
     } else if (thought.type === "error") {
       return thought;
     }
+
     throw new Error("Unknown plan type");
+  }
+
+  /**
+   * Execute
+   * @param {Action[]} actions - Actions
+   * @param {Conversation} conversation - Conversation
+   * @returns {Promise<Thought>} ChatCompletion
+   */
+  async executeCommand(
+    actions: Action[],
+    message: ChatMessage,
+  ): Promise<Thought> {
+    await this.onStartInteraction(message);
+    const result = await this.execute(actions);
+    const output = await this.onCompleted(result);
+    return new Thought({ type: "message", message: output });
   }
 
   /**
@@ -266,6 +378,10 @@ class ThoughtAgent extends BaseAgent {
     return { name: "reply", arguments: { thought: thought } } as Action;
   }
 
+  private chatAction(userInput: string | MessageContent[]): Action {
+    return { name: "chat", arguments: { userInput: userInput } } as Action;
+  }
+
   /**
    * Chat completion
    * @param {ChatMessage[]} messages - Messages
@@ -307,10 +423,6 @@ class ThoughtAgent extends BaseAgent {
       this.enableMultimodal,
       responseType,
     );
-  }
-
-  private chatAction(userInput: string | MessageContent[]): Action {
-    return { name: "chat", arguments: { userInput: userInput } } as Action;
   }
 
   /**

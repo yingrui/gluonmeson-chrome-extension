@@ -2,16 +2,14 @@ import Tool from "./core/Tool";
 import Agent from "./core/Agent";
 import Conversation from "./core/Conversation";
 import Thought from "./core/Thought";
-import BaseAgent from "./BaseAgent";
 import Environment from "./core/Environment";
 import ChatMessage from "./core/ChatMessage";
-import _ from "lodash";
 
 /**
  * Delegation Agent
  * @extends {DelegateAgent} - Agent with tools
  */
-class DelegateAgent extends BaseAgent {
+class DelegateAgent implements Agent {
   initAgent: Agent;
   currentAgent: Agent;
   commands: CommandOption[];
@@ -26,13 +24,20 @@ class DelegateAgent extends BaseAgent {
     conversation: Conversation = new Conversation(),
     chitchatWhenToolNotFound: boolean = false,
   ) {
-    super();
     this.initAgent = agent;
     this.currentAgent = agent;
     this.agents = agents;
     this.commands = commands;
     this.conversation = conversation;
     this.chitchatWhenToolNotFound = chitchatWhenToolNotFound;
+  }
+
+  onMessageChange(listener: (msg: string) => void): Agent {
+    this.currentAgent.onMessageChange(listener);
+    for (const agent of this.agents) {
+      agent.onMessageChange(listener);
+    }
+    return this;
   }
 
   public getName(): string {

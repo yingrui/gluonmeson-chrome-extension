@@ -1,15 +1,16 @@
 import OpenAI from "openai";
-import { ThoughtAgentProps } from "@src/shared/agents/ThoughtAgent";
+import ThoughtAgent, {
+  ThoughtAgentProps,
+} from "@src/shared/agents/ThoughtAgent";
 import Conversation from "@src/shared/agents/core/Conversation";
 import Agent from "@src/shared/agents/core/Agent";
 import ConversationRepository from "@src/shared/agents/ConversationRepository";
 import intl from "react-intl-universal";
 import ChatMessage from "@src/shared/agents/core/ChatMessage";
 import { locale } from "@src/shared/utils/i18n";
-import BaseAgent from "@src/shared/agents/BaseAgent";
 import type { GluonConfigure } from "@src/shared/storages/gluonConfig";
-import ModelService from "@src/shared/agents/services/ModelService";
 import type { ModelProvider } from "@src/shared/agents/services/ModelService";
+import ModelService from "@src/shared/agents/services/ModelService";
 import DefaultModelService from "@src/shared/agents/services/DefaultModelService";
 import GPTModelService from "@src/shared/agents/services/GPTModelService";
 import ReflectionService from "@src/shared/agents/services/ReflectionService";
@@ -69,7 +70,7 @@ class BaseAgentFactory {
       agent.getConversation().set(this.initMessages);
     }
 
-    if (this.repository && agent instanceof BaseAgent) {
+    if (this.repository && agent instanceof ThoughtAgent) {
       agent.setConversationRepository(this.repository);
     }
     return agent;

@@ -30,12 +30,6 @@ interface Agent {
   getConversation(): Conversation;
 
   /**
-   * Receive message
-   * @param result
-   */
-  onCompleted(result: Thought): Promise<string>;
-
-  /**
    * Add listener for receiving stream message
    * @param listener
    */

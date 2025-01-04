@@ -20,6 +20,7 @@ import type { MentionProps } from "antd";
 import intl from "react-intl-universal";
 import ChatMessage from "@src/shared/agents/core/ChatMessage";
 import SensitiveTopicError from "@src/shared/agents/core/errors/SensitiveTopicError";
+import Thought from "@src/shared/agents/core/Thought";
 
 const { Text } = Typography;
 
@@ -117,7 +118,7 @@ function SidePanel(props: Record<string, unknown>) {
 
   async function generateReply(
     userInput: string,
-    generate_func: () => Promise<any>,
+    generate_func: () => Promise<Thought>,
   ): Promise<string> {
     setGenerating(true);
     let message = "";
@@ -128,14 +129,15 @@ function SidePanel(props: Record<string, unknown>) {
       }
 
       try {
-        message = await agent
-          .onMessageChange((msg) => {
-            setCurrentText(msg);
-            setTimeout(() => {
-              scrollToBottom();
-            });
-          })
-          .onCompleted(await generate_func());
+        agent.onMessageChange((msg) => {
+          setCurrentText(msg);
+          setTimeout(() => {
+            scrollToBottom();
+          });
+        });
+
+        const thought = await generate_func();
+        message = await thought.getMessage();
       } catch (e) {
         message = handleError(e);
       }
