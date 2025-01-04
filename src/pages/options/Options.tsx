@@ -87,7 +87,12 @@ const Options: React.FC<OptionsProps> = ({ config }) => {
             defaultSelectedKeys={[defaultSelectedItem]}
             selectedKeys={[selectedItem]}
             items={getHeaderItems(config)}
-            style={{ flex: 1, minWidth: 0 }}
+            style={{
+              flex: 1,
+              minWidth: 300,
+              justifyContent: "flex-end",
+              display: "flex",
+            }}
             onClick={(e) => handleMenuClick(e.key)}
           />
         </div>
