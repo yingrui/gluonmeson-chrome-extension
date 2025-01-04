@@ -107,6 +107,7 @@ const WriterEditor: React.FC<WriterEditorProps> = ({ context }) => {
           textareaProps={{
             placeholder: "Please enter Markdown text",
           }}
+          highlightEnable={false}
           height={"100%"}
           value={value}
           previewOptions={{
