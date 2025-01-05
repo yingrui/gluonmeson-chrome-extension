@@ -18,6 +18,25 @@ class PromptReflectionService implements ReflectionService {
     this.language = language;
   }
 
+  async goal(env: Environment, conversation: Conversation): Promise<string> {
+    const thought = await this.modelService.chatCompletion(
+      [
+        new ChatMessage({
+          role: "system",
+          content: this.getGoalPrompt(env, conversation),
+        }),
+        new ChatMessage({
+          role: "user",
+          content: `Please analysis user's goal in ${this.language}`,
+        }),
+      ],
+      true,
+      false,
+      "text",
+    );
+    return thought.getMessage();
+  }
+
   async reflection(
     env: Environment,
     conversation: Conversation,
@@ -145,8 +164,8 @@ class PromptReflectionService implements ReflectionService {
     return `## Role: Assistant
 ## Task
 Think whether the current result meet the goals, return the actions or suggestions if not.
-- What is the goal of user?
-- Whether the answer is correct and satisfied?
+- Consider the current goal of user?
+- Check if the answer is correct or satisfied?
 
 It tools call request, the result have 3 types:
 1. If the answer is good enough, then return "finished".
@@ -178,6 +197,7 @@ if not satisfied, but the answer is still useful, then return:
 ## Examples
 ### Example 1
 #### Conversation Messages
+user goal: Find the information about the Hinton.
 user: When the Hinton won the nobel prize?
 assistant: I don't know, I have the knowledge before 2023.
 #### Output
@@ -185,6 +205,7 @@ Should choose search action to find the answer.
 
 ### Example 2
 #### Conversation Messages
+user goal: Browsing the webpage more quickly.
 user: /summary
 assistant: the summary is ...
 #### Output
@@ -192,6 +213,7 @@ assistant: the summary is ...
 
 ### Example 3
 #### Conversation Messages
+user goal: chitchat with some math problem.
 user: which number is bigger, the 1.11 or 1.2?
 assistant: 1.11 is greater than 1.2
 #### Output
@@ -257,6 +279,31 @@ The user is browsing webpage:
 - Title: ${env.content?.title}
 - URL: ${env.content?.url}
 - Links: ${env.content?.links}
+- Content: 
+${text}
+
+## Conversation Messages
+${conversationContent}
+`;
+  }
+
+  private getGoalPrompt(env: Environment, conversation: Conversation): string {
+    const conversationContent = conversation.toString();
+    const text =
+      env.content?.text?.length > 1024 * 5
+        ? env.content?.text?.slice(0, 1024 * 5)
+        : env.content?.text;
+    return `## Role: Assistant
+## Task
+Just analysis user's goal, consider the previous goals, if the goal is not change, could use previous goals.
+
+## Output Format
+Keep the output goal short and precise, just one sentence, less than 50 words. 
+
+## Status
+The user is browsing webpage:
+- Title: ${env.content?.title}
+- URL: ${env.content?.url}
 - Content: 
 ${text}
 

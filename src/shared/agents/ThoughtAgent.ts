@@ -259,6 +259,12 @@ class ThoughtAgent implements Agent {
 
     const interaction = this.conversation.getCurrentInteraction();
     interaction.setStatus("Planning", `${this.getName()} is thinking...`);
+    interaction.setGoal(
+      await this.reflectionService.goal(
+        this.getCurrentEnvironment(),
+        this.getConversation(),
+      ),
+    );
 
     const toolCalls = this.getToolCalls();
     if (toolCalls.length === 0) {
@@ -278,6 +284,8 @@ class ThoughtAgent implements Agent {
 
     const interaction = this.conversation.getCurrentInteraction();
     interaction.setStatus("Reflecting", `${this.getName()} is reflecting...`);
+    this.getConversation().getCurrentInteraction().environment =
+      await this.environment();
 
     return await this.reflectionService.reflection(
       this.getCurrentEnvironment(),
@@ -299,11 +307,7 @@ class ThoughtAgent implements Agent {
       return [this.chatAction(messages[messages.length - 1].content)];
     }
     // TODO: The connections between intent and actions are missing.
-    interaction.setState(
-      actions[0].name,
-      actions[0].name,
-      actions[0].arguments,
-    );
+    interaction.setIntent(actions[0].name, actions[0].arguments);
     return actions;
   }
 

@@ -48,8 +48,11 @@ class Interaction {
     return this.statusMessage;
   }
 
-  public setState(state: string, intent: string, intentArguments: any) {
-    this.state = state;
+  public setGoal(goal: string) {
+    this.state = goal;
+  }
+
+  public setIntent(intent: string, intentArguments: any) {
     this.intent = intent;
     this.intentArguments = intentArguments;
     this.notify();

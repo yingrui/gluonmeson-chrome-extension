@@ -15,6 +15,14 @@ class Suggestions {
 
 interface ReflectionService {
   /**
+   * Analysis user's goal
+   * @param env
+   * @param conversation
+   * @returns {Promise<string>}
+   */
+  goal(env: Environment, conversation: Conversation): Promise<string>;
+
+  /**
    * Reflection
    * @param {Environment} env - Environment
    * @param {Conversation} conversation - Conversation

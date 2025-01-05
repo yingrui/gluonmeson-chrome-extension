@@ -83,8 +83,8 @@ class Conversation {
     return this.interactions
       .map(
         (i) => `user goal: ${i.state}
-user: ${i.inputMessage.content}
-assistant: ${i.outputMessage.content}
+user: ${i.inputMessage.getContentText()}
+assistant: ${i.outputMessage?.getContentText()}
 `,
       )
       .join("\n");

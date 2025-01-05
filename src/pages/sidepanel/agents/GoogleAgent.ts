@@ -10,6 +10,13 @@ import Environment from "@src/shared/agents/core/Environment";
 import ChatMessage from "@src/shared/agents/core/ChatMessage";
 
 class GoogleAgent extends ThoughtAgent {
+  private readonly pages = {
+    "search engine": "https://www.google.com",
+    calendar: "https://calendar.google.com/",
+    "cloud drive": "https://drive.google.com/",
+    news: "https://www.toutiao.com/",
+  };
+
   constructor(props: ThoughtAgentProps) {
     super(
       props,
@@ -28,6 +35,12 @@ class GoogleAgent extends ThoughtAgent {
       "open_url",
       "When user input an url or if user intent to open an url in conversation messages, open given url in browser.",
       ["url"],
+    );
+    this.addTool(
+      "visit",
+      `When user want to visit some website (search engine, calendar, cloud drive, news, etc.), 
+open the website or open the given url. the website type or url is required.`,
+      ["website", "url", "userInput"],
     );
   }
 
@@ -84,6 +97,8 @@ There is a problem that you cannot get any information from current tab, it's po
     ]);
   }
 
+  private urlIsOpened = "Url is opened.";
+
   async open_url(args: object, messages: ChatMessage[]): Promise<Thought> {
     return new Promise<any>((resolve, reject) => {
       const url = args["url"];
@@ -103,7 +118,7 @@ There is a problem that you cannot get any information from current tab, it's po
               resolve(
                 new Thought({
                   type: "stream",
-                  stream: stringToAsyncIterator("Url is opened."),
+                  stream: stringToAsyncIterator(this.urlIsOpened),
                 }),
               );
               return;
@@ -114,11 +129,42 @@ There is a problem that you cannot get any information from current tab, it's po
         resolve(
           new Thought({
             type: "stream",
-            stream: stringToAsyncIterator("Url is opened."),
+            stream: stringToAsyncIterator(this.urlIsOpened),
           }),
         );
       });
     });
+  }
+
+  async visit(args: object, messages: ChatMessage[]): Promise<Thought> {
+    const defaultUserInput = `please describe what is this webpage in ${this.language}`;
+    const userInput = args["userInput"] ?? defaultUserInput;
+    let result: Thought = null;
+
+    if (args["url"]) {
+      result = await this.open_url({ userInput, url: args["url"] }, messages);
+    }
+
+    const website = args["website"];
+    if (website) {
+      let url = args["url"];
+      url = this.pages[website];
+      if (!url) {
+        throw new Error("Unknown website.");
+      }
+      result = await this.open_url({ userInput, url: url }, messages);
+    }
+
+    const status = await result.getMessage();
+    if (status === this.urlIsOpened) {
+      const env = await this.environment();
+      return await this.chatCompletion([
+        new ChatMessage({ role: "system", content: env.systemPrompt }),
+        new ChatMessage({ role: "user", content: userInput }),
+      ]);
+    }
+
+    return new Thought({ type: "message", message: status });
   }
 
   async google(args: object, messages: ChatMessage[]): Promise<Thought> {
