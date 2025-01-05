@@ -48,6 +48,12 @@ const Message: React.FC<MessageProps> = React.memo((props: MessageProps) => {
     });
   }
 
+  function shouldSpin(): boolean {
+    return (
+      isAssistant && interaction && interaction.getStatus() !== "Completed"
+    );
+  }
+
   return (
     <div className={`message-item ${isAssistant ? "message-assistant" : ""}`}>
       {isAssistant && (
@@ -56,36 +62,35 @@ const Message: React.FC<MessageProps> = React.memo((props: MessageProps) => {
           <span>{name}</span>
         </div>
       )}
-      {content ? (
-        <div
-          className={`message-content ${isAssistant ? "bot-message-content" : "user-message-content"}`}
+      <div
+        className={`message-content ${isAssistant ? "bot-message-content" : "user-message-content"}`}
+      >
+        {shouldSpin() && (
+          // When content is empty
+          <div className={"message-spin"}>
+            <Spin />
+            {interaction && (
+              <span className={"interaction-status"}>{statusMessage}</span>
+            )}
+          </div>
+        )}
+        <ReactMarkdown
+          components={{
+            code: (props) => {
+              return <CodeBlock {...props} loading={loading} />;
+            },
+          }}
+          rehypePlugins={rehypePlugins as any}
+          remarkPlugins={remarkPlugins as any}
         >
-          <ReactMarkdown
-            components={{
-              code: (props) => {
-                return <CodeBlock {...props} loading={loading} />;
-              },
-            }}
-            rehypePlugins={rehypePlugins as any}
-            remarkPlugins={remarkPlugins as any}
-          >
-            {getContent()}
-          </ReactMarkdown>
-          {isAssistant && !loading && index > 0 && (
-            <div>
-              <CopyOutlined className="copy-icon" onClick={handleCopy} />
-            </div>
-          )}
-        </div>
-      ) : (
-        // When content is empty
-        <div className="message-spin">
-          <Spin />
-          {interaction && (
-            <span className={"interaction-status"}>{statusMessage}</span>
-          )}
-        </div>
-      )}
+          {getContent()}
+        </ReactMarkdown>
+        {isAssistant && !loading && index > 0 && (
+          <div>
+            <CopyOutlined className="copy-icon" onClick={handleCopy} />
+          </div>
+        )}
+      </div>
       {!isAssistant && (
         <img className="user-avatar" src="/icons/user-icon.png" />
       )}

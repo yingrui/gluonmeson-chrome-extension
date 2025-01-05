@@ -79,6 +79,7 @@ class ThoughtAgent implements Agent {
    */
   private async onCompleted(result: Thought): Promise<string> {
     if (result.type === "error") {
+      this.getConversation().getCurrentInteraction().setStatus("Completed", "");
       return result.error.message;
     }
 
@@ -106,6 +107,8 @@ class ThoughtAgent implements Agent {
         this.notifyMessageChanged(msg);
       });
     }
+
+    this.getConversation().getCurrentInteraction().setStatus("Completed", "");
     return message;
   }
 

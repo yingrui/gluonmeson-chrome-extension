@@ -2,13 +2,20 @@ import { v4 as uuidv4 } from "uuid";
 import ChatMessage from "./ChatMessage";
 import Environment from "./Environment";
 
+type InteractionStatus =
+  | "Start"
+  | "Planning"
+  | "Reflecting"
+  | "Executing"
+  | "Completed";
+
 class Interaction {
   private readonly uuid: string;
   private readonly datetime: string;
   state: string; // State is the description of user intents, for example: "Searching", "Viewing", etc.
   intent: string; // The specific intent, for example: "google_search", "open_url", etc.
   intentArguments?: any; // The arguments of the intent
-  status: string; // the status of agent: "Intent Recognition" | "Reflecting" | "Executing" | "Completed"
+  status: InteractionStatus; // the status of agent
   statusMessage: string; // the message of the status
   agentName: string; // the name of the agent
   inputMessage: ChatMessage;
@@ -34,7 +41,7 @@ class Interaction {
     this.outputMessage = message;
   }
 
-  public setStatus(status: string, statusMessage: string) {
+  public setStatus(status: InteractionStatus, statusMessage: string) {
     this.status = status;
     this.statusMessage = statusMessage;
     this.notify();
@@ -85,3 +92,4 @@ class Interaction {
 }
 
 export default Interaction;
+export type { InteractionStatus };

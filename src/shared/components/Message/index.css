@@ -39,9 +39,7 @@
 }
 
 .message-spin {
-  background: #f3f4f6;
-  border-radius: 16px;
-  padding: 12px 16px;
+  padding: 8px 0px;
 }
 
 .bot-message-content {
