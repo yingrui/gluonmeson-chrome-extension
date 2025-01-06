@@ -9,6 +9,7 @@ import ModelService from "./services/ModelService";
 import ReflectionService from "./services/ReflectionService";
 import ConversationRepository from "@src/shared/agents/ConversationRepository";
 import Agent from "./core/Agent";
+import Interaction from "./core/Interaction";
 
 interface ThoughtAgentProps {
   language: string;
@@ -59,15 +60,20 @@ class ThoughtAgent implements Agent {
    */
   private async onStartInteraction(message: ChatMessage): Promise<void> {
     this.getConversation().appendMessage(message);
-    const env = await this.environment(); // Perception
-    this.getConversation().getCurrentInteraction().environment = env;
+    const interaction = this.getCurrentInteraction();
+    // Perception
+    interaction.environment = await this.environment();
   }
 
   /**
    * Get current environment
    */
   protected getCurrentEnvironment(): Environment {
-    return this.getConversation().getCurrentInteraction().environment;
+    return this.getCurrentInteraction().environment;
+  }
+
+  protected getCurrentInteraction(): Interaction {
+    return this.getConversation().getCurrentInteraction();
   }
 
   /**
@@ -79,7 +85,7 @@ class ThoughtAgent implements Agent {
    */
   private async onCompleted(result: Thought): Promise<string> {
     if (result.type === "error") {
-      this.getConversation().getCurrentInteraction().setStatus("Completed", "");
+      this.getCurrentInteraction().setStatus("Completed", "");
       return result.error.message;
     }
 
@@ -108,7 +114,7 @@ class ThoughtAgent implements Agent {
       });
     }
 
-    this.getConversation().getCurrentInteraction().setStatus("Completed", "");
+    this.getCurrentInteraction().setStatus("Completed", "");
     return message;
   }
 
@@ -241,7 +247,7 @@ class ThoughtAgent implements Agent {
    */
   async environment(): Promise<Environment> {
     return new Promise<Environment>((resolve, reject) => {
-      resolve({ systemPrompt: "" });
+      resolve({ systemPrompt: () => "" });
     });
   }
 
@@ -250,24 +256,26 @@ class ThoughtAgent implements Agent {
    * @returns {Promise<Thought>} ThinkResult
    */
   async plan(): Promise<Thought> {
-    const messages = this.conversation.getMessages();
+    const interaction = this.conversation.getCurrentInteraction();
+    interaction.setStatus("Planning", `${this.getName()} is thinking...`);
+    if (this.enableReflection && this.reflectionService) {
+      interaction.setGoal(
+        await this.reflectionService.goal(
+          this.getCurrentEnvironment(),
+          this.getConversation(),
+        ),
+      );
+    }
+
     const env = this.getCurrentEnvironment();
     const systemMessage = new ChatMessage({
       role: "system",
-      content: env.systemPrompt,
+      content: env.systemPrompt(),
     });
-    const messagesWithEnv = env.systemPrompt
+    const messages = this.conversation.getMessages();
+    const messagesWithEnv = env.systemPrompt()
       ? [systemMessage, ...messages.slice(1)]
       : messages;
-
-    const interaction = this.conversation.getCurrentInteraction();
-    interaction.setStatus("Planning", `${this.getName()} is thinking...`);
-    interaction.setGoal(
-      await this.reflectionService.goal(
-        this.getCurrentEnvironment(),
-        this.getConversation(),
-      ),
-    );
 
     const toolCalls = this.getToolCalls();
     if (toolCalls.length === 0) {
@@ -287,8 +295,7 @@ class ThoughtAgent implements Agent {
 
     const interaction = this.conversation.getCurrentInteraction();
     interaction.setStatus("Reflecting", `${this.getName()} is reflecting...`);
-    this.getConversation().getCurrentInteraction().environment =
-      await this.environment();
+    this.getCurrentInteraction().environment = await this.environment();
 
     return await this.reflectionService.reflection(
       this.getCurrentEnvironment(),
@@ -338,7 +345,7 @@ class ThoughtAgent implements Agent {
       const env = await this.environment();
       return this.chatCompletion(
         this.conversation.getMessages(),
-        env.systemPrompt,
+        env.systemPrompt(),
         args["userInput"],
       );
     }

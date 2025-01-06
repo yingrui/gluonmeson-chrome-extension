@@ -124,11 +124,13 @@ Please help user to beautify or complete the text with Markdown format.`;
           ? content.text.slice(0, maxContentLength)
           : content.text;
       return {
-        systemPrompt: `As an assistant or chrome copilot provided by GluonMeson, named Guru Mason.
-You're an assistant and good at data extraction, data analysis, summarization, wikipedia, and many kinds of internet tools.
-Please decide to call different tools or directly answer questions in ${this.language}, and consider the language of user input, should not add assistant in answer.
+        systemPrompt:
+          () => `As an assistant or chrome copilot provided by GluonMeson, named Guru Mason.
+You're an assistant and good at data extraction, data analysis, summarization, wikipedia, and many kinds of internet tools or websites.
+Please decide to call different tools or directly answer questions in ${this.language}, and consider the language of user input.
 Output format should be in markdown format, and use mermaid format for diagram generation.
-Current user is viewing the page: ${content.title}, the url is ${content.url}, the content is:
+Current user's goal is ${this.getCurrentInteraction().state} 
+He/she is viewing the page: ${content.title}, the url is ${content.url}, the content is:
 ${text}.
 The links are: ${JSON.stringify(content.links)}`,
         content,
@@ -136,7 +138,7 @@ The links are: ${JSON.stringify(content.links)}`,
       };
     } else {
       return {
-        systemPrompt: this.getInitialSystemMessage(),
+        systemPrompt: () => this.getInitialSystemMessage(),
         content,
         screenshot,
       };

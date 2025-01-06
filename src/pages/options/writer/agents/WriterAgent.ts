@@ -30,7 +30,8 @@ class WriterAgent extends ThoughtAgent {
 
       if (title) {
         resolve({
-          systemPrompt: `As an article writer assistant by GluonMeson, named Guru Mason. Here’s how you can help users:
+          systemPrompt:
+            () => `As an article writer assistant by GluonMeson, named Guru Mason. Here’s how you can help users:
 
 * Title: you can help users with the title of the article.
 * Outline: you can help users with the structure of the article.
@@ -44,7 +45,8 @@ ${content}.`,
         });
       } else {
         resolve({
-          systemPrompt: `As an assistant named Guru Mason. You can help users writing with given information.`,
+          systemPrompt: () =>
+            `As an assistant named Guru Mason. You can help users writing with given information.`,
           screenshot,
         });
       }

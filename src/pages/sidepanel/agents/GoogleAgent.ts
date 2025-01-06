@@ -159,7 +159,7 @@ There is a problem that you cannot get any information from current tab, it's po
     if (status === this.urlIsOpened) {
       const env = await this.environment();
       return await this.chatCompletion([
-        new ChatMessage({ role: "system", content: env.systemPrompt }),
+        new ChatMessage({ role: "system", content: env.systemPrompt() }),
         new ChatMessage({ role: "user", content: userInput }),
       ]);
     }
@@ -247,7 +247,7 @@ The links are: ${JSON.stringify(content.links)}`;
           ? content.text.slice(0, maxContentLength)
           : content.text;
       return {
-        systemPrompt: `${this.getInitialSystemMessage()}
+        systemPrompt: () => `${this.getInitialSystemMessage()}
 
 ## Situation
 Current user is viewing the page: ${content.title}, the url is ${content.url}, the content is:
@@ -255,7 +255,7 @@ ${textContent}.
 The links are: ${JSON.stringify(content.links)}`,
       };
     } else {
-      return { systemPrompt: this.getInitialSystemMessage() };
+      return { systemPrompt: () => this.getInitialSystemMessage() };
     }
   }
 
