@@ -184,7 +184,7 @@ class ThoughtAgent implements Agent {
   addTool(name: string, description: string, stringParameters: string[]): Tool {
     const tool = new Tool(name, description);
     for (const stringParameter of stringParameters) {
-      tool.addStringParameter(stringParameter);
+      tool.setStringParameter(stringParameter);
     }
 
     this.getTools().push(tool);

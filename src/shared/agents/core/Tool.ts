@@ -11,11 +11,11 @@ class Tool {
     this.properties = {};
   }
 
-  addStringParameter(name: string) {
+  setStringParameter(name: string) {
     this.properties[name] = { type: "string" };
   }
 
-  setStringParameterEnumValues(name: string, enumValues: string[]) {
+  setEnumParameter(name: string, enumValues: string[]) {
     this.properties[name] = { type: "string", enum: enumValues };
   }
 

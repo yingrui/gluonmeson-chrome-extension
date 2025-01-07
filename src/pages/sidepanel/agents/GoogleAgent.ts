@@ -40,8 +40,8 @@ class GoogleAgent extends ThoughtAgent {
       "visit",
       `When user want to visit some website (search engine, calendar, cloud drive, news, etc.), 
 open the website or open the given url. the website type or url is required.`,
-      ["website", "url", "userInput"],
-    );
+      ["url", "userInput"],
+    ).setEnumParameter("website", Object.keys(this.pages));
   }
 
   async search(args: object, messages: ChatMessage[]): Promise<Thought> {
