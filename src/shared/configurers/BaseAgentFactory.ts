@@ -15,6 +15,7 @@ import DefaultModelService from "@src/shared/agents/services/DefaultModelService
 import GPTModelService from "@src/shared/agents/services/GPTModelService";
 import ReflectionService from "@src/shared/agents/services/ReflectionService";
 import PromptReflectionService from "@src/shared/agents/services/PromptReflectionService";
+import DelegateAgent from "@src/shared/agents/DelegateAgent";
 
 class BaseAgentFactory {
   private repository: ConversationRepository;
@@ -70,7 +71,10 @@ class BaseAgentFactory {
       agent.getConversation().set(this.initMessages);
     }
 
-    if (this.repository && agent instanceof ThoughtAgent) {
+    if (
+      this.repository &&
+      (agent instanceof DelegateAgent || agent instanceof ThoughtAgent)
+    ) {
       agent.setConversationRepository(this.repository);
     }
     return agent;

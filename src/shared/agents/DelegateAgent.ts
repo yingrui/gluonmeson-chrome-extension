@@ -4,6 +4,8 @@ import Conversation from "./core/Conversation";
 import Thought from "./core/Thought";
 import Environment from "./core/Environment";
 import ChatMessage from "./core/ChatMessage";
+import ConversationRepository from "./ConversationRepository";
+import ThoughtAgent from "./ThoughtAgent";
 
 /**
  * Delegation Agent
@@ -38,6 +40,16 @@ class DelegateAgent implements Agent {
       agent.onMessageChange(listener);
     }
     return this;
+  }
+
+  public setConversationRepository(
+    conversationRepository: ConversationRepository,
+  ) {
+    for (const agent of [this.currentAgent, ...this.agents]) {
+      if (agent instanceof ThoughtAgent) {
+        agent.setConversationRepository(conversationRepository);
+      }
+    }
   }
 
   public getName(): string {

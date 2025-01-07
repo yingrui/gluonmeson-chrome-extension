@@ -197,15 +197,20 @@ const ConversationsManagement: React.FC<ConversationsManagementProps> = ({
       render: (msg: ChatMessage) => msg.getContentText(),
     },
     {
+      title: intl.get("options_app_history_column_goal").d("Goal"),
+      dataIndex: "goal",
+      key: "goal",
+    },
+    {
       title: intl.get("options_app_history_column_answer").d("Answer"),
       dataIndex: "outputMessage",
       key: "outputMessage",
       render: (msg: ChatMessage) => (msg ? msg.getContentText() : ""),
     },
     {
-      title: intl.get("options_app_history_column_state").d("State"),
-      dataIndex: "state",
-      key: "state",
+      title: intl.get("options_app_history_column_intent").d("Intent"),
+      dataIndex: "intent",
+      key: "intent",
       render: (s: string) => (
         <Tag color={"green"} key={s}>
           {s}

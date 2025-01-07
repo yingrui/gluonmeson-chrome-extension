@@ -258,15 +258,18 @@ class ThoughtAgent implements Agent {
   async plan(): Promise<Thought> {
     const interaction = this.conversation.getCurrentInteraction();
     interaction.setStatus("Planning", `${this.getName()} is thinking...`);
-    if (this.enableReflection && this.reflectionService) {
-      interaction.setGoal(
-        await this.reflectionService.goal(
-          this.getCurrentEnvironment(),
-          this.getConversation(),
-        ),
-      );
+    await this.guessGoal(interaction);
+
+    const toolCalls = this.getToolCalls();
+    if (toolCalls.length === 0) {
+      return new Thought({ type: "actions", actions: [] });
     }
 
+    const messages = this.messagesWithNewSystemPrompt();
+    return await this.toolsCall(messages, toolCalls, true);
+  }
+
+  private messagesWithNewSystemPrompt() {
     const env = this.getCurrentEnvironment();
     const systemMessage = new ChatMessage({
       role: "system",
@@ -276,12 +279,18 @@ class ThoughtAgent implements Agent {
     const messagesWithEnv = env.systemPrompt()
       ? [systemMessage, ...messages.slice(1)]
       : messages;
+    return messagesWithEnv;
+  }
 
-    const toolCalls = this.getToolCalls();
-    if (toolCalls.length === 0) {
-      return new Thought({ type: "actions", actions: [] });
+  private async guessGoal(interaction: Interaction) {
+    if (this.enableReflection && this.reflectionService) {
+      interaction.setGoal(
+        await this.reflectionService.goal(
+          this.getCurrentEnvironment(),
+          this.getConversation(),
+        ),
+      );
     }
-    return await this.toolsCall(messagesWithEnv, toolCalls, true);
   }
 
   /**
