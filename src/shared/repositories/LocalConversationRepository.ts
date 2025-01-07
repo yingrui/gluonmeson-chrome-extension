@@ -16,7 +16,7 @@ interface ConversationRecord {
 interface InteractionRecord {
   uuid: string;
   datetime: string;
-  state: string;
+  goal: string;
   intent: string;
   intentArguments?: any;
   status: string;
@@ -84,7 +84,7 @@ class LocalConversationRepository implements ConversationRepository {
       key: `conversation_${conversation.datetime}_${conversation.uuid}`,
       rounds: conversation.interactions.length,
       states: conversation.interactions.map((_) =>
-        _.state ? _.state : defaultDialogueState,
+        _.intent ? _.intent : defaultDialogueState,
       ),
       recordStatus: conversation.recordStatus !== "Kept" ? "Unkept" : "Kept",
       messages: conversation.messages.map((msg) => new ChatMessage(msg)),

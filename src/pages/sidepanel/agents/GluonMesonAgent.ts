@@ -129,7 +129,7 @@ Please help user to beautify or complete the text with Markdown format.`;
 You're an assistant and good at data extraction, data analysis, summarization, wikipedia, and many kinds of internet tools or websites.
 Please decide to call different tools or directly answer questions in ${this.language}, and consider the language of user input.
 Output format should be in markdown format, and use mermaid format for diagram generation.
-Current user's goal is ${this.getCurrentInteraction().state} 
+Current user's goal is ${this.getCurrentInteraction().goal} 
 He/she is viewing the page: ${content.title}, the url is ${content.url}, the content is:
 ${text}.
 The links are: ${JSON.stringify(content.links)}`,

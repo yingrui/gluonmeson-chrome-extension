@@ -82,7 +82,7 @@ class Conversation {
   public toString(): string {
     return this.interactions
       .map(
-        (i) => `user goal: ${i.state}
+        (i) => `user goal: ${i.goal}
 user: ${i.inputMessage.getContentText()}
 assistant: ${i.outputMessage?.getContentText()}
 `,

@@ -12,7 +12,7 @@ type InteractionStatus =
 class Interaction {
   private readonly uuid: string;
   private readonly datetime: string;
-  state: string; // State is the description of user intents, for example: "Searching", "Viewing", etc.
+  goal: string; // State is the description of user intents, for example: "Searching", "Viewing", etc.
   intent: string; // The specific intent, for example: "google_search", "open_url", etc.
   intentArguments?: any; // The arguments of the intent
   status: InteractionStatus; // the status of agent
@@ -26,7 +26,7 @@ class Interaction {
   listener: () => void;
 
   public constructor(chatMessage: ChatMessage, chatMessages: ChatMessage[]) {
-    this.state = "";
+    this.goal = "";
     this.intent = "";
     this.status = "Start";
     this.statusMessage = "";
@@ -56,7 +56,7 @@ class Interaction {
   }
 
   public setGoal(goal: string) {
-    this.state = goal;
+    this.goal = goal;
   }
 
   public setIntent(intent: string, intentArguments: any) {
