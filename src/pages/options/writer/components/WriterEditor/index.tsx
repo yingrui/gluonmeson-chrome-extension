@@ -74,6 +74,22 @@ const WriterEditor: React.FC<WriterEditorProps> = ({ context }) => {
   } = theme.useToken();
   const [value, setValue] = useState(context.getContent());
   const [title, setTitle] = useState(context.getTitle());
+  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+
+  const handleInput = (event: React.FormEvent<HTMLTextAreaElement>) => {
+    const textarea = event.currentTarget;
+    const { selectionStart } = textarea;
+    const { left, top } = textarea.getBoundingClientRect();
+    const lineHeight = parseInt(
+      window.getComputedStyle(textarea).lineHeight,
+      10,
+    );
+    const lines = textarea.value.substr(0, selectionStart).split("\n").length;
+    const x = left + textarea.selectionEnd * 8; // Approximate character width
+    const y = top + (lines - 1) * lineHeight;
+    setCursorPosition({ x, y });
+    console.log("Input event:", event, "cursorPosition:", cursorPosition);
+  };
 
   return (
     <Layout style={{ paddingRight: 36 }}>
@@ -106,6 +122,7 @@ const WriterEditor: React.FC<WriterEditorProps> = ({ context }) => {
           }}
           textareaProps={{
             placeholder: "Please enter Markdown text",
+            onInput: handleInput,
           }}
           highlightEnable={false}
           height={"100%"}
