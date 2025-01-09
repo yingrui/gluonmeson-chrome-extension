@@ -16,54 +16,70 @@ import intl from "react-intl-universal";
 import ArchitectApp from "@pages/options/architect/components/ArchitectApp";
 
 const { Header } = Layout;
+const MENU_KEYS = {
+  SEARCH: "search",
+  WRITER: "writer",
+  HISTORY: "history",
+  ARCHITECT: "architect",
+  MORE: "more",
+};
 
-const SearchItemKey = "search";
-const WriterItemKey = "writer";
-const HistoryItemKey = "history";
-const ArchitectItemKey = "architect";
-const OtherItemKey = "more";
-
-const getHeaderItems = (config: GluonConfigure) => {
-  const header_items: MenuProps["items"] = [];
-  header_items.push({
-    key: SearchItemKey,
-    label: intl.get("options_app_search").d("Search"),
-  });
-  header_items.push({
-    key: ArchitectItemKey,
-    label: intl.get("options_app_architect").d("Architect"),
-  });
+const getHeaderItems = (config: GluonConfigure): MenuProps["items"] => {
+  const items: MenuProps["items"] = [
+    {
+      key: MENU_KEYS.SEARCH,
+      label: intl.get("options_app_search").d("Search"),
+    },
+    {
+      key: MENU_KEYS.ARCHITECT,
+      label: intl.get("options_app_architect").d("Architect"),
+    },
+  ];
   if (config.enableWriting) {
-    header_items.push({
-      key: WriterItemKey,
+    items.push({
+      key: MENU_KEYS.WRITER,
       label: intl.get("options_app_writer").d("Writing"),
     });
   }
   if (config.enableHistoryRecording) {
-    header_items.push({
-      key: HistoryItemKey,
+    items.push({
+      key: MENU_KEYS.HISTORY,
       label: intl.get("options_app_history").d("History"),
     });
   }
-  header_items.push({
-    key: OtherItemKey,
+  items.push({
+    key: MENU_KEYS.MORE,
     label: intl.get("options_app_more").d("Coming Soon"),
   });
-  return header_items;
+  return items;
 };
 
 interface OptionsProps extends Record<string, unknown> {
   config: GluonConfigure;
 }
 
+const Logo: React.FC<{
+  onClick: () => void;
+  query: string;
+  setQuery: (query: string) => void;
+}> = ({ onClick, query, setQuery }) => (
+  <div className="logo">
+    <div className="logo-and-name" onClick={onClick}>
+      <img src="/icons/gm_logo.png" alt="Logo" />
+      <h6>{intl.get("assistant_name").d("Guru Mason")}</h6>
+    </div>
+    {!!query && <NavSearch query={query} onQueryChange={setQuery} />}
+  </div>
+);
+
 const Options: React.FC<OptionsProps> = ({ config }) => {
   const [query, setQuery] = useState<string>("");
   const defaultSelectedItem = getHeaderItems(config)[0].key as string;
   const [selectedItem, setSelectedItem] = useState<string>(defaultSelectedItem);
 
-  const handleMenuClick = (item: string) => {
+  const clickLogoOrMenuItem = (item: string) => {
     setSelectedItem(item);
-    if (item === SearchItemKey) {
+    if (item === MENU_KEYS.SEARCH) {
       setQuery("");
     }
   };
@@ -71,39 +87,28 @@ const Options: React.FC<OptionsProps> = ({ config }) => {
   return (
     <Layout>
       <Header id="app-header">
-        <div className="logo">
-          <div
-            className="logo-and-name"
-            onClick={() => handleMenuClick(SearchItemKey)}
-          >
-            <img src="/icons/gm_logo.png" />
-            <h6>{intl.get("assistant_name").d("Guru Mason")}</h6>
-          </div>
-          {!!query && <NavSearch query={query} onQueryChange={setQuery} />}
-        </div>
+        <Logo
+          query={query}
+          setQuery={setQuery}
+          onClick={() => handleMenuClick(MENU_KEYS.SEARCH)}
+        />
         <div className="nav-menus">
           <Menu
             mode="horizontal"
             defaultSelectedKeys={[defaultSelectedItem]}
             selectedKeys={[selectedItem]}
             items={getHeaderItems(config)}
-            style={{
-              flex: 1,
-              minWidth: 300,
-              justifyContent: "flex-end",
-              display: "flex",
-            }}
-            onClick={(e) => handleMenuClick(e.key)}
+            onClick={(e) => clickLogoOrMenuItem(e.key)}
           />
         </div>
       </Header>
-      {selectedItem === SearchItemKey && (
+      {selectedItem === MENU_KEYS.SEARCH && (
         <SearchApp config={config} query={query} onQueryChange={setQuery} />
       )}
-      {selectedItem === ArchitectItemKey && <ArchitectApp config={config} />}
-      {selectedItem === WriterItemKey && <WriterApp config={config} />}
-      {selectedItem === HistoryItemKey && <HistoryApp config={config} />}
-      {selectedItem === OtherItemKey && <MoreComing />}
+      {selectedItem === MENU_KEYS.ARCHITECT && <ArchitectApp config={config} />}
+      {selectedItem === MENU_KEYS.WRITER && <WriterApp config={config} />}
+      {selectedItem === MENU_KEYS.HISTORY && <HistoryApp config={config} />}
+      {selectedItem === MENU_KEYS.MORE && <MoreComing />}
     </Layout>
   );
 };

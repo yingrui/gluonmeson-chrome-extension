@@ -16,6 +16,18 @@
   min-width: 180px;
 }
 
+.nav-menus ul {
+  flex: 1;
+  min-width: 300px;
+  justify-content: flex-end;
+  display: flex;
+}
+
+.nav-menus ul li {
+  min-width: 75px;
+  text-align: center;
+}
+
 h6 {
   font-size: 24px;
   font-style: normal;
