@@ -116,6 +116,7 @@ const ConversationsManagement: React.FC<ConversationsManagementProps> = ({
       title: intl.get("options_app_history_column_time").d("Time"),
       dataIndex: "datetime",
       key: "datetime",
+      defaultSortOrder: "descend",
       sorter: (a, b) => a.datetime.localeCompare(b.datetime),
       render: (text) => new Date(text).toLocaleString(),
     },
@@ -183,6 +184,7 @@ const ConversationsManagement: React.FC<ConversationsManagementProps> = ({
       title: intl.get("options_app_history_column_time").d("Time"),
       dataIndex: "datetime",
       key: "datetime",
+      defaultSortOrder: "ascend",
       render: (text) => new Date(text).toLocaleString(),
     },
     {
