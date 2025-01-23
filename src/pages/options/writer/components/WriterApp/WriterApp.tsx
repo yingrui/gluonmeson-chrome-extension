@@ -33,7 +33,7 @@ const WriterApp: React.FC<WriterAppProps> = ({ config }) => {
 
   return (
     <Layout>
-      <WriterWorkspace context={context}></WriterWorkspace>
+      <WriterWorkspace context={context} agent={agent}></WriterWorkspace>
       <WriterAssistant
         context={context}
         initMessages={initMessages}

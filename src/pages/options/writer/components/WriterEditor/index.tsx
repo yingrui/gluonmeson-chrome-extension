@@ -1,9 +1,9 @@
 import React, {
-  useState,
-  useRef,
-  useEffect,
   Fragment,
   useCallback,
+  useEffect,
+  useRef,
+  useState,
 } from "react";
 import { Input, Layout, theme } from "antd";
 import PropTypes from "prop-types";
@@ -12,6 +12,9 @@ import { getCodeString } from "rehype-rewrite";
 import mermaid from "mermaid";
 import "./index.css";
 import WriterContext from "@pages/options/writer/context/WriterContext";
+import AssistantDialog from "@pages/options/writer/components/AssistantDialog";
+import DelegateAgent from "@src/shared/agents/DelegateAgent";
+import intl from "react-intl-universal";
 
 const { Header, Content } = Layout;
 
@@ -66,29 +69,32 @@ Code.propTypes = {
 
 interface WriterEditorProps {
   context: WriterContext;
+  agent: DelegateAgent;
 }
 
-const WriterEditor: React.FC<WriterEditorProps> = ({ context }) => {
+const WriterEditor: React.FC<WriterEditorProps> = ({ context, agent }) => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
   const [value, setValue] = useState(context.getContent());
   const [title, setTitle] = useState(context.getTitle());
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+  const [editorLoaded, setEditorLoaded] = useState(false);
+  const textareaId = "writer-editor-textarea";
 
-  const handleInput = (event: React.FormEvent<HTMLTextAreaElement>) => {
-    const textarea = event.currentTarget;
-    const { selectionStart } = textarea;
-    const { left, top } = textarea.getBoundingClientRect();
-    const lineHeight = parseInt(
-      window.getComputedStyle(textarea).lineHeight,
-      10,
-    );
-    const lines = textarea.value.substr(0, selectionStart).split("\n").length;
-    const x = left + textarea.selectionEnd * 8; // Approximate character width
-    const y = top + (lines - 1) * lineHeight;
-    setCursorPosition({ x, y });
-    console.log("Input event:", event, "cursorPosition:", cursorPosition);
+  useEffect(() => {
+    function checkTextarea() {
+      const textarea = document.getElementById(textareaId);
+      if (textarea) {
+        setEditorLoaded(true);
+      } else {
+        setTimeout(checkTextarea, 100);
+      }
+    }
+    checkTextarea();
+  }, []);
+
+  const handleMouseClick = (event: React.MouseEvent<HTMLTextAreaElement>) => {
+    // console.log("Mouse click event:", event);
   };
 
   return (
@@ -121,8 +127,13 @@ const WriterEditor: React.FC<WriterEditorProps> = ({ context }) => {
             setValue(newValue);
           }}
           textareaProps={{
-            placeholder: "Please enter Markdown text",
-            onInput: handleInput,
+            id: textareaId,
+            placeholder: intl
+              .get("options_app_writer_content_placeholder")
+              .d(
+                "Please enter Markdown text, type Alt+Enter to ask AI assistant",
+              ),
+            onClick: handleMouseClick,
           }}
           highlightEnable={false}
           height={"100%"}
@@ -133,6 +144,14 @@ const WriterEditor: React.FC<WriterEditorProps> = ({ context }) => {
             },
           }}
         />
+        {editorLoaded && (
+          <AssistantDialog
+            dialogWidth={500}
+            textareaId={textareaId}
+            agent={agent}
+            context={context}
+          />
+        )}
       </Content>
     </Layout>
   );

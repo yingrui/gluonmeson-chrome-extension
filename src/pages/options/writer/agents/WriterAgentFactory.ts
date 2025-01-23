@@ -14,8 +14,10 @@ class WriterAgentFactory extends BaseAgentFactory {
   ): DelegateAgent {
     const props = this.thoughtAgentProps(config);
     props.enableMultimodal = false;
+    props.enableReflection = false;
 
     const commands = [
+      { value: "autocomplete", label: "/autocomplete, continue writing" },
       {
         value: "outline",
         label: intl.get("options_app_writer_command_outline").d("/outline"),

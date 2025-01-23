@@ -43,6 +43,7 @@
     "rehype-katex": "6.0.3",
     "remark-gfm": "4.0.0",
     "remark-mermaidjs": "4.1.1",
+    "textarea-caret": "^3.1.0",
     "uuid": "11.0.3",
     "webextension-polyfill": "0.10.0"
   },
@@ -56,6 +57,7 @@
     "@types/react": "18.2.37",
     "@types/react-dom": "18.2.18",
     "@types/react-syntax-highlighter": "15.5.13",
+    "@types/textarea-caret": "^3.0.3",
     "@types/ws": "8.5.8",
     "@typescript-eslint/eslint-plugin": "6.10.0",
     "@typescript-eslint/parser": "6.18.1",
