@@ -1,39 +1,11 @@
 import React, { useState } from "react";
-import { Button, Layout, Menu, Radio } from "antd";
-import type { MenuProps } from "antd";
-import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  UserOutlined,
-  LaptopOutlined,
-  NotificationOutlined,
-} from "@ant-design/icons";
+import type { TreeDataNode } from "antd";
+import { Button, Layout, Radio, Tree } from "antd";
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 
 import "./WriterSider.css";
 import WriterContext from "@pages/options/writer/context/WriterContext";
 import intl from "react-intl-universal";
-
-const chapters: MenuProps["items"] = [
-  UserOutlined,
-  LaptopOutlined,
-  NotificationOutlined,
-].map((icon, index) => {
-  const key = String(index + 1);
-
-  return {
-    key: `sub${key}`,
-    //       icon: React.createElement(icon),
-    label: `Chapter ${key}`,
-
-    children: new Array(4).fill(null).map((_, j) => {
-      const subKey = index * 4 + j + 1;
-      return {
-        key: subKey,
-        label: `Section ${subKey}`,
-      };
-    }),
-  };
-});
 
 const { Sider } = Layout;
 
@@ -43,6 +15,12 @@ interface WriterSiderProps {
 
 const WriterSider: React.FC<WriterSiderProps> = ({ context }) => {
   const [collapsed, setCollapsed] = useState(false);
+  const [selectedPanel, setSelectedPanel] = useState("Outline");
+  const [treeData, setTreeData] = useState<TreeDataNode[]>([]);
+
+  context.onOutlineChange((outline) => {
+    setTreeData(outline);
+  });
 
   return (
     <Sider
@@ -66,23 +44,31 @@ const WriterSider: React.FC<WriterSiderProps> = ({ context }) => {
           }}
         />
         {collapsed ? null : (
-          <Radio.Group value={"Outline"}>
-            <Radio.Button value="Outline">
+          <Radio.Group value={selectedPanel}>
+            <Radio.Button
+              value="Outline"
+              onClick={() => setSelectedPanel("Outline")}
+            >
               {intl.get("options_app_writer_outline").d("Outline")}
             </Radio.Button>
-            <Radio.Button value="Reference">
+            <Radio.Button
+              value="Reference"
+              onClick={() => setSelectedPanel("Reference")}
+            >
               {intl.get("options_app_writer_reference").d("Reference")}
             </Radio.Button>
           </Radio.Group>
         )}
       </div>
-      <Menu
-        theme="light"
-        mode="inline"
-        defaultSelectedKeys={["1"]}
-        items={chapters}
-        style={{ height: "89vh", borderRight: 0 }}
-      />
+      <div className={"writer-menu"}>
+        {selectedPanel === "Outline" && (
+          <Tree
+            className={"outline-tree"}
+            treeData={treeData}
+            defaultExpandAll={true}
+          />
+        )}
+      </div>
     </Sider>
   );
 };

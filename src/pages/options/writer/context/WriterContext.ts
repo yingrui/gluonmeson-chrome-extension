@@ -1,4 +1,6 @@
 import type { GluonConfigure } from "@src/shared/storages/gluonConfig";
+import type { TreeDataNode } from "antd";
+import OutlineParser from "./OutlineParser";
 
 type SelectionRange = {
   selectionStart: number;
@@ -6,13 +8,15 @@ type SelectionRange = {
 };
 
 class WriterContext {
-  title: string = "";
-  content: string = "";
-  selectionRange: SelectionRange = {
+  private title: string = "";
+  private content: string = "";
+  private selectionRange: SelectionRange = {
     selectionStart: 0,
     selectionEnd: 0,
   };
-  config: GluonConfigure;
+  private config: GluonConfigure;
+  private outlineChangeListener: (tree: TreeDataNode[]) => void;
+  private outline: TreeDataNode[] = [];
 
   constructor(config: GluonConfigure) {
     this.config = config;
@@ -32,6 +36,12 @@ class WriterContext {
 
   public setContent(content: string): void {
     this.content = content;
+    if (this.outlineChangeListener) {
+      this.outline = new OutlineParser()
+        .parse(content)
+        .getTreeDataNode().children;
+      this.outlineChangeListener(this.outline);
+    }
   }
 
   public setSelectionRange(selectionStart: number, selectionEnd: number) {
@@ -41,6 +51,10 @@ class WriterContext {
 
   public getSelectionRange(): SelectionRange {
     return this.selectionRange;
+  }
+
+  public onOutlineChange(listener: (tree: TreeDataNode[]) => void) {
+    this.outlineChangeListener = listener;
   }
 }
 
