@@ -97,6 +97,11 @@ const WriterEditor: React.FC<WriterEditorProps> = ({ context, agent }) => {
     // console.log("Mouse click event:", event);
   };
 
+  const updateContent = (newValue: string = "") => {
+    context.setContent(newValue);
+    setValue(newValue);
+  };
+
   return (
     <Layout style={{ paddingRight: 36 }}>
       <Header style={{ padding: 0, background: colorBgContainer }}>
@@ -122,10 +127,7 @@ const WriterEditor: React.FC<WriterEditorProps> = ({ context, agent }) => {
         }}
       >
         <MDEditor
-          onChange={(newValue = "") => {
-            context.setContent(newValue);
-            setValue(newValue);
-          }}
+          onChange={updateContent}
           textareaProps={{
             id: textareaId,
             placeholder: intl
@@ -150,6 +152,7 @@ const WriterEditor: React.FC<WriterEditorProps> = ({ context, agent }) => {
             textareaId={textareaId}
             agent={agent}
             context={context}
+            setValue={updateContent}
           />
         )}
       </Content>

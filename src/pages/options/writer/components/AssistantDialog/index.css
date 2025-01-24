@@ -1,0 +1,24 @@
+.generating {
+  margin-top: 12px;
+  display: inline-flex;
+  width: 100%;
+}
+
+.wrapp {
+  height: 20px;
+  overflow: hidden;
+  position: relative;
+  line-height: 1.4;
+  width: inherit;
+}
+
+.wrapp:after {
+  content: ' ';
+  display: block;
+  visibility: hidden;
+}
+
+.generating-status{
+  position: absolute;
+  inset: auto 0 0 0;
+}

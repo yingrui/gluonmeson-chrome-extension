@@ -1,16 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
-import { type MentionProps, Mentions, Modal } from "antd";
+import { type MentionProps, Mentions, Modal, Spin } from "antd";
 import getCaretCoordinates from "textarea-caret";
 import { delay } from "@src/shared/utils";
 import DelegateAgent from "@src/shared/agents/DelegateAgent";
 import ChatMessage from "@src/shared/agents/core/ChatMessage";
 import WriterContext from "@pages/options/writer/context/WriterContext";
+import "./index.css";
 
 interface DialogProps {
   textareaId: string;
   dialogWidth: number;
   agent: DelegateAgent;
   context: WriterContext;
+  setValue: (value: string) => void;
 }
 
 type PrefixType = "@" | "/";
@@ -20,6 +22,7 @@ const AssistantDialog: React.FC<DialogProps> = ({
   textareaId,
   agent,
   context,
+  setValue,
 }) => {
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -28,6 +31,8 @@ const AssistantDialog: React.FC<DialogProps> = ({
   // TODO: extract a shared Mentions Component
   const [text, setText] = useState<string>("");
   const [prefix, setPrefix] = useState<PrefixType>("/");
+  const [generating, setGenerating] = useState<boolean>();
+  const [currentText, setCurrentText] = useState<string>("");
   const inputMethodRef = useRef<boolean>(false);
   const commandRef = useRef<boolean>();
   // End of Mentions Component
@@ -90,8 +95,13 @@ const AssistantDialog: React.FC<DialogProps> = ({
     const doc = textarea.value;
     const newDoc =
       doc.substring(0, selectionStart) + content + doc.substring(selectionEnd);
-    textarea.value = newDoc;
-    textarea.setSelectionRange(selectionStart, selectionStart + content.length);
+    setValue(newDoc);
+    setTimeout(() => {
+      textarea.setSelectionRange(
+        selectionStart,
+        selectionStart + content.length,
+      );
+    }, 100);
   }
 
   const handleCancel = () => {
@@ -107,12 +117,19 @@ const AssistantDialog: React.FC<DialogProps> = ({
   async function handleSubmit() {
     updateSelectionRange();
 
+    setGenerating(true);
+    agent.onMessageChange((msg) => {
+      setCurrentText(msg);
+    });
+
     const thought = await agent.chat(
       new ChatMessage({ role: "user", content: text }),
     );
     const content = await thought.getMessage();
 
+    setGenerating(false);
     setText("");
+    setCurrentText("");
     setIsModalVisible(false);
     insertTextAtCursor(content);
   }
@@ -177,10 +194,20 @@ const AssistantDialog: React.FC<DialogProps> = ({
         onSearch={onSearch}
         options={getCommandOptions()}
         value={text}
+        disabled={generating}
+        readOnly={generating}
         onChange={(value) => {
           setText(value);
         }}
       ></Mentions>
+      {generating && (
+        <div className={"generating"}>
+          {currentText.length <= 0 && <Spin />}
+          <div className="wrapp">
+            <div className={"generating-status"}>{currentText}</div>
+          </div>
+        </div>
+      )}
     </Modal>
   );
 };
