@@ -8,3 +8,14 @@
   border-right-style: solid;
   border-right-color: #ccc;
 }
+
+#writer-left-sider .ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+.writer-menu {
+  height: 100%;
+}

@@ -1,9 +1,9 @@
 import React, {
-  useState,
-  useRef,
-  useEffect,
   Fragment,
   useCallback,
+  useEffect,
+  useRef,
+  useState,
 } from "react";
 import { Input, Layout, theme } from "antd";
 import PropTypes from "prop-types";
@@ -12,6 +12,9 @@ import { getCodeString } from "rehype-rewrite";
 import mermaid from "mermaid";
 import "./index.css";
 import WriterContext from "@pages/options/writer/context/WriterContext";
+import AssistantDialog from "@pages/options/writer/components/AssistantDialog";
+import DelegateAgent from "@src/shared/agents/DelegateAgent";
+import intl from "react-intl-universal";
 
 const { Header, Content } = Layout;
 
@@ -66,14 +69,38 @@ Code.propTypes = {
 
 interface WriterEditorProps {
   context: WriterContext;
+  agent: DelegateAgent;
 }
 
-const WriterEditor: React.FC<WriterEditorProps> = ({ context }) => {
+const WriterEditor: React.FC<WriterEditorProps> = ({ context, agent }) => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
   const [value, setValue] = useState(context.getContent());
   const [title, setTitle] = useState(context.getTitle());
+  const [editorLoaded, setEditorLoaded] = useState(false);
+  const textareaId = "writer-editor-textarea";
+
+  useEffect(() => {
+    function checkTextarea() {
+      const textarea = document.getElementById(textareaId);
+      if (textarea) {
+        setEditorLoaded(true);
+      } else {
+        setTimeout(checkTextarea, 100);
+      }
+    }
+    checkTextarea();
+  }, []);
+
+  const handleMouseClick = (event: React.MouseEvent<HTMLTextAreaElement>) => {
+    // console.log("Mouse click event:", event);
+  };
+
+  const updateContent = (newValue: string = "") => {
+    context.setContent(newValue);
+    setValue(newValue);
+  };
 
   return (
     <Layout style={{ paddingRight: 36 }}>
@@ -100,12 +127,15 @@ const WriterEditor: React.FC<WriterEditorProps> = ({ context }) => {
         }}
       >
         <MDEditor
-          onChange={(newValue = "") => {
-            context.setContent(newValue);
-            setValue(newValue);
-          }}
+          onChange={updateContent}
           textareaProps={{
-            placeholder: "Please enter Markdown text",
+            id: textareaId,
+            placeholder: intl
+              .get("options_app_writer_content_placeholder")
+              .d(
+                "Please enter Markdown text, type Alt+Enter to ask AI assistant",
+              ),
+            onClick: handleMouseClick,
           }}
           highlightEnable={false}
           height={"100%"}
@@ -116,6 +146,15 @@ const WriterEditor: React.FC<WriterEditorProps> = ({ context }) => {
             },
           }}
         />
+        {editorLoaded && (
+          <AssistantDialog
+            dialogWidth={500}
+            textareaId={textareaId}
+            agent={agent}
+            context={context}
+            setValue={updateContent}
+          />
+        )}
       </Content>
     </Layout>
   );
