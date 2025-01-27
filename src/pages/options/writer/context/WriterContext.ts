@@ -36,12 +36,16 @@ class WriterContext {
 
   public setContent(content: string): void {
     this.content = content;
+    this.outline = new OutlineParser()
+      .parse(content)
+      .getTreeDataNode().children;
     if (this.outlineChangeListener) {
-      this.outline = new OutlineParser()
-        .parse(content)
-        .getTreeDataNode().children;
       this.outlineChangeListener(this.outline);
     }
+  }
+
+  public getOutline(): TreeDataNode[] {
+    return this.outline;
   }
 
   public setSelectionRange(selectionStart: number, selectionEnd: number) {

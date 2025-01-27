@@ -17,7 +17,7 @@ class OutlineParser {
 
   private resetRoot() {
     this.root = {
-      key: "Root",
+      key: "0",
       level: 0,
       title: "Root",
       children: [],
@@ -35,30 +35,29 @@ class OutlineParser {
     // all the headings are descendent of the root node
     this.resetRoot();
     const lines = content.split("\n");
-    let current = this.root;
+    let parent = this.root;
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       const level = this.getHeadingLevel(line);
       const title = this.getHeadingTitle(line);
-      if (level > 0) {
+      if (level > 0 && title.length > 0) {
+        if (level == parent.level) {
+          parent = parent.parent;
+        } else if (level < parent.level) {
+          while (parent.level >= level) {
+            parent = parent.parent!;
+          }
+        }
+        // When level > parent.level, directly add the node as a child of the parent node
         const node: TreeNode = {
-          key: `heading-${i}`,
+          key: parent.key + "-" + parent.children.length + "-" + title,
           title: title,
           level: level,
           children: [],
-          parent: null,
+          parent: parent,
         };
-        if (level == current.level) {
-          current = current.parent;
-        } else if (level < current.level) {
-          while (current.level >= level) {
-            current = current.parent!;
-          }
-        }
-        // When level > current.level, directly add the node as a child of the current node
-        node.parent = current;
-        current.children.push(node);
-        current = node;
+        parent.children.push(node);
+        parent = node;
       }
     }
     return this;

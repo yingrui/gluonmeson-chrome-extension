@@ -16,7 +16,9 @@ interface WriterSiderProps {
 const WriterSider: React.FC<WriterSiderProps> = ({ context }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedPanel, setSelectedPanel] = useState("Outline");
-  const [treeData, setTreeData] = useState<TreeDataNode[]>([]);
+  const [treeData, setTreeData] = useState<TreeDataNode[]>(
+    context.getOutline(),
+  );
 
   context.onOutlineChange((outline) => {
     setTreeData(outline);

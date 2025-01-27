@@ -4,7 +4,7 @@ class ElevatorPitchRepository {
   private storage: chrome.storage.StorageArea;
   private readonly key = "elevator_pitch_key";
 
-  constructor(maxConversations = 1000) {
+  constructor() {
     this.storage = chrome.storage.local;
   }
 

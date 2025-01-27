@@ -4,9 +4,10 @@ import { Input, Layout, theme } from "antd";
 import MDEditor from "@uiw/react-md-editor";
 import "./index.css";
 import WriterContext from "@pages/options/writer/context/WriterContext";
-import intl from "react-intl-universal";
 import AssistantDialog from "@pages/options/writer/components/AssistantDialog";
 import DelegateAgent from "@src/shared/agents/DelegateAgent";
+import intl from "react-intl-universal";
+import initCommands from "@pages/options/writer/components/CustomToolbar";
 
 const { Header, Content } = Layout;
 
@@ -44,6 +45,11 @@ const WriterEditor: React.FC<WriterEditorWithoutMermaidProps> = ({
     setValue(newValue);
   };
 
+  const updateTitle = (newTitle: string = "") => {
+    context.setTitle(newTitle);
+    setTitle(newTitle);
+  };
+
   return (
     <Layout style={{ paddingRight: 36 }}>
       <Header style={{ padding: 0, background: colorBgContainer }}>
@@ -55,10 +61,7 @@ const WriterEditor: React.FC<WriterEditorWithoutMermaidProps> = ({
           autoComplete="off"
           variant="borderless"
           value={title}
-          onChange={(e) => {
-            context.setTitle(e.target.value);
-            setTitle(e.target.value);
-          }}
+          onChange={(e) => updateTitle(e.target.value)}
         />
       </Header>
       <Content
@@ -83,6 +86,7 @@ const WriterEditor: React.FC<WriterEditorWithoutMermaidProps> = ({
           highlightEnable={false}
           height={"100%"}
           value={value}
+          commands={initCommands(context)}
         />
         {editorLoaded && (
           <AssistantDialog

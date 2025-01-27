@@ -6,6 +6,7 @@ import DelegateAgent from "@src/shared/agents/DelegateAgent";
 import ChatMessage from "@src/shared/agents/core/ChatMessage";
 import WriterContext from "@pages/options/writer/context/WriterContext";
 import "./index.css";
+import intl from "react-intl-universal";
 
 interface DialogProps {
   textareaId: string;
@@ -184,7 +185,9 @@ const AssistantDialog: React.FC<DialogProps> = ({
     >
       <Mentions
         id={mentionsId}
-        placeholder="type `/` specify instruction, type `Enter` submit."
+        placeholder={intl
+          .get("options_app_writer_dialog_placeholder")
+          .d("type `/` specify instruction, type `Enter` submit.")}
         prefix={["/", "@"]}
         autoSize={{ minRows: 1, maxRows: 4 }}
         autoFocus={true}
