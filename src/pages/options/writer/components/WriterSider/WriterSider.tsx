@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { TreeDataNode } from "antd";
 import { Button, Layout, Radio, Tree } from "antd";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
@@ -16,13 +16,58 @@ interface WriterSiderProps {
 const WriterSider: React.FC<WriterSiderProps> = ({ context }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedPanel, setSelectedPanel] = useState("Outline");
-  const [treeData, setTreeData] = useState<TreeDataNode[]>(
+  const [tabsTree, setTabsTree] = useState<TreeDataNode[]>([]);
+  const [outlineTree, setOutlineTree] = useState<TreeDataNode[]>(
     context.getOutline(),
   );
 
   context.onOutlineChange((outline) => {
-    setTreeData(outline);
+    setOutlineTree(outline);
   });
+
+  function getTabsTree(): Promise<TreeDataNode[]> {
+    return new Promise((resolve) => {
+      chrome.tabs.query({ currentWindow: true, active: false }, (tabs) => {
+        const tree = tabs
+          .map((tab) => {
+            return {
+              key: tab.id,
+              title: tab.title,
+              children: [],
+            };
+          })
+          .filter((tab) => tab.title);
+        resolve(tree);
+      });
+    });
+  }
+
+  const updateTabsTree = async () => {
+    setTabsTree(await getTabsTree());
+  };
+
+  const switchPanel = async (panel: string) => {
+    setSelectedPanel(panel);
+    if (panel === "Reference") {
+      await updateTabsTree();
+    }
+  };
+
+  useEffect(() => {
+    const events = [
+      chrome.tabs.onUpdated,
+      chrome.tabs.onAttached,
+      chrome.tabs.onDetached,
+      chrome.tabs.onRemoved,
+      chrome.tabs.onCreated,
+    ];
+    for (const event of events) {
+      if (event.hasListener(updateTabsTree)) {
+        event.removeListener(updateTabsTree);
+      }
+      event.addListener(updateTabsTree);
+    }
+  }, []);
 
   return (
     <Sider
@@ -49,13 +94,13 @@ const WriterSider: React.FC<WriterSiderProps> = ({ context }) => {
           <Radio.Group value={selectedPanel}>
             <Radio.Button
               value="Outline"
-              onClick={() => setSelectedPanel("Outline")}
+              onClick={() => switchPanel("Outline")}
             >
               {intl.get("options_app_writer_outline").d("Outline")}
             </Radio.Button>
             <Radio.Button
               value="Reference"
-              onClick={() => setSelectedPanel("Reference")}
+              onClick={() => switchPanel("Reference")}
             >
               {intl.get("options_app_writer_reference").d("Reference")}
             </Radio.Button>
@@ -66,9 +111,12 @@ const WriterSider: React.FC<WriterSiderProps> = ({ context }) => {
         {selectedPanel === "Outline" && (
           <Tree
             className={"outline-tree"}
-            treeData={treeData}
+            treeData={outlineTree}
             defaultExpandAll={true}
           />
+        )}
+        {selectedPanel === "Reference" && (
+          <Tree className={"tabs-tree"} treeData={tabsTree} checkable={true} />
         )}
       </div>
     </Sider>
