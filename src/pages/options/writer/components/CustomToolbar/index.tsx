@@ -6,7 +6,7 @@ import WriterContext from "@pages/options/writer/context/WriterContext";
 import DocumentRepository from "@pages/options/writer/repositories/DocumentRepository";
 import intl from "react-intl-universal";
 
-function initCommands(context: WriterContext): ICommand[] {
+function toolbarCommands(context: WriterContext): ICommand[] {
   const save: ICommand = {
     name: "save",
     keyCommand: "save",
@@ -28,4 +28,4 @@ function initCommands(context: WriterContext): ICommand[] {
   return [save, commands.divider, ...commands.getCommands()];
 }
 
-export default initCommands;
+export default toolbarCommands;

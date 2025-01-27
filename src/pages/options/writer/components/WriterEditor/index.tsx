@@ -15,7 +15,7 @@ import WriterContext from "@pages/options/writer/context/WriterContext";
 import AssistantDialog from "@pages/options/writer/components/AssistantDialog";
 import DelegateAgent from "@src/shared/agents/DelegateAgent";
 import intl from "react-intl-universal";
-import initCommands from "@pages/options/writer/components/CustomToolbar";
+import toolbarCommands from "@pages/options/writer/components/CustomToolbar";
 
 const { Header, Content } = Layout;
 
@@ -148,7 +148,7 @@ const WriterEditor: React.FC<WriterEditorProps> = ({ context, agent }) => {
               code: Code,
             },
           }}
-          commands={initCommands(context)}
+          commands={toolbarCommands(context)}
         />
         {editorLoaded && (
           <AssistantDialog

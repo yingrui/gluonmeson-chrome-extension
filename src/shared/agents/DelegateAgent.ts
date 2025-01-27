@@ -131,7 +131,7 @@ class DelegateAgent implements Agent {
    */
   async executeCommandWithUserInput(
     command: string,
-    userInput: string,
+    userInput: string = "",
   ): Promise<Thought> {
     const args = {};
     // Find the tool with the given command

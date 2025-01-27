@@ -65,8 +65,8 @@ const AssistantDialog: React.FC<DialogProps> = ({
     return { x, y };
   };
 
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.altKey && event.key === "Enter") {
+  const handleKeyDown = async (event: KeyboardEvent) => {
+    if (!event.ctrlKey && event.altKey && event.key === "Enter") {
       const textarea = event.currentTarget as HTMLTextAreaElement;
       const { x, y } = getCursorPosition(textarea);
       setCursorPosition({ x, y });
@@ -79,8 +79,33 @@ const AssistantDialog: React.FC<DialogProps> = ({
           mentions.focus();
         }
       }, 200);
+    } else if (event.ctrlKey && event.altKey && event.key === "Enter") {
+      await autocomplete();
     }
   };
+
+  async function autocomplete() {
+    // Known issue: the generated message cannot be undo in the textarea
+    const textarea = document.getElementById(textareaId) as HTMLTextAreaElement;
+    const { selectionStart, selectionEnd } = textarea;
+    const doc = textarea.value;
+    const before = doc.substring(0, selectionStart);
+    const after = doc.substring(selectionEnd);
+    agent.onMessageChange((msg) => {
+      const newDoc = before + msg + after;
+      textarea.value = newDoc;
+    });
+    const thought = await agent.executeCommandWithUserInput("autocomplete");
+    const content = await thought.getMessage();
+    const newDoc = before + content + after;
+    setValue(newDoc);
+    setTimeout(() => {
+      textarea.setSelectionRange(
+        selectionStart,
+        selectionStart + content.length,
+      );
+    }, 100);
+  }
 
   function focusOnEditor() {
     // focus on the textarea after closing the dialog
