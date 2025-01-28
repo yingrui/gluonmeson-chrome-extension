@@ -8,7 +8,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
     if (message.type === "command_from_content_script") {
       // Make sure the side panel is opened
       await chrome.sidePanel.open({ tabId: sender.tab.id });
-      chrome.storage.session.set({
+      await chrome.storage.session.set({
         command_from_content_script: message.command,
       });
     }
@@ -18,23 +18,21 @@ chrome.runtime.onMessage.addListener((message, sender) => {
 // A generic onclick callback function.
 chrome.contextMenus.onClicked.addListener(genericOnClick);
 
-function genericOnClick(info, tab) {
+async function genericOnClick(info, tab) {
   if (info.editable) {
-    if (info.menuItemId === "generate_text") {
+    if (info.menuItemId === "autocomplete") {
       // Get the editing text
-      getActiveElementTextContent(tab.id).then((results) => {
-        const textContent = results[0].result;
-        chrome.storage.session.set({
-          command_from_content_script: {
-            name: "GluonMeson",
-            userInput: "generate text",
-            tool: "generate_text",
-            args: {
-              userInput: textContent,
-            },
-            date: new Date().toISOString(),
-          },
-        });
+      await chrome.sidePanel.open({ tabId: tab.id });
+      const results = await getActiveElementTextContent(tab.id);
+      const args = results[0].result;
+      await chrome.storage.session.set({
+        command_from_content_script: {
+          name: "GluonMeson",
+          userInput: "/autocomplete",
+          tool: "autocomplete",
+          args: args,
+          date: new Date().toISOString(),
+        },
       });
     }
   } else {
@@ -46,15 +44,21 @@ function getActiveElementTextContent(tabId) {
   return chrome.scripting.executeScript({
     target: { tabId: tabId },
     function: () => {
-      return document.activeElement.textContent;
+      let activeElement = document.activeElement;
+      if (activeElement instanceof HTMLTextAreaElement) {
+        const textarea = activeElement;
+        const { value, selectionStart, selectionEnd } = textarea;
+        return { text: value, selectionStart, selectionEnd };
+      }
+      return { text: activeElement.textContent };
     },
   });
 }
 
 chrome.runtime.onInstalled.addListener(function () {
   chrome.contextMenus.create({
-    title: "Generate Text",
+    title: "Autocomplete",
     contexts: ["editable"],
-    id: "generate_text",
+    id: "autocomplete",
   });
 });

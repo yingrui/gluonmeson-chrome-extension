@@ -40,7 +40,42 @@ function SidePanel(props: Record<string, unknown>) {
   const initMessages = props.initMessages as ChatMessage[];
   const [messages, setList] = useState<ChatMessage[]>([...initMessages]);
 
+  function checkMessages() {
+    // TODO: need to know why the messages are not the same with agent conversation
+    if (messages.length > agent.getConversation().getMessages().length) {
+      messages.length = 0;
+      agent
+        .getConversation()
+        .getMessages()
+        .forEach((msg) => {
+          messages.push(msg);
+        });
+    }
+  }
+
   useEffect(() => {
+    // Create command handler for events from content script
+    async function handleCommandFromContentScript(
+      action: string,
+      args: any,
+      userInput: string,
+    ) {
+      if (generating) {
+        return;
+      }
+
+      checkMessages();
+      const result = await generateReply(userInput, async () => {
+        return agent.executeCommand(
+          [{ name: action, arguments: args }],
+          new ChatMessage({ role: "user", content: userInput }),
+        );
+      });
+      // TODO: post process the result by action
+      // If the action returns JSON string, you need to parse it before use it.
+    }
+    installContentScriptCommandListener(handleCommandFromContentScript);
+
     const focus = () => {
       if (mentionRef.current) {
         mentionRef.current.focus();
@@ -63,26 +98,6 @@ function SidePanel(props: Record<string, unknown>) {
     );
   }
 
-  async function handleCommandFromContentScript(
-    action: string,
-    args: any,
-    userInput: string,
-  ) {
-    if (generating) {
-      return;
-    }
-    const result = await generateReply(userInput, async () => {
-      return agent.executeCommand(
-        [{ name: action, arguments: args }],
-        new ChatMessage({ role: "user", content: userInput }),
-      );
-    });
-    // TODO: post process the result by action
-    // If the action returns JSON string, you need to parse it before use it.
-  }
-
-  installContentScriptCommandListener(handleCommandFromContentScript);
-
   async function handleSubmit() {
     if (generating) {
       return;
@@ -98,7 +113,8 @@ function SidePanel(props: Record<string, unknown>) {
       text.startsWith("/cl")
     ) {
       const cloneInitMessages = [...initMessages];
-      agent.getConversation().set(cloneInitMessages);
+      agent.getConversation().reset(cloneInitMessages);
+      messages.length = 0;
       setList(cloneInitMessages);
       setText("");
       return;
@@ -135,7 +151,6 @@ function SidePanel(props: Record<string, unknown>) {
             scrollToBottom();
           });
         });
-
         const thought = await generate_func();
         message = await thought.getMessage();
       } catch (e) {

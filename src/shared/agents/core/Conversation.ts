@@ -58,8 +58,9 @@ class Conversation {
     });
   }
 
-  set(messages: ChatMessage[]): Conversation {
+  reset(messages: ChatMessage[]): Conversation {
     this.messages = [...messages];
+    this.interactions.length = 0; // Clear the interactions
     return this;
   }
 

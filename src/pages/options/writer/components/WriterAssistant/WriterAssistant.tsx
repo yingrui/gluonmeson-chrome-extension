@@ -109,7 +109,7 @@ const WriterAssistant: React.FC<WriterAssistantProps> = ({
 
   function clearMessages() {
     const cloneInitMessages = [...initMessages];
-    agent.getConversation().set(cloneInitMessages);
+    agent.getConversation().reset(cloneInitMessages);
     setList(cloneInitMessages);
     setText("");
   }

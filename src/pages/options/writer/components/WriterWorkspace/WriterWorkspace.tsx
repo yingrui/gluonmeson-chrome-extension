@@ -1,5 +1,6 @@
 import React from "react";
 
+import DelegateAgent from "@src/shared/agents/DelegateAgent";
 import WriterSider from "@pages/options/writer/components/WriterSider/WriterSider";
 import WriterContext from "@pages/options/writer/context/WriterContext";
 
@@ -8,7 +9,6 @@ import WriterContext from "@pages/options/writer/context/WriterContext";
 // When ready for release, use the following import statement:
 // import WriterEditor from "@pages/options/writer/components/WriterEditorWithoutMermaid";
 import WriterEditor from "@pages/options/writer/components/WriterEditor";
-import DelegateAgent from "@src/shared/agents/DelegateAgent";
 
 interface WriterWorkspaceProps {
   context: WriterContext;

@@ -91,21 +91,76 @@ The links are: ${JSON.stringify(content.links)}`;
    * @param {ChatMessage[]} messages - Messages
    * @returns {Promise<any>} ChatCompletion
    */
-  async generate_text(args: object, messages: ChatMessage[]): Promise<Thought> {
-    const userInput = args["userInput"];
+  async autocomplete(args: object, messages: ChatMessage[]): Promise<Thought> {
+    console.log("autocomplete args", args);
     const content = await get_content();
-    const prompt = `You're a good writer provided by GluonMeson,
-when user input: ${userInput}.
-the webpage text: ${content.text}.
-Please help user to beautify or complete the text with Markdown format.`;
+    const userInput = args["userInput"];
+    const text = args["text"];
+    const selectionStart = args["selectionStart"];
+    const selectionEnd = args["selectionEnd"];
+    let prompt = "";
+    if (text && selectionStart && selectionStart) {
+      prompt = this.autocompletePrompt(
+        content,
+        text,
+        selectionStart,
+        selectionEnd,
+      );
+    } else {
+      prompt = `## Role & Task
+You're a great editor. You're viewing a webpage and writing something.  
+Consider the context, you can try to add 1 sentence to the end of given text.
 
+## Context
+
+### Webpage content
+${content.text}
+
+### Text in editing area
+${text}
+
+## Output Instruction
+Directly give the sentence continue to the end of given text. Do not repeat the content before and after caret position.`;
+    }
     return await this.chatCompletion([
       new ChatMessage({ role: "system", content: prompt }),
       new ChatMessage({
         role: "user",
-        content: `please generate text in ${this.language}:`,
+        content: `Continue writing in ${this.language}:`,
       }),
     ]);
+  }
+
+  private autocompletePrompt(
+    content: any,
+    text: string,
+    selectionStart: number,
+    selectionEnd: number,
+  ): string {
+    const firstPart = text.slice(0, selectionStart);
+    const secondPart = text.slice(selectionEnd);
+    const prompt = `## Role
+You're a great editor. 
+Consider the context, you can try to add 1 sentence to current caret position of document.
+
+## Context
+
+### Webpage content
+${content.text}
+
+### Text in editing area
+
+#### Before Caret Position
+${firstPart}
+
+#### After Caret Position
+${secondPart}
+
+## Output Instruction
+Directly give the sentence with markdown format, so AI assistant can directly add to caret position.
+Do not repeat the content before and after caret position.
+`;
+    return prompt;
   }
 
   /**

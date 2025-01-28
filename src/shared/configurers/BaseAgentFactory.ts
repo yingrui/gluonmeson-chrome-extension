@@ -68,7 +68,7 @@ class BaseAgentFactory {
 
   postCreateAgent(agent: Agent): Agent {
     if (this.initMessages && this.initMessages.length > 0) {
-      agent.getConversation().set(this.initMessages);
+      agent.getConversation().reset(this.initMessages);
     }
 
     if (
