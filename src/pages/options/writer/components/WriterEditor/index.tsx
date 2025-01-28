@@ -74,6 +74,7 @@ interface WriterEditorProps {
 }
 
 const WriterEditor: React.FC<WriterEditorProps> = ({ context, agent }) => {
+  // TODO: Support image paste and drag&drop, https://github.com/uiwjs/react-md-editor/issues/83
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
