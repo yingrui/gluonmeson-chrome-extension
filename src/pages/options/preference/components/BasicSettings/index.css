@@ -1,0 +1,15 @@
+.basic-settings-app {
+  padding: 24px;
+  width: 100%;
+}
+
+.basic-settings {
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+}
+
+.form-container {
+  padding: 24px;
+  width: 600px;
+}

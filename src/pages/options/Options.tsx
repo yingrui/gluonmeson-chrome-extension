@@ -14,6 +14,12 @@ import MoreComing from "@pages/options/components/MoreComing";
 import HistoryApp from "@pages/options/history/components/HistoryApp";
 import intl from "react-intl-universal";
 import ArchitectApp from "@pages/options/architect/components/ArchitectApp";
+import {
+  HistoryOutlined,
+  MoreOutlined,
+  SettingOutlined,
+} from "@ant-design/icons";
+import PreferenceApp from "@pages/options/preference/components/PreferenceApp";
 
 const { Header } = Layout;
 const MENU_KEYS = {
@@ -22,6 +28,7 @@ const MENU_KEYS = {
   HISTORY: "history",
   ARCHITECT: "architect",
   MORE: "more",
+  PREFERENCE: "preference",
 };
 
 const getHeaderItems = (config: GluonConfigure): MenuProps["items"] => {
@@ -41,16 +48,30 @@ const getHeaderItems = (config: GluonConfigure): MenuProps["items"] => {
       label: intl.get("options_app_writer").d("Writing"),
     });
   }
+  const more = {
+    key: "dropdown_more",
+    label: intl.get("options_app_dropdown_more").d("More"),
+    children: [
+      {
+        key: MENU_KEYS.PREFERENCE,
+        label: intl.get("options_app_preference").d("Preference"),
+        icon: <SettingOutlined />,
+      },
+      {
+        key: MENU_KEYS.MORE,
+        label: intl.get("options_app_more").d("Coming Soon"),
+        icon: <MoreOutlined />,
+      },
+    ],
+  };
   if (config.enableHistoryRecording) {
-    items.push({
+    more.children.unshift({
       key: MENU_KEYS.HISTORY,
       label: intl.get("options_app_history").d("History"),
+      icon: <HistoryOutlined />,
     });
   }
-  items.push({
-    key: MENU_KEYS.MORE,
-    label: intl.get("options_app_more").d("Coming Soon"),
-  });
+  items.push(more);
   return items;
 };
 
@@ -108,6 +129,7 @@ const Options: React.FC<OptionsProps> = ({ config }) => {
       {selectedItem === MENU_KEYS.ARCHITECT && <ArchitectApp config={config} />}
       {selectedItem === MENU_KEYS.WRITER && <WriterApp config={config} />}
       {selectedItem === MENU_KEYS.HISTORY && <HistoryApp config={config} />}
+      {selectedItem === MENU_KEYS.PREFERENCE && <PreferenceApp />}
       {selectedItem === MENU_KEYS.MORE && <MoreComing />}
     </Layout>
   );
