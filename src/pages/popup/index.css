@@ -3,9 +3,15 @@ body {
   margin: 10px;
 }
 
-.form-container {
+.container {
   width: 500px;
-  padding: 10px 20px;
+  padding: 0px 20px;
+
+  .popup-content {
+    padding-top: 5px;
+    height: 300px;
+    overflow: auto;
+  }
 
   .popup-footer {
     display: flex;
@@ -15,20 +21,4 @@ body {
   .ant-btn {
     margin: 0 5px;
   }
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-label {
-  margin-bottom: 5px;
-}
-
-input {
-  margin-bottom: 10px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
 }

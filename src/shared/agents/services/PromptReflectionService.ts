@@ -241,6 +241,10 @@ ${conversationContent}
 The given answer is not good enough, please revise the last answer based on below feedback: 
 ${feedback}
 
+### Watch out
+- You don't need to apologize, just correct the answer.
+- The feedback is not provided by the user, it's self-review of AI.
+
 ## Status
 The user is browsing webpage:
 - Title: ${env.content?.title}

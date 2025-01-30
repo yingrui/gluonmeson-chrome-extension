@@ -24,6 +24,7 @@ const manifest = {
     "scripting",
     "activeTab",
     "contextMenus",
+    "history",
   ],
   background: {
     service_worker: "src/index.js",
