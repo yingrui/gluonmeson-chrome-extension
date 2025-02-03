@@ -8,11 +8,13 @@ import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import CodeBlock from "@src/shared/components/Message/MarkDownBlock/CodeBlock";
+import { UserJourneyRecord } from "@pages/options/architect/entities/UserJourneyRecord";
 
 interface UserJourneyProps {
   config: GluonConfigure;
 }
 
+const { Footer } = Layout;
 const { TextArea } = Input;
 const rehypePlugins = [rehypeKatex];
 const remarkPlugins = [remarkGfm];
@@ -20,6 +22,7 @@ const remarkPlugins = [remarkGfm];
 const UserJourneyApp: React.FC<UserJourneyProps> = ({ config }) => {
   const [loading, setLoading] = useState(true);
   const contextRef = useRef(new UserJourneyContext(config));
+  const [mode, setMode] = useState<"editing" | "viewing">("editing");
   const [userJourney, setUserJourney] = useState<string>("");
   const [details, setDetails] = useState<string>("");
   const [boardUrl, setBoardUrl] = useState<string>("");
@@ -31,8 +34,13 @@ const UserJourneyApp: React.FC<UserJourneyProps> = ({ config }) => {
     // Load the context of this app from local storage
     // Once loaded, this component will rerender.
     // That's why we need to set the context in the state
-    contextRef.current.load().then(() => {
+    contextRef.current.load().then((record) => {
       setLoading(false);
+      setDetails(record.details ?? "");
+      setUserJourney(record.userJourney ?? "");
+      setBoardUrl(record.boardUrl ?? "");
+      setFeedback(record.feedback ?? "");
+      setGeneratedText(record.generatedText ?? "");
     });
   }, []);
 
@@ -52,7 +60,21 @@ const UserJourneyApp: React.FC<UserJourneyProps> = ({ config }) => {
   };
 
   const handleSave = async () => {
-    console.log("handle save");
+    await contextRef.current
+      .save({
+        details: details,
+        boardUrl: boardUrl,
+        feedback: feedback,
+        generatedText: generatedText,
+        userJourney: userJourney,
+      })
+      .then(() => {
+        message.success(
+          intl
+            .get("user_journey_save_success")
+            .d("User journey saved successfully!"),
+        );
+      });
   };
 
   const handleSubmit = async () => {
@@ -87,7 +109,10 @@ const UserJourneyApp: React.FC<UserJourneyProps> = ({ config }) => {
 
   return (
     <Layout style={{ padding: "24px" }} className={"user-journey-app"}>
-      <Layout className={"user-journey-form"}>
+      <Layout
+        className={"user-journey-form"}
+        style={{ display: mode === "editing" ? "flex" : "none" }}
+      >
         <h2>
           {intl.get("user_journey_form_title").d("Provide details for AI")}
         </h2>
@@ -138,6 +163,9 @@ const UserJourneyApp: React.FC<UserJourneyProps> = ({ config }) => {
           <Button type="default" onClick={handleSave}>
             {intl.get("user_journey_form_save").d("Save")}
           </Button>
+          <Button type="default" onClick={() => setMode("viewing")}>
+            {intl.get("user_journey_view_mode").d("View Mode")}
+          </Button>
         </div>
         <div className={"generated-text"}>
           <ReactMarkdown
@@ -149,17 +177,30 @@ const UserJourneyApp: React.FC<UserJourneyProps> = ({ config }) => {
         </div>
       </Layout>
       <Layout className={"user-journey-preview"}>
-        <ReactMarkdown
-          components={{
-            code: (props) => {
-              return <CodeBlock {...props} loading={generating} />;
-            },
-          }}
-          rehypePlugins={rehypePlugins as any}
-          remarkPlugins={remarkPlugins as any}
-        >
-          {userJourney}
-        </ReactMarkdown>
+        <div style={{ height: "100%" }}>
+          <ReactMarkdown
+            components={{
+              code: (props) => {
+                return <CodeBlock {...props} loading={generating} />;
+              },
+            }}
+            rehypePlugins={rehypePlugins as any}
+            remarkPlugins={remarkPlugins as any}
+          >
+            {userJourney}
+          </ReactMarkdown>
+        </div>
+        {mode === "viewing" && (
+          <Footer className="user-journey-preview-footer">
+            <Button
+              type="default"
+              style={{ width: 100 }}
+              onClick={() => setMode("editing")}
+            >
+              {intl.get("user_journey_edit_mode").d("Edit Mode")}
+            </Button>
+          </Footer>
+        )}
       </Layout>
     </Layout>
   );

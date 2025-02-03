@@ -118,6 +118,7 @@
   "toolsCallModel": "Tools Call Model",
   "tooltip_assistant_shortcut": "is glad to help you, type `Alt + Enter` can also open side panel.",
   "tooltip_side_panel": "Type Alt + Enter can also open side panel",
+  "user_journey_edit_mode": "Edit Mode",
   "user_journey_err_details_are_empty": "Details cannot be empty!",
   "user_journey_form_board_url": "Board URL",
   "user_journey_form_board_url_placeholder": "provide board url",
@@ -128,5 +129,7 @@
   "user_journey_form_save": "Save",
   "user_journey_form_submit": "Submit",
   "user_journey_form_title": "Provide details for AI",
+  "user_journey_save_success": "User journey saved successfully!",
+  "user_journey_view_mode": "View Mode",
   "zh": "Chinese"
 }

@@ -30,3 +30,11 @@ pre {
   white-space: pre-wrap;
   word-wrap: break-word;
 }
+
+.user-journey-preview-footer {
+  justify-content: center;
+  display: flex;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
