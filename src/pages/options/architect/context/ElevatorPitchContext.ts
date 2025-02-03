@@ -34,7 +34,9 @@ class ElevatorPitchContext {
 
   getElevatorPitchAgent() {
     if (!this.elevatorPitchAgent) {
-      this.elevatorPitchAgent = this.agentFactory.create(this.config);
+      this.elevatorPitchAgent = this.agentFactory.createElevatorPitchAgent(
+        this.config,
+      );
     }
     return this.elevatorPitchAgent;
   }

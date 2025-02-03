@@ -38,15 +38,13 @@ const Popup: React.FC<PopupProps> = ({ config, copilot }) => {
         const history = historyItems
           .map((i) => `title: ${i.title}, url: ${i.url}`)
           .join("\n");
-        copilot.onMessageChange((msg) => {
+
+        const thought = await copilot.recommend({ history });
+        const result = await thought.getMessage((msg) => {
           setIsLoading(false);
           setSuggestion(msg);
         });
-        const thought = await copilot.executeCommand(
-          [{ name: "recommend", arguments: { history } }],
-          new ChatMessage({ role: "user", content: "" }),
-        );
-        setSuggestion(await thought.getMessage());
+        setSuggestion(result);
       },
     );
   }, []);

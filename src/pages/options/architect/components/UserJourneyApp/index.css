@@ -1,0 +1,32 @@
+.user-journey-app {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.user-journey-form, .user-journey-preview {
+  flex: 2;
+  padding: 12px 24px;
+  background-color: #fff;
+}
+
+.form-submit-buttons {
+  margin-bottom: 24px;
+}
+
+.form-submit-buttons button {
+  margin-right: 12px;
+}
+
+.generated-text {
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  height: 100%;
+  padding: 8px;
+  overflow: auto;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}

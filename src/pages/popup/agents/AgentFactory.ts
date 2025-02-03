@@ -4,7 +4,6 @@ import BrowserCopilot from "@pages/popup/agents/BrowserCopilot";
 
 class AgentFactory extends BaseAgentFactory {
   create(config: GluonConfigure): BrowserCopilot {
-    config.enableReflection = false;
     return new BrowserCopilot(this.thoughtAgentProps(config));
   }
 }
