@@ -20,6 +20,7 @@ export type GluonConfigure = {
   enableWriting: boolean;
   enableHistoryRecording: boolean;
   enableMultimodal: boolean;
+  enableChainOfThoughts: boolean;
 };
 
 type ConfigureStorage = BaseStorage<GluonConfigure>;
@@ -40,6 +41,7 @@ export const DEFAULT_GM_CONFIG_VALUE = {
   enableWriting: false,
   enableHistoryRecording: false,
   enableMultimodal: false,
+  enableChainOfThoughts: false,
 };
 
 const storage = createStorage<GluonConfigure>(

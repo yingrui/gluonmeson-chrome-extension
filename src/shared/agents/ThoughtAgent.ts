@@ -16,6 +16,7 @@ interface ThoughtAgentProps {
   conversation: Conversation;
   enableMultimodal: boolean;
   enableReflection: boolean;
+  enableChainOfThoughts: boolean;
   modelService: ModelService;
   reflectionService?: ReflectionService;
 }
@@ -24,6 +25,7 @@ class ThoughtAgent implements Agent {
   language: string;
   protected readonly enableMultimodal: boolean;
   protected readonly enableReflection: boolean;
+  protected readonly enableChainOfThoughts: boolean;
   private readonly tools: Tool[] = [];
   private readonly name: string;
   private readonly description: string;
@@ -44,6 +46,7 @@ class ThoughtAgent implements Agent {
     this.reflectionService = props.reflectionService;
     this.enableMultimodal = props.enableMultimodal;
     this.enableReflection = props.enableReflection;
+    this.enableChainOfThoughts = props.enableChainOfThoughts;
     this.name = name;
     this.description = description;
   }

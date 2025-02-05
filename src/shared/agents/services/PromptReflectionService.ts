@@ -12,10 +12,16 @@ import Tool from "../core/Tool";
 class PromptReflectionService implements ReflectionService {
   private readonly modelService: ModelService;
   private readonly language: string;
+  private enableChainOfThoughts: boolean;
 
-  constructor(modelService: ModelService, language: string) {
+  constructor(
+    modelService: ModelService,
+    language: string,
+    enableChainOfThoughts: boolean,
+  ) {
     this.modelService = modelService;
     this.language = language;
+    this.enableChainOfThoughts = enableChainOfThoughts;
   }
 
   async goal(env: Environment, conversation: Conversation): Promise<string> {
@@ -300,6 +306,7 @@ ${conversationContent}
     return `## Role: Assistant
 ## Task
 Just analysis user's goal, consider the previous goals, if the goal is not change, could use previous goals.
+${this.enableChainOfThoughts ? "And then, give the thoughts of how to achieve the goal step by step." : ""}
 
 ## Output Format
 Keep the output goal short and precise, just one sentence, less than 50 words. 

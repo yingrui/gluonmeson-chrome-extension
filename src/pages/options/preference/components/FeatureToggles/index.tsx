@@ -67,6 +67,13 @@ const FeatureToggles: React.FC<FeatureTogglesProps> = ({
             >
               <Switch />
             </Form.Item>
+            <Form.Item
+              label={intl.get("enableChainOfThoughts").d("Chain of Thoughts")}
+              name="enableChainOfThoughts"
+              valuePropName="checked"
+            >
+              <Switch />
+            </Form.Item>
             <Form.Item label={null}>
               <Button key="create" type="primary" htmlType="submit">
                 {intl.get("save").d("Save")}

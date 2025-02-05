@@ -24,14 +24,20 @@ class BaseAgentFactory {
   thoughtAgentProps(config: GluonConfigure): ThoughtAgentProps {
     const modelService = this.createModelService(config);
     const language = intl.get(locale(config.language)).d("English");
+    const enableChainOfThoughts = config.enableChainOfThoughts ?? false;
     const reflectionService = config.enableReflection
-      ? this.createReflectionService(modelService, language)
+      ? this.createReflectionService(
+          modelService,
+          language,
+          enableChainOfThoughts,
+        )
       : null;
     return {
       language: language,
       conversation: new Conversation(),
       enableMultimodal: config.enableMultimodal ?? false,
       enableReflection: config.enableReflection ?? false,
+      enableChainOfThoughts: enableChainOfThoughts,
       modelService: modelService,
       reflectionService: reflectionService,
     };
@@ -100,8 +106,13 @@ class BaseAgentFactory {
   private createReflectionService(
     modelService: ModelService,
     language: string,
+    enableChainOfThoughts: boolean,
   ): ReflectionService {
-    return new PromptReflectionService(modelService, language);
+    return new PromptReflectionService(
+      modelService,
+      language,
+      enableChainOfThoughts,
+    );
   }
 }
 
