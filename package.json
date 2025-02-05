@@ -50,7 +50,8 @@
   "devDependencies": {
     "@rollup/plugin-sucrase": "5.0.2",
     "@rollup/plugin-typescript": "11.1.6",
-    "@testing-library/react": "14.0.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^14.0.0",
     "@types/chrome": "0.0.287",
     "@types/lodash": "4.17.4",
     "@types/node": "20.8.10",
