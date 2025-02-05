@@ -58,7 +58,6 @@ const ElevatorPitchApp: React.FC<ElevatorPitchProps> = ({ config }) => {
           onEdit={() => setEditing(true)}
         />
       )}
-      <Layout style={{ flex: "1" }}></Layout>
     </Layout>
   );
 };
